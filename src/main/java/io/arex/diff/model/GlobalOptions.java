@@ -4,6 +4,7 @@ import io.arex.diff.service.DecompressService;
 import io.arex.diff.utils.DeCompressUtil;
 import io.arex.diff.utils.StringUtil;
 
+import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.HashMap;
@@ -80,8 +81,8 @@ public class GlobalOptions {
             } else {
                 resource = DeCompressUtil.class.getClassLoader().getResource(decompressJarUrl);
             }
-            if (resource == null) {
-                return null;
+            if (resource == null){
+                resource = new File(decompressJarUrl).toURI().toURL();
             }
             URLClassLoader serviceClassLoader = new URLClassLoader(new URL[]{resource},
                     Thread.currentThread().getContextClassLoader());
