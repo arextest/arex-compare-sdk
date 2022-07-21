@@ -209,6 +209,6 @@ public class LogEntity implements Serializable {
         }
         String leftPath = ListUti.convertPathToStringForShow(this.pathPair.getLeftUnmatchedPath());
         String rightPath = ListUti.convertPathToStringForShow(this.pathPair.getRightUnmatchedPath());
-        return logInfo + ";  " + "Left node path ：" + leftPath + ";  " + "Right node path：" + rightPath;
+        return logInfo + ";  " + "Left node path: " + leftPath + ";  " + "Right node path: " + rightPath;
     }
 }

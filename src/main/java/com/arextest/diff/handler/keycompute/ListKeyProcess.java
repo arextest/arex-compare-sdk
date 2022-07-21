@@ -195,7 +195,6 @@ public class ListKeyProcess {
                 try {
                     subObj = ((JSONObject) obj).get(path);
                 } catch (JSONException e) {
-                    // logs.add(new LogEntity("key field don't have value：" + path));
                 }
                 if (subObj != null) {
                     result = getKeyValueByPath(relativePath.subList(1, relativePath.size()), subObj);
@@ -269,12 +268,12 @@ public class ListKeyProcess {
                 }
 
                 if (cnt == 0) {
-                    LogEntity log = new LogEntity("The referenced node could not be found or the referenced List does not have listKey, fkNodePath："
-                            + ListUti.convertToString2(currentParentPath) + ", fkNodeValue：" + value);
+                    LogEntity log = new LogEntity("The referenced node could not be found or the referenced List does not have listKey, fkNodePath: "
+                            + ListUti.convertToString2(currentParentPath) + ", fkNodeValue: " + value);
                     logs.add(log);
                 }
                 if (cnt > 1) {
-                    LogEntity log = new LogEntity("More than one referenced node, fkNodePath：" + ListUti.convertToString2(currentParentPath) + ", fkNodeValue：" + value);
+                    LogEntity log = new LogEntity("More than one referenced node, fkNodePath: " + ListUti.convertToString2(currentParentPath) + ", fkNodeValue: " + value);
                     logs.add(log);
                 }
             }
