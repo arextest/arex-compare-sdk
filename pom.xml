@@ -57,8 +57,8 @@
         <dependencies>
             <dependency>
                 <groupId>org.json</groupId>
-                <artifactId>org.json</artifactId>
-                <version>2.0</version>
+                <artifactId>json</artifactId>
+                <version>20180813</version>
             </dependency>
             <dependency>
                 <groupId>com.google.guava</groupId>
@@ -87,7 +87,7 @@
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
-            <artifactId>org.json</artifactId>
+            <artifactId>json</artifactId>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>

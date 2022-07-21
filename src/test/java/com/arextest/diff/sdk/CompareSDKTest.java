@@ -1,14 +1,14 @@
-//package com.arextest.diff.sdk;
+// package com.arextest.diff.sdk;
 //
-//import com.arextest.diff.model.CompareOptions;
-//import com.arextest.diff.model.CompareResult;
-//import org.junit.Test;
+// import com.arextest.diff.model.CompareOptions;
+// import com.arextest.diff.model.CompareResult;
+// import org.junit.Test;
 //
-//import java.util.Arrays;
-//import java.util.HashMap;
-//import java.util.List;
+// import java.util.Arrays;
+// import java.util.HashMap;
+// import java.util.List;
 //
-//public class CompareSDKTest {
+// public class CompareSDKTest {
 //
 //    @Test
 //    public void testCompare() throws Exception {
@@ -48,4 +48,4 @@
 //        System.out.println("toatal cost:" + (end - start) + " ms");
 //
 //    }
-//}
+// }
