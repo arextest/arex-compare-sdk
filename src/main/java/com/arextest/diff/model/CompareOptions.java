@@ -36,6 +36,17 @@ public class CompareOptions {
      */
     private Map<String, String> listSortConfig;
 
+    /**
+     * change the message and configuration to lowercase, for the inconsistency between the actual message and the contract case
+     */
+    private Boolean nameToLower = null;
+
+    /**
+     * This option is true, The null, CollectionUtils.isEmpty and Strings.empty are equal
+     * for example：the baseMsg：{"age":""} is consistent with testMsg："{\"age\":null}"
+     */
+    private Boolean nullEqualsEmpty = null;
+
 
     public CompareOptions() {
     }
@@ -155,6 +166,16 @@ public class CompareOptions {
         return this;
     }
 
+    public CompareOptions putNameToLower(Boolean nameToLower) {
+        this.nameToLower = nameToLower;
+        return this;
+    }
+
+    public CompareOptions putNullEqualsEmpty(Boolean nullEqualsEmpty) {
+        this.nullEqualsEmpty = nullEqualsEmpty;
+        return this;
+    }
+
     public Set<String> getInclusions() {
         return inclusions;
     }
@@ -175,6 +196,13 @@ public class CompareOptions {
         return listSortConfig;
     }
 
+    public Boolean getNameToLower() {
+        return nameToLower;
+    }
+
+    public Boolean getNullEqualsEmpty() {
+        return nullEqualsEmpty;
+    }
 
     public static void main(String[] args) {
 

@@ -7,9 +7,7 @@ import com.arextest.diff.service.DecompressService;
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.ServiceLoader;
+import java.util.*;
 
 public class GlobalOptions {
 
@@ -42,7 +40,8 @@ public class GlobalOptions {
             return this;
         }
         this.pluginJarUrl = pluginJarUrl;
-        this.decompressServices = getDecompressServices(pluginJarUrl);
+        this.decompressServices = Optional.ofNullable(decompressServices).orElse(new HashMap<>());
+        this.decompressServices.putAll(getDecompressServices(pluginJarUrl));
         return this;
     }
 
@@ -81,7 +80,7 @@ public class GlobalOptions {
             } else {
                 resource = DeCompressUtil.class.getClassLoader().getResource(decompressJarUrl);
             }
-            if (resource == null){
+            if (resource == null) {
                 resource = new File(decompressJarUrl).toURI().toURL();
             }
             URLClassLoader serviceClassLoader = new URLClassLoader(new URL[]{resource},
@@ -96,7 +95,7 @@ public class GlobalOptions {
             }
 
         } catch (Throwable e) {
-            return null;
+            return Collections.emptyMap();
         }
         return result;
     }

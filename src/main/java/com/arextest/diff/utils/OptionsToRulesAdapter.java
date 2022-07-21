@@ -16,8 +16,8 @@ public class OptionsToRulesAdapter {
         rulesConfig.setBaseMsg(baseMsg);
         rulesConfig.setTestMsg(testMsg);
 
-        optionsToRules(compareOptions, rulesConfig);
         globalOptionsToRules(globalOptions, rulesConfig);
+        optionsToRules(compareOptions, rulesConfig);
         if (rulesConfig.isNameToLower()) {
             configToLower(rulesConfig);
         }
@@ -32,6 +32,15 @@ public class OptionsToRulesAdapter {
         keyConfigToLower(rulesConfig.getListSortEntities());
     }
 
+    private static void globalOptionsToRules(GlobalOptions globalOptions, RulesConfig rulesConfig) {
+        if (globalOptions == null) {
+            return;
+        }
+        rulesConfig.setDecompressServices(globalOptions.getDecompressServices());
+        rulesConfig.setNameToLower(globalOptions.isNameToLower());
+        rulesConfig.setNullEqualsEmpty(globalOptions.isNullEqualsEmpty());
+    }
+
     private static void optionsToRules(CompareOptions compareOptions, RulesConfig rulesConfig) {
         if (compareOptions == null) {
             return;
@@ -41,17 +50,14 @@ public class OptionsToRulesAdapter {
         rulesConfig.setDecompressConfig(compareOptions.getDecompressConfig());
         rulesConfig.setReferenceEntities(referenceConfigConvert(compareOptions.getReferenceConfig()));
         rulesConfig.setListSortEntities(listSortConfigConvert(compareOptions.getListSortConfig(), rulesConfig.getReferenceEntities()));
-    }
-
-    private static void globalOptionsToRules(GlobalOptions globalOptions, RulesConfig rulesConfig) {
-        if (globalOptions == null) {
-            return;
+        // if CompareOptions exist nameToLower or nullEqualsEmpty, override GlobalOptions
+        if (compareOptions.getNameToLower() != null) {
+            rulesConfig.setNameToLower(compareOptions.getNameToLower());
         }
-        rulesConfig.setNameToLower(globalOptions.isNameToLower());
-        rulesConfig.setDecompressServices(globalOptions.getDecompressServices());
-        rulesConfig.setNullEqualsEmpty(globalOptions.isNullEqualsEmpty());
+        if (compareOptions.getNullEqualsEmpty() != null) {
+            rulesConfig.setNullEqualsEmpty(compareOptions.getNullEqualsEmpty());
+        }
     }
-
 
     private static Map<String, List<String>> mapKeyToLower(Map<String, List<String>> map) {
         if (map == null) {
