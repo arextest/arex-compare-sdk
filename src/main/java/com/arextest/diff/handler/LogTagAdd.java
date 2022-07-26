@@ -69,7 +69,6 @@ public class LogTagAdd {
                 } else {
                     unmatchedPath = pathPair.getRightUnmatchedPath();
                 }
-                logTag.setLv(unmatchedPath.size());
                 ignoreTagProcessor(unmatchedPath, request.getIgnoreNodePaths(), logTag);
                 processInConsistentPaths(log, inConsistentPaths);
 
