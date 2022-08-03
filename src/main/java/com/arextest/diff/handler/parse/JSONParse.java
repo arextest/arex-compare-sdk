@@ -47,7 +47,6 @@ public class JSONParse {
         Map<List<NodeEntity>, String> testOriginal = TaskThreadFactory.jsonObjectThreadPool.submit(callable2).get();
 
         return JSONParseUtil.getTotalParses(baseOriginal, testOriginal);
-
     }
 
     private Map<String, String> convertDecompressConfig(Map<String, List<String>> decompressConfig) {

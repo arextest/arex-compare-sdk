@@ -1,6 +1,5 @@
 package com.arextest.diff.handler.keycompute;
 
-
 import com.arextest.diff.model.enumeration.Constant;
 import com.arextest.diff.model.key.ListSortEntity;
 import com.arextest.diff.model.key.ReferenceEntity;
@@ -25,19 +24,10 @@ public class ListKeyProcess {
 
     private LinkedList<ListSortEntity> prioritylistSortEntities;
 
-
-    public ListKeyProcess(List<ReferenceEntity> responseReferences, List<ListSortEntity> allListKeys) {
-        this.responseReferences = responseReferences;
-        this.allListKeys = allListKeys;
-        this.listKeysMap = getListKeysMap();
-        this.prioritylistSortEntities = computeReferencedListPriority();
-    }
-
     // <referenceListPath,refNum,keyValue>
     private HashMap<String, HashMap<String, String>> referenceKeys = new HashMap<>();
 
     // <list path, <index,keyValue>>
-
     private HashMap<List<NodeEntity>, HashMap<Integer, String>> listIndexKeys = new HashMap<>();
 
     private HashMap<String, List<String>> listKeysMap;
@@ -45,6 +35,13 @@ public class ListKeyProcess {
     private List<String> currentParentPath;
 
     boolean useFirstElementKey = false;
+
+    public ListKeyProcess(List<ReferenceEntity> responseReferences, List<ListSortEntity> allListKeys) {
+        this.responseReferences = responseReferences;
+        this.allListKeys = allListKeys;
+        this.listKeysMap = getListKeysMap();
+        this.prioritylistSortEntities = computeReferencedListPriority();
+    }
 
     public List<LogEntity> getLogs() {
         return logs;

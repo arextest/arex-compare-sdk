@@ -1,16 +1,13 @@
 package com.arextest.diff.model.log;
 
-import com.arextest.diff.utils.ListUti;
 import com.arextest.diff.model.enumeration.UnmatchedType;
+import com.arextest.diff.utils.ListUti;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-/**
- * Created by yuxiangshi on 2017/7/12.
- */
 public class UnmatchedPairEntity implements Serializable {
     /**
      * {@link UnmatchedType}

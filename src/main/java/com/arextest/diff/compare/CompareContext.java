@@ -4,47 +4,46 @@ import com.arextest.diff.model.compare.IndexPair;
 import com.arextest.diff.model.key.ReferenceEntity;
 import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.model.log.NodeEntity;
+import com.arextest.diff.model.parse.MsgStructure;
 import com.google.common.collect.Lists;
 
 import java.util.*;
 
-/**
- * Created by rchen9 on 2022/7/25.
- */
 public class CompareContext {
 
-    private Object baseObj;
-    private Object testObj;
+    public Object baseObj;
+    public Object testObj;
 
-    private Map<List<String>, Object> refPkListNodeCacheLeft = new HashMap<>();
-    private Map<List<String>, Object> refPkListNodeCacheRight = new HashMap<>();
+    public Map<List<String>, Object> refPkListNodeCacheLeft = new HashMap<>();
+    public Map<List<String>, Object> refPkListNodeCacheRight = new HashMap<>();
 
-    private List<String> currentListKeysLeft = new ArrayList<>();
-    private List<String> currentListKeysRight = new ArrayList<>();
+    public List<String> currentListKeysLeft = new ArrayList<>();
+    public List<String> currentListKeysRight = new ArrayList<>();
     // compare reference trace
-    private List<List<NodeEntity>> currentTraceLeft;
-    private List<List<NodeEntity>> currentTraceRight;
+    public List<List<NodeEntity>> currentTraceLeft;
+    public List<List<NodeEntity>> currentTraceRight;
 
-    private List<List<NodeEntity>> currentTraceLeftForShow;
-    private List<List<NodeEntity>> currentTraceRightForShow;
+    public List<List<NodeEntity>> currentTraceLeftForShow;
+    public List<List<NodeEntity>> currentTraceRightForShow;
 
-    private List<NodeEntity> currentNodeLeft = new ArrayList<>();
-    private List<NodeEntity> currentNodeRight = new ArrayList<>();
+    public List<NodeEntity> currentNodeLeft = new ArrayList<>();
+    public List<NodeEntity> currentNodeRight = new ArrayList<>();
 
-    private List<ReferenceEntity> responseReferences;
-    private HashSet<List<String>> pkNodePaths;
+    public List<ReferenceEntity> responseReferences;
+    public HashSet<List<String>> pkNodePaths;
+    // store the pkList has compared the paired index, because of the situation that the paired indexes compared by the reference
+    public Map<List<String>, List<IndexPair>> pkListIndexPair;
+    public HashMap<List<NodeEntity>, HashMap<Integer, String>> listIndexKeysLeft = new HashMap<>();
+    public HashMap<List<NodeEntity>, HashMap<Integer, String>> listIndexKeysRight = new HashMap<>();
 
-    private Map<List<String>, List<IndexPair>> pkListIndexPair;
-    private HashMap<List<NodeEntity>, HashMap<Integer, String>> listIndexKeysLeft = new HashMap<>();
-    private HashMap<List<NodeEntity>, HashMap<Integer, String>> listIndexKeysRight = new HashMap<>();
+    public List<LogEntity> logs;
 
-    private List<LogEntity> logs;
+    public MsgStructure baseMsgStructure;
+    public MsgStructure testMsgStructure;
 
-    private List<List<NodeEntity>> listKeyPath = new ArrayList<>();
+    public byte ignoreReferenceNotFound = 0;
 
-    private byte ignoreReferenceNotFound = 0;
-
-    private boolean notDistinguishNullAndEmpty = false;
+    public boolean notDistinguishNullAndEmpty = false;
 
     public CompareContext() {
         this.currentTraceLeft = Lists.newArrayList();
@@ -204,12 +203,20 @@ public class CompareContext {
         this.logs = logs;
     }
 
-    public List<List<NodeEntity>> getListKeyPath() {
-        return listKeyPath;
+    public MsgStructure getBaseMsgStructure() {
+        return baseMsgStructure;
     }
 
-    public void setListKeyPath(List<List<NodeEntity>> listKeyPath) {
-        this.listKeyPath = listKeyPath;
+    public void setBaseMsgStructure(MsgStructure baseMsgStructure) {
+        this.baseMsgStructure = baseMsgStructure;
+    }
+
+    public MsgStructure getTestMsgStructure() {
+        return testMsgStructure;
+    }
+
+    public void setTestMsgStructure(MsgStructure testMsgStructure) {
+        this.testMsgStructure = testMsgStructure;
     }
 
     public byte getIgnoreReferenceNotFound() {

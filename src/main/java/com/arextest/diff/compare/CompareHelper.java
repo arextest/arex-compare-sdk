@@ -5,14 +5,14 @@ import com.arextest.diff.model.key.ReferenceEntity;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.model.log.Trace;
 import com.arextest.diff.model.log.UnmatchedPairEntity;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
-/**
- * Created by rchen9 on 2022/7/25.
- */
 public class CompareHelper {
 
     public static UnmatchedPairEntity getUnmatchedPair(int unmatchedType, CompareContext compareContext) {
@@ -70,6 +70,37 @@ public class CompareHelper {
             return null;
         }
         return target;
+    }
+
+    public static List<NodeEntity> getPkNodePath(List<ReferenceEntity> references, boolean isLeft, Object obj, CompareContext compareContext) throws JSONException {
+        for (ReferenceEntity reference : references) {
+            List<String> pkNodeListPath = reference.getPkNodeListPath();
+            List<String> pkNodePath = reference.getPkNodePath();
+
+            Object refList;
+            Map<List<String>, Object> refPkListNodeCache = isLeft ? compareContext.getRefPkListNodeCacheLeft() : compareContext.getRefPkListNodeCacheRight();
+
+            if (refPkListNodeCache.containsKey(pkNodeListPath)) {
+                refList = refPkListNodeCache.get(pkNodeListPath);
+            } else {
+                refList = findByPath(isLeft ? compareContext.getBaseObj() : compareContext.getTestObj(), pkNodeListPath);
+                refPkListNodeCache.put(pkNodeListPath, refList);
+            }
+
+            if (refList instanceof JSONArray) {
+                JSONArray array = ((JSONArray) refList);
+                for (int i = 0; i < array.length(); i++) {
+                    Object element = array.get(i);
+                    Object pkNodeValue = findByPath(element, pkNodePath.subList(pkNodeListPath.size(), pkNodePath.size()));
+                    if (String.valueOf(obj).equals(String.valueOf(pkNodeValue))) {
+                        List<NodeEntity> list = convertToNodeEntityList(pkNodeListPath);
+                        list.add(new NodeEntity(null, i));
+                        return list;
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public static List<NodeEntity> convertToNodeEntityList(List<String> pkNodeListPath) {

@@ -97,7 +97,7 @@ public class ListUti {
             if (!StringUtil.isEmpty(no.getNodeName())) {
                 path.append(no.getNodeName() + suffix);
             } else {
-                if (path.length()>0){
+                if (path.length() > 0) {
                     path.deleteCharAt(path.length() - 1);
                 }
                 path.append("[").append(no.getIndex()).append("]").append(suffix);
@@ -114,7 +114,7 @@ public class ListUti {
         return dest;
     }
 
-    public static void removeLast(List<?> list) {
+    public static <T> void removeLast(List<T> list) {
         if (list == null || list.size() == 0) {
             return;
         }

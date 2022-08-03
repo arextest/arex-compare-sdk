@@ -5,6 +5,7 @@ import java.io.Serializable;
 public class LogTag implements Serializable {
 
     private Boolean ig = false;
+    private int errorType = 0;
 
     public LogTag() {
     }
@@ -17,4 +18,11 @@ public class LogTag implements Serializable {
         this.ig = ig;
     }
 
+    public int getErrorType() {
+        return errorType;
+    }
+
+    public void setErrorType(int errorType) {
+        this.errorType = errorType;
+    }
 }
