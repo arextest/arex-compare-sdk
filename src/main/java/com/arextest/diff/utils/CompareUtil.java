@@ -2,27 +2,31 @@ package com.arextest.diff.utils;
 
 import com.arextest.diff.handler.CompareHandler;
 import com.arextest.diff.handler.FillResultSync;
-import com.arextest.diff.handler.LogTagAdd;
 import com.arextest.diff.handler.WhitelistHandler;
+import com.arextest.diff.handler.keycompute.KeyCompute;
+import com.arextest.diff.handler.log.LogTagAdd;
 import com.arextest.diff.handler.parse.JSONParse;
+import com.arextest.diff.handler.parse.JSONStructureParse;
 import com.arextest.diff.handler.parse.ObjectParse;
+import com.arextest.diff.model.CompareResult;
+import com.arextest.diff.model.RulesConfig;
 import com.arextest.diff.model.enumeration.DiffResultCode;
+import com.arextest.diff.model.enumeration.UnmatchedType;
+import com.arextest.diff.model.key.KeyComputeResponse;
 import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.model.log.LogTagAddRequest;
 import com.arextest.diff.model.log.LogTagAddResponse;
 import com.arextest.diff.model.log.UnmatchedPairEntity;
 import com.arextest.diff.model.parse.MsgObjCombination;
-import com.arextest.diff.handler.keycompute.KeyCompute;
-import com.arextest.diff.model.CompareResult;
-import com.arextest.diff.model.RulesConfig;
-import com.arextest.diff.model.enumeration.UnmatchedType;
-import com.arextest.diff.model.key.KeyComputeResponse;
+import com.arextest.diff.model.parse.MsgStructure;
+import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
 
 public class CompareUtil {
@@ -41,6 +45,8 @@ public class CompareUtil {
 
     private static LogTagAdd logTagAdd = new LogTagAdd();
 
+    private static JSONStructureParse jsonStructureParse = new JSONStructureParse();
+
     public static CompareResult jsonCompare(RulesConfig rulesConfig) {
 
         CompareResult result = new CompareResult();
@@ -58,6 +64,10 @@ public class CompareUtil {
             Map<String, List<String>> parsePaths = jsonParse.doHandler(rulesConfig, msgObjCombination.getBaseObj(),
                     msgObjCombination.getTestObj());
 
+            // Parse JSON structure
+            CompletableFuture<MutablePair<MsgStructure, MsgStructure>> msgStructureFuture =
+                    jsonStructureParse.doHandler(msgObjCombination.getBaseObj(), msgObjCombination.getTestObj());
+
             // Backfill the parsed message to result
             List<Future<String>> list = fillResultSync.fillResult(msgObjCombination);
 
@@ -70,8 +80,8 @@ public class CompareUtil {
                     msgObjCombination.getTestObj(), rulesConfig.getInclusions());
 
             // compare jsonObject
-            List<LogEntity> logs = compareHandler.doHandler(rulesConfig, keyComputeResponse, msgWhiteObj.getBaseObj(),
-                    msgWhiteObj.getTestObj());
+            List<LogEntity> logs = compareHandler.doHandler(rulesConfig, keyComputeResponse, msgStructureFuture,
+                    msgWhiteObj.getBaseObj(), msgWhiteObj.getTestObj());
 
             LogTagAddRequest logTagAddRequest = new LogTagAddRequest(logs, rulesConfig.getExclusions());
             LogTagAddResponse logTagAddResponse = logTagAdd.addTagInLog(logTagAddRequest);

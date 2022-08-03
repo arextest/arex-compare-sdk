@@ -45,10 +45,10 @@ public class CompareSDK {
     /**
      * fromException
      *
-     * @param baseMsg
-     * @param testMsg
-     * @param remark
-     * @return
+     * @param baseMsg the based msg
+     * @param testMsg the tested msg
+     * @param remark the info of exception
+     * @return the compare result
      */
     public static CompareResult fromException(String baseMsg, String testMsg, String remark) {
         return CompareUtil.fromException(baseMsg, testMsg, remark);
@@ -58,8 +58,8 @@ public class CompareSDK {
     /**
      * Expose to the caller, sort a set of packets, and use split sorting
      *
-     * @param baseMsgs
-     * @param testMsgs
+     * @param baseMsgs the based msg
+     * @param testMsgs the tested msg
      */
     public static void arraySort(List<String> baseMsgs, List<String> testMsgs) {
 

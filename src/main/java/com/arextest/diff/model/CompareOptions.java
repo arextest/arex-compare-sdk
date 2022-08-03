@@ -43,7 +43,7 @@ public class CompareOptions {
 
     /**
      * This option is true, The null, CollectionUtils.isEmpty and Strings.empty are equal
-     * for example：the baseMsg：{"age":""} is consistent with testMsg："{\"age\":null}"
+     * for example：the baseMsg: {"age":""} is consistent with testMsg: "{\"age\":null}"
      */
     private Boolean nullEqualsEmpty = null;
 
@@ -202,10 +202,6 @@ public class CompareOptions {
 
     public Boolean getNullEqualsEmpty() {
         return nullEqualsEmpty;
-    }
-
-    public static void main(String[] args) {
-
     }
 
 }

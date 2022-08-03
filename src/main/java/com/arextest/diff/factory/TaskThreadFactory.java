@@ -11,8 +11,8 @@ public class TaskThreadFactory {
             1, TimeUnit.MINUTES, new LinkedBlockingQueue<>(500), new NamedThreadFactory("JsonObject"),
             new CallerRunsPolicyWithReport("JsonObject"));
 
-    public static ExecutorService keyHandlerThreadPool = new ThreadPoolExecutor(7, 7,
-            1, TimeUnit.MINUTES, new LinkedBlockingQueue<>(500), new NamedThreadFactory("KeyHandler"),
-            new CallerRunsPolicyWithReport("KeyHandler"));
+    public static ExecutorService structureHandlerThreadPool = new ThreadPoolExecutor(7, 7,
+            1, TimeUnit.MINUTES, new LinkedBlockingQueue<>(500), new NamedThreadFactory("structureHandler"),
+            new CallerRunsPolicyWithReport("structureHandler"));
 
 }

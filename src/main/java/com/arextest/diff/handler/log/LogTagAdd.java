@@ -1,4 +1,4 @@
-package com.arextest.diff.handler;
+package com.arextest.diff.handler.log;
 
 import com.arextest.diff.model.log.*;
 import com.arextest.diff.utils.ListUti;
@@ -19,6 +19,7 @@ public class LogTagAdd {
         add(UnmatchedType.LEFT_MISSING);
         add(UnmatchedType.RIGHT_MISSING);
         add(UnmatchedType.UNMATCHED);
+        // add(UnmatchedType.DIFFERENT_TYPE);
         // add(UnmatchedType.DIFFERENT_COUNT);
     }};
 
@@ -32,7 +33,6 @@ public class LogTagAdd {
                 }
             }
         }
-
     }
 
     private boolean ignoreMatch(List<String> pathInList, List<String> ignoreNodePath) {
@@ -69,7 +69,6 @@ public class LogTagAdd {
                 } else {
                     unmatchedPath = pathPair.getRightUnmatchedPath();
                 }
-                logTag.setLv(unmatchedPath.size());
                 ignoreTagProcessor(unmatchedPath, request.getIgnoreNodePaths(), logTag);
                 processInConsistentPaths(log, inConsistentPaths);
 

@@ -26,7 +26,7 @@ public class GlobalOptions {
 
     /**
      * This option is true, The null, CollectionUtils.isEmpty and Strings.empty are equal
-     * for example：the baseMsg：{"age":""} is consistent with testMsg："{\"age\":null}"
+     * for example：the baseMsg: {"age":""} is consistent with testMsg: "{\"age\":null}"
      */
     private boolean nullEqualsEmpty;
 

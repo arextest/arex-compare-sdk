@@ -121,8 +121,10 @@ public class LogEntity implements Serializable {
     }
 
     public LogEntity(Object baseValue, Object testValue, UnmatchedPairEntity pathPair) {
-        this.baseValue = baseValue instanceof JSONObject || baseValue instanceof JSONArray ? null : baseValue;
-        this.testValue = testValue instanceof JSONObject || testValue instanceof JSONArray ? null : testValue;
+        this.baseValue = baseValue instanceof JSONObject || baseValue instanceof JSONArray || JSONObject.NULL.equals(baseValue)
+                ? null : baseValue;
+        this.testValue = testValue instanceof JSONObject || testValue instanceof JSONArray || JSONObject.NULL.equals(testValue)
+                ? null : testValue;
         this.pathPair = pathPair;
         processLogInfo(this.baseValue, this.testValue, pathPair.getUnmatchedType());
         processPath();
@@ -209,6 +211,6 @@ public class LogEntity implements Serializable {
         }
         String leftPath = ListUti.convertPathToStringForShow(this.pathPair.getLeftUnmatchedPath());
         String rightPath = ListUti.convertPathToStringForShow(this.pathPair.getRightUnmatchedPath());
-        return logInfo + ";  " + "Left node path ：" + leftPath + ";  " + "Right node path：" + rightPath;
+        return logInfo + ";  " + "Left node path: " + leftPath + ";  " + "Right node path: " + rightPath;
     }
 }

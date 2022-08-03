@@ -1,6 +1,5 @@
 package com.arextest.diff.handler.keycompute;
 
-
 import com.arextest.diff.model.enumeration.Constant;
 import com.arextest.diff.model.key.ListSortEntity;
 import com.arextest.diff.model.key.ReferenceEntity;
@@ -25,19 +24,10 @@ public class ListKeyProcess {
 
     private LinkedList<ListSortEntity> prioritylistSortEntities;
 
-
-    public ListKeyProcess(List<ReferenceEntity> responseReferences, List<ListSortEntity> allListKeys) {
-        this.responseReferences = responseReferences;
-        this.allListKeys = allListKeys;
-        this.listKeysMap = getListKeysMap();
-        this.prioritylistSortEntities = computeReferencedListPriority();
-    }
-
     // <referenceListPath,refNum,keyValue>
     private HashMap<String, HashMap<String, String>> referenceKeys = new HashMap<>();
 
     // <list path, <index,keyValue>>
-
     private HashMap<List<NodeEntity>, HashMap<Integer, String>> listIndexKeys = new HashMap<>();
 
     private HashMap<String, List<String>> listKeysMap;
@@ -45,6 +35,13 @@ public class ListKeyProcess {
     private List<String> currentParentPath;
 
     boolean useFirstElementKey = false;
+
+    public ListKeyProcess(List<ReferenceEntity> responseReferences, List<ListSortEntity> allListKeys) {
+        this.responseReferences = responseReferences;
+        this.allListKeys = allListKeys;
+        this.listKeysMap = getListKeysMap();
+        this.prioritylistSortEntities = computeReferencedListPriority();
+    }
 
     public List<LogEntity> getLogs() {
         return logs;
@@ -195,7 +192,6 @@ public class ListKeyProcess {
                 try {
                     subObj = ((JSONObject) obj).get(path);
                 } catch (JSONException e) {
-                    // logs.add(new LogEntity("key field don't have value：" + path));
                 }
                 if (subObj != null) {
                     result = getKeyValueByPath(relativePath.subList(1, relativePath.size()), subObj);
@@ -269,12 +265,12 @@ public class ListKeyProcess {
                 }
 
                 if (cnt == 0) {
-                    LogEntity log = new LogEntity("The referenced node could not be found or the referenced List does not have listKey, fkNodePath："
-                            + ListUti.convertToString2(currentParentPath) + ", fkNodeValue：" + value);
+                    LogEntity log = new LogEntity("The referenced node could not be found or the referenced List does not have listKey, fkNodePath: "
+                            + ListUti.convertToString2(currentParentPath) + ", fkNodeValue: " + value);
                     logs.add(log);
                 }
                 if (cnt > 1) {
-                    LogEntity log = new LogEntity("More than one referenced node, fkNodePath：" + ListUti.convertToString2(currentParentPath) + ", fkNodeValue：" + value);
+                    LogEntity log = new LogEntity("More than one referenced node, fkNodePath: " + ListUti.convertToString2(currentParentPath) + ", fkNodeValue: " + value);
                     logs.add(log);
                 }
             }

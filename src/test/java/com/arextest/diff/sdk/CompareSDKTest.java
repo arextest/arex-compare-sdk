@@ -15,7 +15,7 @@ public class CompareSDKTest {
         long start = System.currentTimeMillis();
         CompareSDK sdk = new CompareSDK();
         sdk.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true)
-            .putPluginJarUrl("./lib/arex-compare-sdk-plugin-0.1.0-jar-with-dependencies.jar");
+                .putPluginJarUrl("./lib/arex-compare-sdk-plugin-0.1.0-jar-with-dependencies.jar");
 
         System.out.println(System.currentTimeMillis() - start);
 
@@ -46,6 +46,5 @@ public class CompareSDKTest {
         CompareResult result = sdk.compare(str1, str2, compareOptions);
         long end = System.currentTimeMillis();
         System.out.println("toatal cost:" + (end - start) + " ms");
-
     }
 }

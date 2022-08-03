@@ -4,10 +4,8 @@ import java.io.Serializable;
 
 public class LogTag implements Serializable {
 
-    // level
-    private int lv;
-    // beforeIgnore
     private Boolean ig = false;
+    private int errorType = 0;
 
     public LogTag() {
     }
@@ -20,11 +18,11 @@ public class LogTag implements Serializable {
         this.ig = ig;
     }
 
-    public int getLv() {
-        return lv;
+    public int getErrorType() {
+        return errorType;
     }
 
-    public void setLv(int lv) {
-        this.lv = lv;
+    public void setErrorType(int errorType) {
+        this.errorType = errorType;
     }
 }

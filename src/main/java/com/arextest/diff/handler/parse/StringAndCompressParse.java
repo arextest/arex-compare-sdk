@@ -112,7 +112,7 @@ public class StringAndCompressParse {
      * @param value
      * @param beanPath
      * @param preObj
-     * @return Pair<Object, Boolean>, the same define @link{processStringParse()}
+     * @return Pair<Object, Boolean>, the same define processStringParse()
      * k: show weather successfully process，if return null:fail,if return not null:success
      * v: show Object instanceof JSONObject or JSONArray which need to further performance getJSONParse
      */

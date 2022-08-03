@@ -34,8 +34,9 @@ public class ObjectParse {
     private Object msgToObj(String msg) throws JSONException {
         Object obj = null;
         if (StringUtil.isEmpty(msg)) {
-            obj = null;
-        } else if (msg.startsWith("[")) {
+            return obj;
+        }
+        if (msg.startsWith("[")) {
             obj = new JSONArray(msg);
         } else {
             obj = new JSONObject(msg);
@@ -46,24 +47,27 @@ public class ObjectParse {
     private MutablePair<Object, Object> compatibleDiffType(Object obj1, Object obj2) throws Exception {
         MutablePair<Object, Object> result = new MutablePair<>();
         if (obj1 == null && obj2 == null) {
-            result.setLeft("");
-            result.setRight("");
-        } else if (obj1 == null) {
+            return result;
+        }
+        if (obj1 == null) {
             if (obj2 instanceof JSONObject) {
                 obj1 = new JSONObject();
-            }else if (obj2 instanceof JSONArray){
+            } else if (obj2 instanceof JSONArray) {
                 obj1 = new JSONArray();
-            }else{
-               throw new Exception("exist string");
-            }
-        }else if (obj2 == null){
-            if (obj1 instanceof JSONObject){
-                obj2 = new JSONObject();
-            }else if (obj1 instanceof JSONArray){
-                obj2 = new JSONArray();
-            }else {
+            } else {
                 throw new Exception("exist string");
             }
+        } else if (obj2 == null) {
+            if (obj1 instanceof JSONObject) {
+                obj2 = new JSONObject();
+            } else if (obj1 instanceof JSONArray) {
+                obj2 = new JSONArray();
+            } else {
+                throw new Exception("exist string");
+            }
+        }
+        if (!obj1.getClass().equals(obj2.getClass())){
+            throw new Exception("The JSON types corresponding to baseMsg and testMsg are inconsistent.");
         }
         result.setLeft(obj1);
         result.setRight(obj2);
