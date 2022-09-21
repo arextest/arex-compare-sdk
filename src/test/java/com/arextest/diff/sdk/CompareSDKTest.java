@@ -31,18 +31,19 @@ public class CompareSDKTest {
                 + "\"subObj\":\"H4sIAAAAAAAAAKtWys3PK8lQslIyVdJRqkxNLAIyjQyMDIG8lMRKIMfQXKkWAMavr8AmAAAA\","
                 + "\"alist\":[{\"aid\":{\"id\":3},\"test\":[{\"subject\":\"1\"}]},{\"aid\":{\"id\":1},\"test\":[{\"subject\":\"2\"}],\"addtion\":\"ad\"}],\"nullList\":[1],\"age\":17}";
 
-        CompareOptions compareOptions = CompareOptions.options().putReferenceConfig("alist\\aid\\id", "family\\id")
-                .putListSortConfig(new HashMap<String, String>() {
+        CompareOptions compareOptions = CompareOptions.options().putReferenceConfig(Arrays.asList("alist", "aid", "id"), Arrays.asList("family", "id"))
+                .putListSortConfig(new HashMap<List<String>, List<List<String>>>() {
                     {
-                        put("family", "subject\\mother,subject\\father");
-                        put("alist", "aid\\id");
+                        put(Arrays.asList("family"), Arrays.asList(Arrays.asList("subject", "mother"), Arrays.asList("subject", "father")));
+                        put(Arrays.asList("alist"), Arrays.asList(Arrays.asList("aid", "id")));
                     }
-                }).putDecompressConfig(new HashMap<String, List<String>>() {
+                }).putDecompressConfig(new HashMap<String, List<List<String>>>() {
                     {
-                        put("Gzip", Arrays.asList("subObj"));
+                        put("Gzip", Arrays.asList(Arrays.asList("subObj")));
                     }
-                }).putExclusions(Arrays.asList("family\\mother", "age"))
-                .putInclusions(Arrays.asList("alist\\test", "nullList"));
+                }).putExclusions(Arrays.asList(Arrays.asList("family", "mother"), Arrays.asList("age")));
+                // .putInclusions(Arrays.asList(Arrays.asList("alist", "test"), Arrays.asList("nullList")));
+
         CompareResult result = sdk.compare(str1, str2, compareOptions);
         long end = System.currentTimeMillis();
         System.out.println("toatal cost:" + (end - start) + " ms");

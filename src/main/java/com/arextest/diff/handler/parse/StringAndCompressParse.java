@@ -11,6 +11,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class StringAndCompressParse {
 
@@ -22,7 +23,7 @@ public class StringAndCompressParse {
 
     private Map<String, DecompressService> decompressServices;
 
-    private Map<String, String> decompressConfig;
+    private Map<List<String>, String> decompressConfig;
 
     public Map<List<NodeEntity>, String> getOriginal() {
         return original;
@@ -36,7 +37,7 @@ public class StringAndCompressParse {
         this.decompressServices = decompressServices;
     }
 
-    public void setDecompressConfig(Map<String, String> decompressConfig) {
+    public void setDecompressConfig(Map<List<String>, String> decompressConfig) {
         this.decompressConfig = decompressConfig;
     }
 
@@ -70,8 +71,8 @@ public class StringAndCompressParse {
         } else {
 
             String value = obj.toString();
-            String nodePath = nameToLower ? ListUti.convertToString2(currentNode).toLowerCase() : ListUti.convertToString2(currentNode);
-
+            // TODO: 2022/9/20 improve the method to speed up
+            List<String> nodePath = nameToLower ? ListUti.convertToStringList(currentNode).stream().map(String::toLowerCase).collect(Collectors.toList()) : ListUti.convertToStringList(currentNode);
             MutablePair<Object, Boolean> objectBooleanPair = null;
             if (decompressConfig != null && decompressConfig.containsKey(nodePath)) {
                 String beanPath = decompressConfig.get(nodePath);

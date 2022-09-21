@@ -1,10 +1,10 @@
 package com.arextest.diff.handler.parse;
 
 import com.arextest.diff.factory.TaskThreadFactory;
-import com.arextest.diff.utils.NameConvertUtil;
 import com.arextest.diff.model.RulesConfig;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.utils.JSONParseUtil;
+import com.arextest.diff.utils.NameConvertUtil;
 
 import java.util.HashMap;
 import java.util.List;
@@ -49,11 +49,11 @@ public class JSONParse {
         return JSONParseUtil.getTotalParses(baseOriginal, testOriginal);
     }
 
-    private Map<String, String> convertDecompressConfig(Map<String, List<String>> decompressConfig) {
+    private Map<List<String>, String> convertDecompressConfig(Map<String, List<List<String>>> decompressConfig) {
         if (decompressConfig == null) {
             return null;
         }
-        Map<String, String> result = new HashMap<>();
+        Map<List<String>, String> result = new HashMap<>();
         decompressConfig.forEach((k, v) -> {
             if (v != null) {
                 v.forEach(item -> {
