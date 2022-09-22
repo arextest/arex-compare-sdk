@@ -1,10 +1,10 @@
 package com.arextest.diff.handler.log;
 
-import com.arextest.diff.model.log.*;
-import com.arextest.diff.utils.ListUti;
-import com.arextest.diff.model.enumeration.Constant;
 import com.arextest.diff.model.enumeration.DiffResultCode;
 import com.arextest.diff.model.enumeration.UnmatchedType;
+import com.arextest.diff.model.log.LogEntity;
+import com.arextest.diff.model.log.LogTagAddResponse;
+import com.arextest.diff.model.log.UnmatchedPairEntity;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -23,56 +23,19 @@ public class LogTagAdd {
         // add(UnmatchedType.DIFFERENT_COUNT);
     }};
 
-    private void ignoreTagProcessor(List<NodeEntity> unmatchedPath, List<List<String>> ignoreNodePaths, LogTag logTag) {
-        List<String> unmatchedPathList = ListUti.convertToStringList(unmatchedPath);
-        if (ignoreNodePaths != null && !ignoreNodePaths.isEmpty()) {
-            for (List<String> ignoreNodePath : ignoreNodePaths) {
-                if (ignoreMatch(unmatchedPathList, ignoreNodePath)) {
-                    logTag.setIg(true);
-                    return;
-                }
-            }
-        }
-    }
-
-    private boolean ignoreMatch(List<String> pathInList, List<String> ignoreNodePath) {
-
-        int size = ignoreNodePath.size();
-
-        if (ignoreNodePath.size() > pathInList.size()) {
-            return false;
-        }
-
-        for (int i = 0; i < size; i++) {
-            if (!ignoreNodePath.get(i).equals(pathInList.get(i)) && !ignoreNodePath.get(i).equals(Constant.DYNAMIC_PATH)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    public LogTagAddResponse addTagInLog(LogTagAddRequest request) {
+    public LogTagAddResponse addTagInLog(List<LogEntity> logEntities) {
 
         Set<String> inConsistentPaths = new HashSet<>();
         int existDiff = DiffResultCode.COMPARED_WITHOUT_DIFFERENCE;
         List<LogEntity> filterLogs = new ArrayList<>();
 
-        for (LogEntity log : request.getLogs()) {
+        for (LogEntity log : logEntities) {
             int unmatchedType = log.getPathPair().getUnmatchedType();
 
             if (filterCondition.contains(unmatchedType)) {
-                UnmatchedPairEntity pathPair = log.getPathPair();
-                LogTag logTag = log.getLogTag();
-                List<NodeEntity> unmatchedPath = new ArrayList<>();
-                if (pathPair.getLeftUnmatchedPath().size() >= pathPair.getRightUnmatchedPath().size()) {
-                    unmatchedPath = pathPair.getLeftUnmatchedPath();
-                } else {
-                    unmatchedPath = pathPair.getRightUnmatchedPath();
-                }
-                ignoreTagProcessor(unmatchedPath, request.getIgnoreNodePaths(), logTag);
                 processInConsistentPaths(log, inConsistentPaths);
 
-                if (unmatchedType != UnmatchedType.DIFFERENT_COUNT && Boolean.FALSE.equals(log.getLogTag().getIg())) {
+                if (unmatchedType != UnmatchedType.DIFFERENT_COUNT) {
                     existDiff = DiffResultCode.COMPARED_WITH_DIFFERENCE;
                 }
                 filterLogs.add(log);

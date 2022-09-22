@@ -14,6 +14,8 @@ public class CompareContext {
     public Object baseObj;
     public Object testObj;
 
+    public List<List<String>> exclusions;
+
     public Map<List<String>, Object> refPkListNodeCacheLeft = new HashMap<>();
     public Map<List<String>, Object> refPkListNodeCacheRight = new HashMap<>();
 
@@ -66,6 +68,14 @@ public class CompareContext {
 
     public void setTestObj(Object testObj) {
         this.testObj = testObj;
+    }
+
+    public void setExclusions(List<List<String>> exclusions){
+        this.exclusions = exclusions;
+    }
+
+    public List<List<String>> getExclusions(){
+        return exclusions;
     }
 
     public Map<List<String>, Object> getRefPkListNodeCacheLeft() {

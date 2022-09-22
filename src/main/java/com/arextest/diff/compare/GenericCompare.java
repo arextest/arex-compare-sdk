@@ -2,6 +2,8 @@ package com.arextest.diff.compare;
 
 import com.arextest.diff.handler.log.LogMarker;
 import com.arextest.diff.handler.log.LogRegister;
+import com.arextest.diff.model.enumeration.Constant;
+import com.arextest.diff.utils.IgnoreUtil;
 import com.arextest.diff.utils.ListUti;
 import com.google.common.base.Strings;
 import org.json.JSONArray;
@@ -14,13 +16,20 @@ public class GenericCompare {
 
     public static void jsonCompare(Object obj1, Object obj2, CompareContext compareContext) throws JSONException {
 
+        List<String> fuzzyPath = ListUti.convertToStringList(compareContext.currentNodeLeft);
+
         // ignore primary key node
         if (compareContext.pkNodePaths != null) {
             for (List<String> pkNodePath : compareContext.pkNodePaths) {
-                if (pkNodePath.equals(ListUti.convertToStringList(compareContext.currentNodeLeft))) {
+                if (pkNodePath.equals(fuzzyPath)) {
                     return;
                 }
             }
+        }
+
+        // not compare by exclusions
+        if (IgnoreUtil.ignoreProcessor(fuzzyPath, compareContext.exclusions)) {
+            return;
         }
 
         // There is a null value in any of the left and right nodes

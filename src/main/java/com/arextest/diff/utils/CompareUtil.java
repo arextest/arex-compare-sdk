@@ -83,8 +83,7 @@ public class CompareUtil {
             List<LogEntity> logs = compareHandler.doHandler(rulesConfig, keyComputeResponse, msgStructureFuture,
                     msgWhiteObj.getBaseObj(), msgWhiteObj.getTestObj());
 
-            LogTagAddRequest logTagAddRequest = new LogTagAddRequest(logs, rulesConfig.getExclusions());
-            LogTagAddResponse logTagAddResponse = logTagAdd.addTagInLog(logTagAddRequest);
+            LogTagAddResponse logTagAddResponse = logTagAdd.addTagInLog(logs);
 
             result.setCode(logTagAddResponse.getExistDiff());
             result.setMessage("compare successfully");

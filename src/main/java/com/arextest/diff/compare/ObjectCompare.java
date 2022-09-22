@@ -3,6 +3,7 @@ package com.arextest.diff.compare;
 import com.arextest.diff.handler.log.LogMarker;
 import com.arextest.diff.handler.log.LogRegister;
 import com.arextest.diff.model.log.NodeEntity;
+import com.arextest.diff.utils.IgnoreUtil;
 import com.arextest.diff.utils.ListUti;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -39,7 +40,9 @@ public class ObjectCompare {
                 usedFieldNames.add(fieldName);
                 compareContext.currentNodeRight.add(new NodeEntity(fieldName, 0));
             } catch (JSONException e) {
-                LogRegister.register(obj1FieldValue, obj2FieldValue, LogMarker.RIGHT_OBJECT_MISSING, compareContext);
+                if (!IgnoreUtil.ignoreProcessor(ListUti.convertToStringList(compareContext.currentNodeLeft), compareContext.exclusions)) {
+                    LogRegister.register(obj1FieldValue, obj2FieldValue, LogMarker.RIGHT_OBJECT_MISSING, compareContext);
+                }
             }
 
             if (obj1FieldValue != null && obj2FieldValue != null) {
@@ -66,7 +69,9 @@ public class ObjectCompare {
                 leftExist = true;
                 compareContext.currentNodeLeft.add(new NodeEntity(fieldName, 0));
             } catch (JSONException e) {
-                LogRegister.register(obj1FieldValue, obj2FieldValue, LogMarker.LEFT_OBJECT_MISSING, compareContext);
+                if (!IgnoreUtil.ignoreProcessor(ListUti.convertToStringList(compareContext.currentNodeRight), compareContext.exclusions)) {
+                    LogRegister.register(obj1FieldValue, obj2FieldValue, LogMarker.LEFT_OBJECT_MISSING, compareContext);
+                }
             }
             if (obj1FieldValue != null && obj2FieldValue != null) {
                 GenericCompare.jsonCompare(obj1FieldValue, obj2FieldValue, compareContext);

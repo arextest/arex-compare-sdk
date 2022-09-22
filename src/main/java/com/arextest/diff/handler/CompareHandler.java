@@ -22,6 +22,7 @@ public class CompareHandler {
         compareContext.setLogs(logs);
         compareContext.setBaseObj(baseObj);
         compareContext.setTestObj(testObj);
+        compareContext.setExclusions(rulesConfig.getExclusions());
         compareContext.setResponseReferences(keyComputeResponse.getAllReferenceEntities());
         compareContext.setListIndexKeysLeft(keyComputeResponse.getListIndexKeysLeft());
         compareContext.setListIndexKeysRight(keyComputeResponse.getListIndexKeysRight());

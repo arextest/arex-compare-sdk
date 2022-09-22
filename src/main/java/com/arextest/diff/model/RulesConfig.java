@@ -4,9 +4,11 @@ import com.arextest.diff.model.key.ListSortEntity;
 import com.arextest.diff.model.key.ReferenceEntity;
 import com.arextest.diff.service.DecompressService;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class RulesConfig {
 
@@ -20,7 +22,7 @@ public class RulesConfig {
 
     private Map<String, DecompressService> decompressServices;
 
-    private Map<String, List<String>> decompressConfig;
+    private Map<String, List<List<String>>> decompressConfig;
 
     private List<ReferenceEntity> referenceEntities = Collections.emptyList();
 
@@ -68,11 +70,11 @@ public class RulesConfig {
         this.decompressServices = decompressServices;
     }
 
-    public Map<String, List<String>> getDecompressConfig() {
+    public Map<String, List<List<String>>> getDecompressConfig() {
         return decompressConfig;
     }
 
-    public void setDecompressConfig(Map<String, List<String>> decompressConfig) {
+    public void setDecompressConfig(Map<String, List<List<String>>> decompressConfig) {
         this.decompressConfig = decompressConfig;
     }
 

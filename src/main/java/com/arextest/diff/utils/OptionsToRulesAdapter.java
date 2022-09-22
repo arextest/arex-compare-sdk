@@ -6,7 +6,15 @@ import com.arextest.diff.model.RulesConfig;
 import com.arextest.diff.model.key.ListSortEntity;
 import com.arextest.diff.model.key.ReferenceEntity;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class OptionsToRulesAdapter {
@@ -45,8 +53,8 @@ public class OptionsToRulesAdapter {
         if (compareOptions == null) {
             return;
         }
-        rulesConfig.setInclusions(setToListConvert(compareOptions.getInclusions()));
-        rulesConfig.setExclusions(setToListConvert(compareOptions.getExclusions()));
+        rulesConfig.setInclusions(compareOptions.getInclusions() == null ? null : new ArrayList<>(compareOptions.getInclusions()));
+        rulesConfig.setExclusions(compareOptions.getExclusions() == null ? null : new ArrayList<>(compareOptions.getExclusions()));
         rulesConfig.setDecompressConfig(compareOptions.getDecompressConfig());
         rulesConfig.setReferenceEntities(referenceConfigConvert(compareOptions.getReferenceConfig()));
         rulesConfig.setListSortEntities(listSortConfigConvert(compareOptions.getListSortConfig(), rulesConfig.getReferenceEntities()));
@@ -59,14 +67,15 @@ public class OptionsToRulesAdapter {
         }
     }
 
-    private static Map<String, List<String>> mapKeyToLower(Map<String, List<String>> map) {
+    private static Map<String, List<List<String>>> mapKeyToLower(Map<String, List<List<String>>> map) {
         if (map == null) {
             return null;
         }
-        Map<String, List<String>> result = new HashMap<>();
+        Map<String, List<List<String>>> result = new HashMap<>();
         map.forEach((k, v) -> {
             if (k != null && v != null) {
-                result.put(k, v.stream().map(String::toLowerCase).collect(Collectors.toList()));
+                result.put(k, v.stream().map(item -> item.stream().map(String::toLowerCase).collect(Collectors.toList()))
+                        .collect(Collectors.toList()));
             }
         });
         return result;
@@ -148,48 +157,43 @@ public class OptionsToRulesAdapter {
         return result;
     }
 
-    private static List<ReferenceEntity> referenceConfigConvert(Map<String, String> referenceConfig) {
+    private static List<ReferenceEntity> referenceConfigConvert(Map<List<String>, List<String>> referenceConfig) {
         if (referenceConfig == null) {
             return Collections.emptyList();
         }
         List<ReferenceEntity> referenceEntities = new ArrayList<>();
         referenceConfig.forEach((k, v) -> {
-            if (!StringUtil.isEmpty(k) && !StringUtil.isEmpty(v)) {
+            if (k != null && !k.isEmpty() && v != null && !v.isEmpty()) {
                 ReferenceEntity entity = new ReferenceEntity();
-                entity.setFkNodePath(Arrays.asList(k.split("\\\\")));
-                List<String> pkNodePath = Arrays.asList(v.split("\\\\"));
-                entity.setPkNodePath(pkNodePath);
+                entity.setFkNodePath(k);
+                entity.setPkNodePath(v);
                 // this maybe cause some problem
-                entity.setPkNodeListPath(pkNodePath.subList(0, pkNodePath.size() - 1));
+                entity.setPkNodeListPath(v.subList(0, v.size() - 1));
                 referenceEntities.add(entity);
             }
         });
         return referenceEntities;
     }
 
-    private static List<ListSortEntity> listSortConfigConvert(Map<String, String> listKeyConfig, List<ReferenceEntity> references) {
+    private static List<ListSortEntity> listSortConfigConvert(Map<List<String>, List<List<String>>> listKeyConfig, List<ReferenceEntity> references) {
         if (listKeyConfig == null) {
             return Collections.emptyList();
         }
 
-        Map<String, ReferenceEntity> pkNodePath2ListPathMap = new HashMap<>();
+        Map<List<String>, ReferenceEntity> pkNodePath2ReferenceMap = new HashMap<>();
         if (references != null) {
             for (ReferenceEntity referenceEntity : references) {
-                pkNodePath2ListPathMap.put(ListUti.convertToString2(referenceEntity.getPkNodeListPath()), referenceEntity);
+                pkNodePath2ReferenceMap.put(referenceEntity.getPkNodeListPath(), referenceEntity);
             }
         }
 
         List<ListSortEntity> listKeyEntities = new ArrayList<>();
         listKeyConfig.forEach((k, v) -> {
-            if (!StringUtil.isEmpty(v)) {
+            if (k != null && !k.isEmpty() && v != null && !v.isEmpty()) {
                 ListSortEntity listSortEntity = new ListSortEntity();
-                List<List<String>> keyNodePaths = new ArrayList<>();
-                for (String keyNodePath : v.split(",")) {
-                    keyNodePaths.add(Arrays.asList(keyNodePath.split("\\\\")));
-                }
-                listSortEntity.setListNodepath(Arrays.asList(k.split("\\\\")));
-                listSortEntity.setKeys(keyNodePaths);
-                ReferenceEntity entity = pkNodePath2ListPathMap.get(ListUti.convertToString2(listSortEntity.getListNodepath()));
+                listSortEntity.setListNodepath(k);
+                listSortEntity.setKeys(v);
+                ReferenceEntity entity = pkNodePath2ReferenceMap.get(listSortEntity.getListNodepath());
                 if (entity != null) {
                     List<String> pkNodeRelativePath = entity.getPkNodePath().subList(entity.getPkNodeListPath().size(), entity.getPkNodePath().size());
                     listSortEntity.setReferenceNodeRelativePath(pkNodeRelativePath);
