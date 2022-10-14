@@ -2,21 +2,23 @@ package com.arextest.diff.compare;
 
 import com.arextest.diff.handler.log.LogMarker;
 import com.arextest.diff.handler.log.LogRegister;
-import com.arextest.diff.model.enumeration.Constant;
+import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.utils.IgnoreUtil;
 import com.arextest.diff.utils.ListUti;
-import com.google.common.base.Strings;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
+import java.util.Objects;
 
 public class GenericCompare {
 
     public static void jsonCompare(Object obj1, Object obj2, CompareContext compareContext) throws JSONException {
 
-        List<String> fuzzyPath = ListUti.convertToStringList(compareContext.currentNodeLeft);
+        List<NodeEntity> currentNode = compareContext.currentNodeLeft.size() >= compareContext.currentNodeRight.size()
+                ? compareContext.getCurrentNodeLeft() : compareContext.getCurrentNodeRight();
+        List<String> fuzzyPath = ListUti.convertToStringList(currentNode);
 
         // ignore primary key node
         if (compareContext.pkNodePaths != null) {
@@ -32,12 +34,16 @@ public class GenericCompare {
             return;
         }
 
+
+        if (obj1 == null || obj2 == null) {
+            LogRegister.register(obj1, obj2, obj1 == null ? LogMarker.LEFT_OBJECT_MISSING : LogMarker.RIGHT_OBJECT_MISSING, compareContext);
+            return;
+        }
+
         // There is a null value in any of the left and right nodes
-        if (obj1 == null || obj2 == null || JSONObject.NULL.equals(obj1) || JSONObject.NULL.equals(obj2)) {
+        if (JSONObject.NULL.equals(obj1) || JSONObject.NULL.equals(obj2)) {
             if (compareContext.notDistinguishNullAndEmpty) {
                 if (bothEmptyString(obj1, obj2)) return;
-                if (obj1 == null && JSONObject.NULL.equals(obj2)) return;
-                if (obj2 == null && JSONObject.NULL.equals(obj1)) return;
                 if (obj1 instanceof JSONArray && ((JSONArray) obj1).length() == 0) return;
                 if (obj2 instanceof JSONArray && ((JSONArray) obj2).length() == 0) return;
             }
@@ -62,10 +68,10 @@ public class GenericCompare {
     }
 
     private static boolean bothEmptyString(Object obj1, Object obj2) {
-        if ((obj1 == null || JSONObject.NULL.equals(obj1)) && (obj2 == null || Strings.isNullOrEmpty(obj2.toString()))) {
+        if (JSONObject.NULL.equals(obj1) && Objects.equals("", obj2)) {
             return true;
         }
-        if ((obj2 == null || JSONObject.NULL.equals(obj2)) && (obj1 == null || Strings.isNullOrEmpty(obj1.toString()))) {
+        if (JSONObject.NULL.equals(obj2) && Objects.equals("", obj1)) {
             return true;
         }
         return false;
