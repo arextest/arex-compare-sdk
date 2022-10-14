@@ -1,9 +1,9 @@
 package com.arextest.diff.handler.parse;
 
 import com.arextest.diff.factory.TaskThreadFactory;
-import com.arextest.diff.utils.StringUtil;
 import com.arextest.diff.model.RulesConfig;
 import com.arextest.diff.model.parse.MsgObjCombination;
+import com.arextest.diff.utils.StringUtil;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,27 +46,7 @@ public class ObjectParse {
 
     private MutablePair<Object, Object> compatibleDiffType(Object obj1, Object obj2) throws Exception {
         MutablePair<Object, Object> result = new MutablePair<>();
-        if (obj1 == null && obj2 == null) {
-            return result;
-        }
-        if (obj1 == null) {
-            if (obj2 instanceof JSONObject) {
-                obj1 = new JSONObject();
-            } else if (obj2 instanceof JSONArray) {
-                obj1 = new JSONArray();
-            } else {
-                throw new Exception("exist string");
-            }
-        } else if (obj2 == null) {
-            if (obj1 instanceof JSONObject) {
-                obj2 = new JSONObject();
-            } else if (obj1 instanceof JSONArray) {
-                obj2 = new JSONArray();
-            } else {
-                throw new Exception("exist string");
-            }
-        }
-        if (!obj1.getClass().equals(obj2.getClass())){
+        if (obj1 == null || obj2 == null || !obj1.getClass().equals(obj2.getClass())) {
             throw new Exception("The JSON types corresponding to baseMsg and testMsg are inconsistent.");
         }
         result.setLeft(obj1);
