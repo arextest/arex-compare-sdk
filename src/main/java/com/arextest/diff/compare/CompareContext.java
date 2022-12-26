@@ -16,6 +16,8 @@ public class CompareContext {
 
     public List<List<String>> exclusions;
 
+    public Set<String> ignoreNodeSet;
+
     public Map<List<String>, Object> refPkListNodeCacheLeft = new HashMap<>();
     public Map<List<String>, Object> refPkListNodeCacheRight = new HashMap<>();
 
@@ -76,6 +78,14 @@ public class CompareContext {
 
     public List<List<String>> getExclusions(){
         return exclusions;
+    }
+
+    public Set<String> getIgnoreNodeSet() {
+        return ignoreNodeSet;
+    }
+
+    public void setIgnoreNodeSet(Set<String> ignoreNodeSet) {
+        this.ignoreNodeSet = ignoreNodeSet;
     }
 
     public Map<List<String>, Object> getRefPkListNodeCacheLeft() {

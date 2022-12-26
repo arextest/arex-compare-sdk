@@ -30,7 +30,8 @@ public class GenericCompare {
         }
 
         // not compare by exclusions
-        if (IgnoreUtil.ignoreProcessor(fuzzyPath, compareContext.exclusions)) {
+        if (IgnoreUtil.ignoreProcessor(fuzzyPath, compareContext.exclusions,
+                compareContext.ignoreNodeSet)) {
             return;
         }
 

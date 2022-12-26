@@ -3,6 +3,7 @@ package com.arextest.diff.utils;
 import com.arextest.diff.model.CompareOptions;
 import com.arextest.diff.model.GlobalOptions;
 import com.arextest.diff.model.RulesConfig;
+import com.arextest.diff.model.SystemConfig;
 import com.arextest.diff.model.key.ListSortEntity;
 import com.arextest.diff.model.key.ReferenceEntity;
 
@@ -24,6 +25,7 @@ public class OptionsToRulesAdapter {
         rulesConfig.setBaseMsg(baseMsg);
         rulesConfig.setTestMsg(testMsg);
 
+        systemToRules(rulesConfig);
         globalOptionsToRules(globalOptions, rulesConfig);
         optionsToRules(compareOptions, rulesConfig);
         if (rulesConfig.isNameToLower()) {
@@ -35,9 +37,15 @@ public class OptionsToRulesAdapter {
     private static void configToLower(RulesConfig rulesConfig) {
         rulesConfig.setInclusions(listListToLower(rulesConfig.getInclusions()));
         rulesConfig.setExclusions(listListToLower(rulesConfig.getExclusions()));
+        rulesConfig.setIgnoreNodeSet(setToLower(rulesConfig.getIgnoreNodeSet()));
         rulesConfig.setDecompressConfig(mapKeyToLower(rulesConfig.getDecompressConfig()));
         referenceToLower(rulesConfig.getReferenceEntities());
         keyConfigToLower(rulesConfig.getListSortEntities());
+    }
+
+
+    private static void systemToRules(RulesConfig rulesConfig) {
+        rulesConfig.setIgnoreNodeSet(SystemConfig.getIgnoreNodeSet());
     }
 
     private static void globalOptionsToRules(GlobalOptions globalOptions, RulesConfig rulesConfig) {
