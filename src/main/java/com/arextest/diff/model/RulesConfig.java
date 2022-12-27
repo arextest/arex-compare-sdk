@@ -4,11 +4,10 @@ import com.arextest.diff.model.key.ListSortEntity;
 import com.arextest.diff.model.key.ReferenceEntity;
 import com.arextest.diff.service.DecompressService;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Set;
 
 public class RulesConfig {
 
@@ -19,6 +18,8 @@ public class RulesConfig {
     private List<List<String>> inclusions;
 
     private List<List<String>> exclusions;
+
+    private Set<String> ignoreNodeSet;
 
     private Map<String, DecompressService> decompressServices;
 
@@ -62,6 +63,22 @@ public class RulesConfig {
         this.inclusions = inclusions;
     }
 
+    public List<List<String>> getExclusions() {
+        return exclusions;
+    }
+
+    public void setExclusions(List<List<String>> exclusions) {
+        this.exclusions = exclusions;
+    }
+
+    public Set<String> getIgnoreNodeSet() {
+        return ignoreNodeSet;
+    }
+
+    public void setIgnoreNodeSet(Set<String> ignoreNodeSet) {
+        this.ignoreNodeSet = ignoreNodeSet;
+    }
+
     public Map<String, DecompressService> getDecompressServices() {
         return decompressServices;
     }
@@ -92,14 +109,6 @@ public class RulesConfig {
 
     public void setListSortEntities(List<ListSortEntity> listSortEntities) {
         this.listSortEntities = listSortEntities;
-    }
-
-    public List<List<String>> getExclusions() {
-        return exclusions;
-    }
-
-    public void setExclusions(List<List<String>> exclusions) {
-        this.exclusions = exclusions;
     }
 
     public boolean isNameToLower() {

@@ -30,18 +30,22 @@ public class GenericCompare {
         }
 
         // not compare by exclusions
-        if (IgnoreUtil.ignoreProcessor(fuzzyPath, compareContext.exclusions)) {
+        if (IgnoreUtil.ignoreProcessor(fuzzyPath, compareContext.exclusions,
+                compareContext.ignoreNodeSet)) {
             return;
         }
 
 
-        if (obj1 == null || obj2 == null) {
-            LogRegister.register(obj1, obj2, obj1 == null ? LogMarker.LEFT_OBJECT_MISSING : LogMarker.RIGHT_OBJECT_MISSING, compareContext);
+        if ((obj1 == null && obj2 != null) ||
+                (obj1 != null && obj2 == null)) {
+            LogRegister.register(obj1, obj2,
+                    obj1 == null ? LogMarker.LEFT_OBJECT_MISSING : LogMarker.RIGHT_OBJECT_MISSING, compareContext);
             return;
         }
 
         // There is a null value in any of the left and right nodes
-        if (JSONObject.NULL.equals(obj1) || JSONObject.NULL.equals(obj2)) {
+        if ((JSONObject.NULL.equals(obj1) && !JSONObject.NULL.equals(obj2)) ||
+                (!JSONObject.NULL.equals(obj1) && JSONObject.NULL.equals(obj2))) {
             if (compareContext.notDistinguishNullAndEmpty) {
                 if (bothEmptyString(obj1, obj2)) return;
                 if (obj1 instanceof JSONArray && ((JSONArray) obj1).length() == 0) return;
