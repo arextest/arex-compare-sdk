@@ -2,6 +2,7 @@ package com.arextest.diff.compare;
 
 import com.arextest.diff.handler.log.LogMarker;
 import com.arextest.diff.handler.log.LogRegister;
+import com.arextest.diff.model.compare.CompareContext;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.utils.IgnoreUtil;
 import com.arextest.diff.utils.ListUti;
@@ -10,7 +11,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.List;
-import java.util.Objects;
 
 public class GenericCompare {
 
@@ -47,7 +47,7 @@ public class GenericCompare {
         if ((JSONObject.NULL.equals(obj1) && !JSONObject.NULL.equals(obj2)) ||
                 (!JSONObject.NULL.equals(obj1) && JSONObject.NULL.equals(obj2))) {
             if (compareContext.notDistinguishNullAndEmpty) {
-                if (bothEmptyString(obj1, obj2)) return;
+                if (CompareHelper.bothEmptyString(obj1, obj2)) return;
                 if (obj1 instanceof JSONArray && ((JSONArray) obj1).length() == 0) return;
                 if (obj2 instanceof JSONArray && ((JSONArray) obj2).length() == 0) return;
             }
@@ -70,15 +70,4 @@ public class GenericCompare {
             ValueCompare.valueCompare(obj1, obj2, compareContext);
         }
     }
-
-    private static boolean bothEmptyString(Object obj1, Object obj2) {
-        if (JSONObject.NULL.equals(obj1) && Objects.equals("", obj2)) {
-            return true;
-        }
-        if (JSONObject.NULL.equals(obj2) && Objects.equals("", obj1)) {
-            return true;
-        }
-        return false;
-    }
-
 }

@@ -1,13 +1,17 @@
-package com.arextest.diff.compare;
+package com.arextest.diff.model.compare;
 
-import com.arextest.diff.model.compare.IndexPair;
 import com.arextest.diff.model.key.ReferenceEntity;
 import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.model.parse.MsgStructure;
 import com.google.common.collect.Lists;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 public class CompareContext {
 
@@ -72,11 +76,11 @@ public class CompareContext {
         this.testObj = testObj;
     }
 
-    public void setExclusions(List<List<String>> exclusions){
+    public void setExclusions(List<List<String>> exclusions) {
         this.exclusions = exclusions;
     }
 
-    public List<List<String>> getExclusions(){
+    public List<List<String>> getExclusions() {
         return exclusions;
     }
 

@@ -1,5 +1,6 @@
 package com.arextest.diff.compare;
 
+import com.arextest.diff.model.compare.CompareContext;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.utils.ListUti;
 import org.json.JSONException;

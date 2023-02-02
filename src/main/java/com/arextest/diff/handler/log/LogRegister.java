@@ -1,6 +1,6 @@
 package com.arextest.diff.handler.log;
 
-import com.arextest.diff.compare.CompareContext;
+import com.arextest.diff.model.compare.CompareContext;
 import com.arextest.diff.model.enumeration.ErrorType;
 import com.arextest.diff.model.enumeration.UnmatchedType;
 import com.arextest.diff.model.key.ReferenceEntity;

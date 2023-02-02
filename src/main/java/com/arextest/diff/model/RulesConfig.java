@@ -1,5 +1,6 @@
 package com.arextest.diff.model;
 
+import com.arextest.diff.model.enumeration.CategoryType;
 import com.arextest.diff.model.key.ListSortEntity;
 import com.arextest.diff.model.key.ReferenceEntity;
 import com.arextest.diff.service.DecompressService;
@@ -10,6 +11,11 @@ import java.util.Map;
 import java.util.Set;
 
 public class RulesConfig {
+
+    /**
+     * @see CategoryType
+     */
+    private int categoryType;
 
     private String baseMsg;
 
@@ -33,11 +39,24 @@ public class RulesConfig {
 
     private boolean nullEqualsEmpty;
 
+    private boolean sqlBodyParse;
+
+    private boolean onlyCompareCoincidentColumn;
+
     public RulesConfig() {
         this.nameToLower = false;
         this.nullEqualsEmpty = false;
+        this.sqlBodyParse = false;
+        this.onlyCompareCoincidentColumn = false;
     }
 
+    public int getCategoryType() {
+        return categoryType;
+    }
+
+    public void setCategoryType(int categoryType) {
+        this.categoryType = categoryType;
+    }
 
     public String getBaseMsg() {
         return baseMsg;
@@ -125,5 +144,21 @@ public class RulesConfig {
 
     public void setNullEqualsEmpty(boolean nullEqualsEmpty) {
         this.nullEqualsEmpty = nullEqualsEmpty;
+    }
+
+    public boolean isSqlBodyParse() {
+        return sqlBodyParse;
+    }
+
+    public void setSqlBodyParse(boolean sqlBodyParse) {
+        this.sqlBodyParse = sqlBodyParse;
+    }
+
+    public boolean isOnlyCompareCoincidentColumn() {
+        return onlyCompareCoincidentColumn;
+    }
+
+    public void setOnlyCompareCoincidentColumn(boolean onlyCompareCoincidentColumn) {
+        this.onlyCompareCoincidentColumn = onlyCompareCoincidentColumn;
     }
 }

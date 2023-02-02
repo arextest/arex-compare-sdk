@@ -1,13 +1,14 @@
 package com.arextest.diff.sdk;
 
 import com.arextest.diff.model.CompareOptions;
+import com.arextest.diff.model.CompareResult;
 import com.arextest.diff.model.GlobalOptions;
 import com.arextest.diff.model.RulesConfig;
 import com.arextest.diff.model.enumeration.DiffResultCode;
 import com.arextest.diff.utils.CompareUtil;
+import com.arextest.diff.utils.ExceptionToCompareResult;
 import com.arextest.diff.utils.JSONArraySort;
 import com.arextest.diff.utils.OptionsToRulesAdapter;
-import com.arextest.diff.model.CompareResult;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -47,11 +48,11 @@ public class CompareSDK {
      *
      * @param baseMsg the based msg
      * @param testMsg the tested msg
-     * @param remark the info of exception
+     * @param remark  the info of exception
      * @return the compare result
      */
     public static CompareResult fromException(String baseMsg, String testMsg, String remark) {
-        return CompareUtil.fromException(baseMsg, testMsg, remark);
+        return ExceptionToCompareResult.fromException(baseMsg, testMsg, remark);
     }
 
 

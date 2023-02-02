@@ -1,6 +1,6 @@
 package com.arextest.diff.compare.feature;
 
-import com.arextest.diff.compare.CompareContext;
+import com.arextest.diff.model.compare.CompareContext;
 import com.arextest.diff.model.log.NodeEntity;
 
 import java.util.List;

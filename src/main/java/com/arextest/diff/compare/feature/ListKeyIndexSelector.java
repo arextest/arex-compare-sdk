@@ -1,6 +1,6 @@
 package com.arextest.diff.compare.feature;
 
-import com.arextest.diff.compare.CompareContext;
+import com.arextest.diff.model.compare.CompareContext;
 import com.arextest.diff.handler.log.LogMarker;
 import com.arextest.diff.handler.log.LogRegister;
 import org.json.JSONArray;
