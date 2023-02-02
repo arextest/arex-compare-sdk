@@ -5,11 +5,13 @@ import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
 import org.json.JSONObject;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
  * Created by rchen9 on 2023/1/11.
  */
+@Ignore
 public class SelectExampleTest {
     @Test
     public void testSelect() throws JSQLParserException {

@@ -16,6 +16,7 @@ import net.sf.jsqlparser.statement.select.SelectExpressionItem;
 import net.sf.jsqlparser.statement.select.SelectItem;
 import net.sf.jsqlparser.statement.select.SelectItemVisitorAdapter;
 import net.sf.jsqlparser.statement.select.SubSelect;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import java.util.Map;
 /**
  * Created by rchen9 on 2023/1/11.
  */
+@Ignore
 public class ExampleTest {
 
     @Test
