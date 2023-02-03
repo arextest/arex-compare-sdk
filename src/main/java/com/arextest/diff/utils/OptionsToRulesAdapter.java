@@ -61,6 +61,7 @@ public class OptionsToRulesAdapter {
         if (compareOptions == null) {
             return;
         }
+        rulesConfig.setCategoryType(compareOptions.getCategoryType());
         rulesConfig.setInclusions(compareOptions.getInclusions() == null ? null : new ArrayList<>(compareOptions.getInclusions()));
         rulesConfig.setExclusions(compareOptions.getExclusions() == null ? null : new ArrayList<>(compareOptions.getExclusions()));
         rulesConfig.setDecompressConfig(compareOptions.getDecompressConfig());
@@ -72,6 +73,12 @@ public class OptionsToRulesAdapter {
         }
         if (compareOptions.getNullEqualsEmpty() != null) {
             rulesConfig.setNullEqualsEmpty(compareOptions.getNullEqualsEmpty());
+        }
+        if (compareOptions.getSqlBodyParse() != null) {
+            rulesConfig.setSqlBodyParse(compareOptions.getSqlBodyParse());
+        }
+        if (compareOptions.getOnlyCompareCoincidentColumn() != null) {
+            rulesConfig.setOnlyCompareCoincidentColumn(compareOptions.getOnlyCompareCoincidentColumn());
         }
     }
 

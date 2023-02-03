@@ -1,5 +1,6 @@
 package com.arextest.diff.compare;
 
+import com.arextest.diff.model.compare.CompareContext;
 import com.arextest.diff.model.enumeration.Constant;
 import com.arextest.diff.model.key.ReferenceEntity;
 import com.arextest.diff.model.log.NodeEntity;
@@ -12,8 +13,19 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class CompareHelper {
+
+    public static boolean bothEmptyString(Object obj1, Object obj2) {
+        if (JSONObject.NULL.equals(obj1) && Objects.equals("", obj2)) {
+            return true;
+        }
+        if (JSONObject.NULL.equals(obj2) && Objects.equals("", obj1)) {
+            return true;
+        }
+        return false;
+    }
 
     public static UnmatchedPairEntity getUnmatchedPair(int unmatchedType, CompareContext compareContext) {
         return new UnmatchedPairEntity(unmatchedType, compareContext.getCurrentNodeLeft(), compareContext.getCurrentNodeRight(),

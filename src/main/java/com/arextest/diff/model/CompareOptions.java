@@ -1,5 +1,7 @@
 package com.arextest.diff.model;
 
+import com.arextest.diff.model.enumeration.CategoryType;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -9,6 +11,11 @@ import java.util.Map;
 import java.util.Set;
 
 public class CompareOptions {
+
+    /**
+     * @see CategoryType
+     */
+    private String categoryType;
 
     /**
      * the collection of the node path chosen to compare
@@ -53,12 +60,29 @@ public class CompareOptions {
      */
     private Boolean nullEqualsEmpty = null;
 
+    /**
+     * parse the field of "body"
+     * This configuration works only when compareType is CompareType.DATABASE
+     */
+    private Boolean sqlBodyParse = null;
+
+    /**
+     * only compare the overlapping columns
+     * ignore the non-overlapping columns
+     * This configuration works only when compareType is CompareType.DATABASE
+     */
+    private Boolean onlyCompareCoincidentColumn = null;
+
 
     public CompareOptions() {
     }
 
     public static CompareOptions options() {
         return new CompareOptions();
+    }
+
+    public void putCategoryType(String categoryType) {
+        this.categoryType = categoryType;
     }
 
     public CompareOptions putInclusions(List<String> path) {
@@ -184,6 +208,18 @@ public class CompareOptions {
         return this;
     }
 
+    public void putSqlBodyParse(Boolean sqlBodyParse) {
+        this.sqlBodyParse = sqlBodyParse;
+    }
+
+    public void putOnlyCompareCoincidentColumn(Boolean onlyCompareCoincidentColumn) {
+        this.onlyCompareCoincidentColumn = onlyCompareCoincidentColumn;
+    }
+
+    public String getCategoryType() {
+        return categoryType;
+    }
+
     public Set<List<String>> getInclusions() {
         return inclusions;
     }
@@ -212,4 +248,11 @@ public class CompareOptions {
         return nullEqualsEmpty;
     }
 
+    public Boolean getSqlBodyParse() {
+        return sqlBodyParse;
+    }
+
+    public Boolean getOnlyCompareCoincidentColumn() {
+        return onlyCompareCoincidentColumn;
+    }
 }

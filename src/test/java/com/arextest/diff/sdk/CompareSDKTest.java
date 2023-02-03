@@ -2,6 +2,7 @@ package com.arextest.diff.sdk;
 
 import com.arextest.diff.model.CompareOptions;
 import com.arextest.diff.model.CompareResult;
+import com.arextest.diff.model.enumeration.CategoryType;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -42,10 +43,68 @@ public class CompareSDKTest {
                         put("Gzip", Arrays.asList(Arrays.asList("subObj")));
                     }
                 }).putExclusions(Arrays.asList(Arrays.asList("family", "mother"), Arrays.asList("age")));
-                // .putInclusions(Arrays.asList(Arrays.asList("alist", "test"), Arrays.asList("nullList")));
+        // .putInclusions(Arrays.asList(Arrays.asList("alist", "test"), Arrays.asList("nullList")));
 
         CompareResult result = sdk.compare(str1, str2, compareOptions);
         long end = System.currentTimeMillis();
         System.out.println("toatal cost:" + (end - start) + " ms");
     }
+
+    @Test
+    public void testSQLCompare() {
+        CompareSDK sdk = new CompareSDK();
+        sdk.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true);
+
+        String str1 = "{\n" +
+                "    \"database\": \"htlgroupproductdb_dalcluster\",\n" +
+                "    \"parameters\": [\n" +
+                "        {\n" +
+                "            \"11\": 0,\n" +
+                "            \"1\": 1026268,\n" +
+                "            \"12\": 492752329,\n" +
+                "            \"2\": \"外观\",\n" +
+                "            \"3\": \"\",\n" +
+                "            \"4\": \"\",\n" +
+                "            \"5\": \"外观\",\n" +
+                "            \"6\": 0,\n" +
+                "            \"7\": \"/0206f120009irgqljCA50.jpg\",\n" +
+                "            \"8\": 100,\n" +
+                "            \"9\": \"H\",\n" +
+                "            \"10\": 0\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"body\": \"UPDATE `hotelpicture` SET `hotelid`=?, `title`=?, `smallpicurl`=?, `largepicurl`=?, `description`=?, `sort`=?, `newpicurl`=?, `pictype`=?, `position`=?, `typeid`=?, `sharpness`=? WHERE `id`=?\"\n" +
+                "}";
+
+        String str2 = "{\n" +
+                "    \"database\": \"htlgroupproductdb_dalcluster\",\n" +
+                "    \"parameters\": [\n" +
+                "        {\n" +
+                "            \"11\": null,\n" +
+                "            \"1\": 1026268,\n" +
+                "            \"12\": 492752329,\n" +
+                "            \"2\": \"外观\",\n" +
+                "            \"3\": \"\",\n" +
+                "            \"4\": \"\",\n" +
+                "            \"5\": \"外观\",\n" +
+                "            \"6\": 0,\n" +
+                "            \"7\": \"/0206f120009irgqljCA50.jpg\",\n" +
+                "            \"8\": 100,\n" +
+                "            \"9\": \"H\",\n" +
+                "            \"10\": 0\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"body\": \"UPDATE `hotelpicture` SET `hotelid`=?, `title`=?, `smallpicurl`=?, `largepicurl`=?, `description`=?, `sort`=?, `newpicurl`=?, `pictype`=?, `position`=?, `typeid1`=?, `sharpness`=? WHERE `id`=?\"\n" +
+                "}";
+
+        CompareOptions compareOptions = CompareOptions.options();
+        compareOptions.putExclusions(Arrays.asList("body"));
+        compareOptions.putCategoryType(CategoryType.DATABASE);
+        compareOptions.putSqlBodyParse(true);
+        compareOptions.putOnlyCompareCoincidentColumn(true);
+
+        CompareResult result = sdk.compare(str1, str2, compareOptions);
+        System.out.println();
+    }
+
 }

@@ -1,9 +1,10 @@
 package com.arextest.diff.compare.feature;
 
-import com.arextest.diff.compare.CompareContext;
 import com.arextest.diff.compare.GenericCompare;
+import com.arextest.diff.compare.CompareHelper;
 import com.arextest.diff.handler.log.LogMarker;
 import com.arextest.diff.handler.log.LogRegister;
+import com.arextest.diff.model.compare.CompareContext;
 import com.arextest.diff.model.compare.IndexPair;
 import com.arextest.diff.model.key.ReferenceEntity;
 import com.arextest.diff.model.log.NodeEntity;
@@ -13,9 +14,6 @@ import org.json.JSONArray;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import static com.arextest.diff.compare.CompareHelper.convertToNodeEntityList;
-import static com.arextest.diff.compare.CompareHelper.findByPath;
 
 public class ReferenceFeature {
 
@@ -55,7 +53,7 @@ public class ReferenceFeature {
             if (compareContext.refPkListNodeCacheLeft.containsKey(pkNodeListPath)) {
                 refListLeft = compareContext.refPkListNodeCacheLeft.get(pkNodeListPath);
             } else {
-                refListLeft = findByPath(compareContext.baseObj, pkNodeListPath);
+                refListLeft = CompareHelper.findByPath(compareContext.baseObj, pkNodeListPath);
                 compareContext.refPkListNodeCacheLeft.put(pkNodeListPath, refListLeft);
             }
 
@@ -64,10 +62,10 @@ public class ReferenceFeature {
                 for (int i = 0; i < array.length(); i++) {
                     Object element = array.get(i);
                     List<String> pkSubPaths = pkNodePath.subList(pkNodeListPath.size(), pkNodePath.size());
-                    Object pkNodeValue = findByPath(element, pkSubPaths);
+                    Object pkNodeValue = CompareHelper.findByPath(element, pkSubPaths);
                     if (refValue1.equals(String.valueOf(pkNodeValue))) {
                         refElementLeft = element;
-                        List<NodeEntity> list = convertToNodeEntityList(pkNodeListPath);
+                        List<NodeEntity> list = CompareHelper.convertToNodeEntityList(pkNodeListPath);
                         if (compareContext.listIndexKeysLeft.get(list) != null) {
                             leftKey = compareContext.listIndexKeysLeft.get(list).get(i);
                         }
@@ -89,7 +87,7 @@ public class ReferenceFeature {
             if (compareContext.refPkListNodeCacheRight.containsKey(pkNodeListPath)) {
                 refListRight = compareContext.refPkListNodeCacheRight.get(pkNodeListPath);
             } else {
-                refListRight = findByPath(compareContext.testObj, pkNodeListPath);
+                refListRight = CompareHelper.findByPath(compareContext.testObj, pkNodeListPath);
                 compareContext.refPkListNodeCacheRight.put(pkNodeListPath, refListRight);
             }
             if (refListRight instanceof JSONArray) {
@@ -97,10 +95,10 @@ public class ReferenceFeature {
                 for (int i = 0; i < array.length(); i++) {
                     Object element = array.get(i);
                     List<String> pkSubPaths = pkNodePath.subList(pkNodeListPath.size(), pkNodePath.size());
-                    Object pkNodeValue = findByPath(element, pkSubPaths);
+                    Object pkNodeValue = CompareHelper.findByPath(element, pkSubPaths);
                     if (refValue2.equals(String.valueOf(pkNodeValue))) {
                         refElementRight = element;
-                        List<NodeEntity> list = convertToNodeEntityList(pkNodeListPath);
+                        List<NodeEntity> list = CompareHelper.convertToNodeEntityList(pkNodeListPath);
                         if (compareContext.listIndexKeysRight.get(list) != null) {
                             rightKey = compareContext.listIndexKeysRight.get(list).get(i);
                         }

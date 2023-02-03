@@ -1,8 +1,8 @@
 package com.arextest.diff.handler;
 
-import com.arextest.diff.compare.CompareContext;
 import com.arextest.diff.compare.GenericCompare;
 import com.arextest.diff.model.RulesConfig;
+import com.arextest.diff.model.compare.CompareContext;
 import com.arextest.diff.model.key.KeyComputeResponse;
 import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.model.parse.MsgStructure;
