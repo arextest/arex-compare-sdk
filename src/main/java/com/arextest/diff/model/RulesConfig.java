@@ -15,7 +15,7 @@ public class RulesConfig {
     /**
      * @see CategoryType
      */
-    private int categoryType;
+    private String categoryType;
 
     private String baseMsg;
 
@@ -50,11 +50,11 @@ public class RulesConfig {
         this.onlyCompareCoincidentColumn = false;
     }
 
-    public int getCategoryType() {
+    public String getCategoryType() {
         return categoryType;
     }
 
-    public void setCategoryType(int categoryType) {
+    public void setCategoryType(String categoryType) {
         this.categoryType = categoryType;
     }
 

@@ -15,7 +15,7 @@ public class CompareOptions {
     /**
      * @see CategoryType
      */
-    private int categoryType;
+    private String categoryType;
 
     /**
      * the collection of the node path chosen to compare
@@ -81,7 +81,7 @@ public class CompareOptions {
         return new CompareOptions();
     }
 
-    public void putCategoryType(int categoryType) {
+    public void putCategoryType(String categoryType) {
         this.categoryType = categoryType;
     }
 
@@ -216,7 +216,7 @@ public class CompareOptions {
         this.onlyCompareCoincidentColumn = onlyCompareCoincidentColumn;
     }
 
-    public int getCategoryType() {
+    public String getCategoryType() {
         return categoryType;
     }
 

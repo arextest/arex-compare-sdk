@@ -14,9 +14,9 @@ public class CompareUtil {
 
     public static CompareResult jsonCompare(RulesConfig rulesConfig) {
         if (Objects.equals(rulesConfig.getCategoryType(), CategoryType.DATABASE)
-                && rulesConfig.isSqlBodyParse()){
+                && rulesConfig.isSqlBodyParse()) {
             return dataBaseCompareUtil.jsonCompare(rulesConfig);
-        }else{
+        } else {
             return normalCompareUtil.jsonCompare(rulesConfig);
         }
     }
