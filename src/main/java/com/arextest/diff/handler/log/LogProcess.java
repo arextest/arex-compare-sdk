@@ -3,7 +3,7 @@ package com.arextest.diff.handler.log;
 import com.arextest.diff.handler.log.filterrules.UnmatchedTypeFilter;
 import com.arextest.diff.model.enumeration.DiffResultCode;
 import com.arextest.diff.model.log.LogEntity;
-import com.arextest.diff.model.log.LogTagAddResponse;
+import com.arextest.diff.model.log.LogProcessResponse;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -14,13 +14,13 @@ import java.util.stream.Stream;
 
 import static com.arextest.diff.utils.LogHandler.processInConsistentPaths;
 
-public class LogTagAdd {
+public class LogProcess {
 
     private static List<Predicate<LogEntity>> globalFilterRules = new ArrayList<Predicate<LogEntity>>() {{
         add(new UnmatchedTypeFilter());
     }};
 
-    public LogTagAddResponse addTagInLog(List<LogEntity> logEntities, List<Predicate<LogEntity>> filterRules) {
+    public LogProcessResponse process(List<LogEntity> logEntities, List<Predicate<LogEntity>> filterRules) {
 
         Stream<LogEntity> stream = logEntities.stream();
         for (Predicate<LogEntity> filterRule : globalFilterRules) {
@@ -38,7 +38,7 @@ public class LogTagAdd {
             filterLogs.add(item);
         });
 
-        return new LogTagAddResponse(inConsistentPaths,
+        return new LogProcessResponse(inConsistentPaths,
                 !filterLogs.isEmpty() ? DiffResultCode.COMPARED_WITH_DIFFERENCE : DiffResultCode.COMPARED_WITHOUT_DIFFERENCE,
                 filterLogs);
     }

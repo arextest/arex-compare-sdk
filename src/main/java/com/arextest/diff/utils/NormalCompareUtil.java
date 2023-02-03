@@ -4,7 +4,7 @@ import com.arextest.diff.handler.CompareHandler;
 import com.arextest.diff.handler.FillResultSync;
 import com.arextest.diff.handler.WhitelistHandler;
 import com.arextest.diff.handler.keycompute.KeyCompute;
-import com.arextest.diff.handler.log.LogTagAdd;
+import com.arextest.diff.handler.log.LogProcess;
 import com.arextest.diff.handler.parse.JSONParse;
 import com.arextest.diff.handler.parse.JSONStructureParse;
 import com.arextest.diff.handler.parse.ObjectParse;
@@ -12,7 +12,7 @@ import com.arextest.diff.model.CompareResult;
 import com.arextest.diff.model.RulesConfig;
 import com.arextest.diff.model.key.KeyComputeResponse;
 import com.arextest.diff.model.log.LogEntity;
-import com.arextest.diff.model.log.LogTagAddResponse;
+import com.arextest.diff.model.log.LogProcessResponse;
 import com.arextest.diff.model.parse.MsgObjCombination;
 import com.arextest.diff.model.parse.MsgStructure;
 import org.apache.commons.lang3.tuple.MutablePair;
@@ -40,7 +40,7 @@ public class NormalCompareUtil {
 
     private static CompareHandler compareHandler = new CompareHandler();
 
-    private static LogTagAdd logTagAdd = new LogTagAdd();
+    private static LogProcess logProcess = new LogProcess();
 
     private static JSONStructureParse jsonStructureParse = new JSONStructureParse();
 
@@ -80,14 +80,14 @@ public class NormalCompareUtil {
             List<LogEntity> logs = compareHandler.doHandler(rulesConfig, keyComputeResponse, msgStructureFuture,
                     msgWhiteObj.getBaseObj(), msgWhiteObj.getTestObj());
 
-            LogTagAddResponse logTagAddResponse = logTagAdd.addTagInLog(logs, Collections.emptyList());
+            LogProcessResponse logProcessResponse = logProcess.process(logs, Collections.emptyList());
 
-            result.setCode(logTagAddResponse.getExistDiff());
+            result.setCode(logProcessResponse.getExistDiff());
             result.setMessage("compare successfully");
-            result.setLogs(logTagAddResponse.getLogs());
+            result.setLogs(logProcessResponse.getLogs());
             result.setProcessedBaseMsg(list.get(0).get());
             result.setProcessedTestMsg(list.get(1).get());
-            result.setInConsistentPaths(logTagAddResponse.getInConsistentPaths());
+            result.setInConsistentPaths(logProcessResponse.getInConsistentPaths());
             result.setParseNodePaths(parsePaths);
 
         } catch (Exception e) {

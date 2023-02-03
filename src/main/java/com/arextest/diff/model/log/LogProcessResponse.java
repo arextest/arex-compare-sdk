@@ -5,7 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class LogTagAddResponse {
+public class LogProcessResponse {
 
     private Set<String> inConsistentPaths = new HashSet<>();
 
@@ -13,10 +13,10 @@ public class LogTagAddResponse {
 
     private List<LogEntity> logs = new ArrayList<>();
 
-    public LogTagAddResponse() {
+    public LogProcessResponse() {
     }
 
-    public LogTagAddResponse(Set<String> inConsistentPaths, int existDiff, List<LogEntity> logs) {
+    public LogProcessResponse(Set<String> inConsistentPaths, int existDiff, List<LogEntity> logs) {
         this.inConsistentPaths = inConsistentPaths;
         this.existDiff = existDiff;
         this.logs = logs;

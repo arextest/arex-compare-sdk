@@ -2,14 +2,14 @@ package com.arextest.diff.model.log;
 
 import java.util.List;
 
-public class LogTagAddRequest {
+public class LogProcessRequest {
     private List<LogEntity> logs;
     private List<List<String>> ignoreNodePaths;
 
-    public LogTagAddRequest() {
+    public LogProcessRequest() {
     }
 
-    public LogTagAddRequest(List<LogEntity> logs, List<List<String>> ignoreNodePaths) {
+    public LogProcessRequest(List<LogEntity> logs, List<List<String>> ignoreNodePaths) {
         this.logs = logs;
         this.ignoreNodePaths = ignoreNodePaths;
     }
