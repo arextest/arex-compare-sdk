@@ -2,10 +2,13 @@ package com.arextest.diff.handler.parse;
 
 import com.arextest.diff.factory.TaskThreadFactory;
 import com.arextest.diff.model.parse.MsgStructure;
+import com.arextest.diff.utils.JacksonHelperUtil;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.tuple.MutablePair;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public class JSONStructureParse {
@@ -22,21 +25,17 @@ public class JSONStructureParse {
             getPathMap(testObj, msgStructure);
             return msgStructure;
         }, TaskThreadFactory.structureHandlerThreadPool);
-        CompletableFuture<MutablePair<MsgStructure, MsgStructure>> future3 = future1.thenCombine(future2, (r1, r2) -> new MutablePair(r1, r2));
-        return future3;
+        return future1.thenCombine(future2, MutablePair::new);
     }
 
     private void getPathMap(Object obj, MsgStructure msgStructure) {
-        if (obj == null || JSONObject.NULL.equals(obj)) {
+        if (obj == null || obj instanceof NullNode) {
             return;
         }
 
-        if (obj instanceof JSONObject) {
-            JSONObject jsonObject = (JSONObject) obj;
-            String[] names = JSONObject.getNames(jsonObject);
-            if (names == null) {
-                names = new String[0];
-            }
+        if (obj instanceof ObjectNode) {
+            ObjectNode jsonObject = (ObjectNode) obj;
+            List<String> names = JacksonHelperUtil.getNames(jsonObject);
 
             for (String fieldName : names) {
                 MsgStructure tempMsgStructure = new MsgStructure(fieldName);
@@ -44,9 +43,9 @@ public class JSONStructureParse {
                 Object objFieldValue = jsonObject.get(fieldName);
                 getPathMap(objFieldValue, tempMsgStructure);
             }
-        } else if (obj instanceof JSONArray) {
-            JSONArray objArray = (JSONArray) obj;
-            for (int i = 0; i < objArray.length(); i++) {
+        } else if (obj instanceof ArrayNode) {
+            ArrayNode objArray = (ArrayNode) obj;
+            for (int i = 0; i < objArray.size(); i++) {
                 Object element = objArray.get(i);
                 getPathMap(element, msgStructure);
             }

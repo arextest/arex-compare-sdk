@@ -6,9 +6,10 @@ import com.arextest.diff.model.key.ReferenceEntity;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.model.log.Trace;
 import com.arextest.diff.model.log.UnmatchedPairEntity;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +19,10 @@ import java.util.Objects;
 public class CompareHelper {
 
     public static boolean bothEmptyString(Object obj1, Object obj2) {
-        if (JSONObject.NULL.equals(obj1) && Objects.equals("", obj2)) {
+        if (obj1 instanceof NullNode && Objects.equals("", ((JsonNode) obj2).asText())) {
             return true;
         }
-        if (JSONObject.NULL.equals(obj2) && Objects.equals("", obj1)) {
+        if (obj2 instanceof NullNode && Objects.equals("", ((JsonNode) obj1).asText())) {
             return true;
         }
         return false;
@@ -76,7 +77,7 @@ public class CompareHelper {
         try {
             for (int i = 0; i < path.size(); i++) {
                 String nodeName = path.get(i);
-                target = ((JSONObject) target).get(nodeName);
+                target = ((ObjectNode) target).get(nodeName);
             }
         } catch (Throwable e) {
             return null;
@@ -84,7 +85,7 @@ public class CompareHelper {
         return target;
     }
 
-    public static List<NodeEntity> getPkNodePath(List<ReferenceEntity> references, boolean isLeft, Object obj, CompareContext compareContext) throws JSONException {
+    public static List<NodeEntity> getPkNodePath(List<ReferenceEntity> references, boolean isLeft, Object obj, CompareContext compareContext) {
         for (ReferenceEntity reference : references) {
             List<String> pkNodeListPath = reference.getPkNodeListPath();
             List<String> pkNodePath = reference.getPkNodePath();
@@ -99,9 +100,9 @@ public class CompareHelper {
                 refPkListNodeCache.put(pkNodeListPath, refList);
             }
 
-            if (refList instanceof JSONArray) {
-                JSONArray array = ((JSONArray) refList);
-                for (int i = 0; i < array.length(); i++) {
+            if (refList instanceof ArrayNode) {
+                ArrayNode array = ((ArrayNode) refList);
+                for (int i = 0; i < array.size(); i++) {
                     Object element = array.get(i);
                     Object pkNodeValue = findByPath(element, pkNodePath.subList(pkNodeListPath.size(), pkNodePath.size()));
                     if (String.valueOf(obj).equals(String.valueOf(pkNodeValue))) {

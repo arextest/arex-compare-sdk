@@ -1,7 +1,7 @@
 package com.arextest.diff.compare.feature;
 
-import com.arextest.diff.compare.GenericCompare;
 import com.arextest.diff.compare.CompareHelper;
+import com.arextest.diff.compare.GenericCompare;
 import com.arextest.diff.handler.log.LogMarker;
 import com.arextest.diff.handler.log.LogRegister;
 import com.arextest.diff.model.compare.CompareContext;
@@ -9,7 +9,7 @@ import com.arextest.diff.model.compare.IndexPair;
 import com.arextest.diff.model.key.ReferenceEntity;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.utils.ListUti;
-import org.json.JSONArray;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,9 +57,9 @@ public class ReferenceFeature {
                 compareContext.refPkListNodeCacheLeft.put(pkNodeListPath, refListLeft);
             }
 
-            if (refListLeft instanceof JSONArray) {
-                JSONArray array = ((JSONArray) refListLeft);
-                for (int i = 0; i < array.length(); i++) {
+            if (refListLeft instanceof ArrayNode) {
+                ArrayNode array = ((ArrayNode) refListLeft);
+                for (int i = 0; i < array.size(); i++) {
                     Object element = array.get(i);
                     List<String> pkSubPaths = pkNodePath.subList(pkNodeListPath.size(), pkNodePath.size());
                     Object pkNodeValue = CompareHelper.findByPath(element, pkSubPaths);
@@ -90,9 +90,9 @@ public class ReferenceFeature {
                 refListRight = CompareHelper.findByPath(compareContext.testObj, pkNodeListPath);
                 compareContext.refPkListNodeCacheRight.put(pkNodeListPath, refListRight);
             }
-            if (refListRight instanceof JSONArray) {
-                JSONArray array = ((JSONArray) refListRight);
-                for (int i = 0; i < array.length(); i++) {
+            if (refListRight instanceof ArrayNode) {
+                ArrayNode array = ((ArrayNode) refListRight);
+                for (int i = 0; i < array.size(); i++) {
                     Object element = array.get(i);
                     List<String> pkSubPaths = pkNodePath.subList(pkNodeListPath.size(), pkNodePath.size());
                     Object pkNodeValue = CompareHelper.findByPath(element, pkSubPaths);

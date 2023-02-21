@@ -5,14 +5,15 @@ import com.arextest.diff.handler.parse.sqlparse.constants.Constants;
 import com.arextest.diff.handler.parse.sqlparse.select.ArexExpressionVisitorAdapter;
 import com.arextest.diff.handler.parse.sqlparse.select.ArexOrderByVisitorAdapter;
 import com.arextest.diff.handler.parse.sqlparse.select.utils.JoinParseUtil;
+import com.arextest.diff.utils.JacksonHelperUtil;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.delete.Delete;
 import net.sf.jsqlparser.statement.select.Join;
 import net.sf.jsqlparser.statement.select.Limit;
 import net.sf.jsqlparser.statement.select.OrderByElement;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.List;
 
@@ -21,14 +22,14 @@ import java.util.List;
  */
 public class DeleteParse implements Parse<Delete> {
     @Override
-    public JSONObject parse(Delete parseObj) {
-        JSONObject sqlObject = new JSONObject();
+    public ObjectNode parse(Delete parseObj) {
+        ObjectNode sqlObject = JacksonHelperUtil.getObjectNode();
         sqlObject.put(Constants.ACTION, Constants.DELETE);
 
         // tables parse
         List<Table> tables = parseObj.getTables();
         if (tables != null && !tables.isEmpty()) {
-            JSONObject delTableObj = new JSONObject();
+            ObjectNode delTableObj = JacksonHelperUtil.getObjectNode();
             tables.forEach(item -> {
                 delTableObj.put(item.getFullyQualifiedName(), Constants.EMPTY);
             });
@@ -44,9 +45,9 @@ public class DeleteParse implements Parse<Delete> {
         // join parse
         List<Join> joins = parseObj.getJoins();
         if (joins != null && !joins.isEmpty()) {
-            JSONArray joinArr = new JSONArray();
+            ArrayNode joinArr = JacksonHelperUtil.getArrayNode();
             joins.forEach(item -> {
-                joinArr.put(JoinParseUtil.parse(item));
+                joinArr.add(JoinParseUtil.parse(item));
             });
             sqlObject.put(Constants.JOIN, joinArr);
         }
@@ -54,9 +55,10 @@ public class DeleteParse implements Parse<Delete> {
         // where parse
         Expression where = parseObj.getWhere();
         if (where != null) {
-            JSONObject whereObj = new JSONObject();
-            whereObj.put(Constants.AND_OR, new JSONArray());
-            whereObj.put(Constants.COLUMNS, new JSONObject());
+            ObjectNode whereObj = JacksonHelperUtil.getObjectNode();
+            whereObj.put(Constants.AND_OR, JacksonHelperUtil.getArrayNode());
+            whereObj.put(Constants.COLUMNS, JacksonHelperUtil.getObjectNode());
+
             where.accept(new ArexExpressionVisitorAdapter(whereObj));
             sqlObject.put(Constants.WHERE, whereObj);
         }
@@ -64,7 +66,7 @@ public class DeleteParse implements Parse<Delete> {
         // orderby parse
         List<OrderByElement> orderByElements = parseObj.getOrderByElements();
         if (orderByElements != null && !orderByElements.isEmpty()) {
-            JSONObject orderByObj = new JSONObject();
+            ObjectNode orderByObj = JacksonHelperUtil.getObjectNode();
             ArexOrderByVisitorAdapter arexOrderByVisitorAdapter = new ArexOrderByVisitorAdapter(orderByObj);
             orderByElements.forEach(item -> {
                 item.accept(arexOrderByVisitorAdapter);

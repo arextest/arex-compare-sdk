@@ -2,6 +2,9 @@ package com.arextest.diff.handler.parse.sqlparse.select;
 
 import com.arextest.diff.handler.parse.sqlparse.constants.Constants;
 import com.arextest.diff.handler.parse.sqlparse.select.utils.JoinParseUtil;
+import com.arextest.diff.utils.JacksonHelperUtil;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.schema.Table;
 import net.sf.jsqlparser.statement.select.Distinct;
@@ -23,8 +26,6 @@ import net.sf.jsqlparser.statement.select.Top;
 import net.sf.jsqlparser.statement.select.Wait;
 import net.sf.jsqlparser.statement.select.WithItem;
 import net.sf.jsqlparser.statement.values.ValuesStatement;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.List;
 
@@ -33,9 +34,9 @@ import java.util.List;
  */
 public class ArexSelectVisitorAdapter implements SelectVisitor {
 
-    private JSONObject sqlObj;
+    private ObjectNode sqlObj;
 
-    public ArexSelectVisitorAdapter(JSONObject object) {
+    public ArexSelectVisitorAdapter(ObjectNode object) {
         sqlObj = object;
     }
 
@@ -68,12 +69,12 @@ public class ArexSelectVisitorAdapter implements SelectVisitor {
         // selectItems parse
         List<SelectItem> selectItems = plainSelect.getSelectItems();
         if (selectItems != null && !selectItems.isEmpty()) {
-            JSONObject columnsObj = new JSONObject();
+            ObjectNode columnsObj = JacksonHelperUtil.getObjectNode();
             ArexSelectItemVisitorAdapter arexSelectItemVisitorAdapter = new ArexSelectItemVisitorAdapter(columnsObj);
             selectItems.forEach(selectItem -> {
                 selectItem.accept(arexSelectItemVisitorAdapter);
             });
-            sqlObj.put(Constants.COLUMNS, columnsObj);
+            sqlObj.set(Constants.COLUMNS, columnsObj);
         }
 
         // into parse
@@ -85,18 +86,18 @@ public class ArexSelectVisitorAdapter implements SelectVisitor {
         // fromItem parse
         FromItem fromItem = plainSelect.getFromItem();
         if (fromItem != null) {
-            JSONObject fromObj = new JSONObject();
+            ObjectNode fromObj = JacksonHelperUtil.getObjectNode();
             ArexFromItemVisitorAdapter arexFromItemVisitorAdapter = new ArexFromItemVisitorAdapter(fromObj);
             fromItem.accept(arexFromItemVisitorAdapter);
-            sqlObj.put(Constants.FROM, fromObj);
+            sqlObj.set(Constants.FROM, fromObj);
         }
 
         // jonis parse
         List<Join> joins = plainSelect.getJoins();
         if (joins != null && !joins.isEmpty()) {
-            JSONArray joinArr = new JSONArray();
+            ArrayNode joinArr = JacksonHelperUtil.getArrayNode();
             joins.forEach(item -> {
-                joinArr.put(JoinParseUtil.parse(item));
+                joinArr.add(JoinParseUtil.parse(item));
             });
             sqlObj.put(Constants.JOIN, joinArr);
         }
@@ -104,12 +105,13 @@ public class ArexSelectVisitorAdapter implements SelectVisitor {
         // where parse
         Expression where = plainSelect.getWhere();
         if (where != null) {
-            JSONObject whereObj = new JSONObject();
-            whereObj.put(Constants.AND_OR, new JSONArray());
-            whereObj.put(Constants.COLUMNS, new JSONObject());
+            // JSONObject whereObj = new JSONObject();
+            ObjectNode whereObj = JacksonHelperUtil.getObjectNode();
+            whereObj.set(Constants.AND_OR, JacksonHelperUtil.getArrayNode());
+            whereObj.set(Constants.COLUMNS, JacksonHelperUtil.getObjectNode());
             ArexExpressionVisitorAdapter arexExpressionVisitorAdapter = new ArexExpressionVisitorAdapter(whereObj);
             where.accept(arexExpressionVisitorAdapter);
-            sqlObj.put(Constants.WHERE, whereObj);
+            sqlObj.set(Constants.WHERE, whereObj);
         }
 
         // group by parse
@@ -121,9 +123,9 @@ public class ArexSelectVisitorAdapter implements SelectVisitor {
         // having parse
         Expression having = plainSelect.getHaving();
         if (having != null) {
-            JSONObject havingObj = new JSONObject();
-            havingObj.put(Constants.AND_OR, new JSONArray());
-            havingObj.put(Constants.COLUMNS, new JSONObject());
+            ObjectNode havingObj = JacksonHelperUtil.getObjectNode();
+            havingObj.put(Constants.AND_OR, JacksonHelperUtil.getArrayNode());
+            havingObj.put(Constants.COLUMNS, JacksonHelperUtil.getObjectNode());
             ArexExpressionVisitorAdapter arexExpressionVisitorAdapter = new ArexExpressionVisitorAdapter(havingObj);
             having.accept(arexExpressionVisitorAdapter);
             sqlObj.put(Constants.HAVING, havingObj);
@@ -132,7 +134,7 @@ public class ArexSelectVisitorAdapter implements SelectVisitor {
         // order by parse
         List<OrderByElement> orderByElements = plainSelect.getOrderByElements();
         if (orderByElements != null && !orderByElements.isEmpty()) {
-            JSONObject orderByObj = new JSONObject();
+            ObjectNode orderByObj = JacksonHelperUtil.getObjectNode();
             ArexOrderByVisitorAdapter arexOrderByVisitorAdapter = new ArexOrderByVisitorAdapter(orderByObj);
             orderByElements.forEach(item -> {
                 item.accept(arexOrderByVisitorAdapter);

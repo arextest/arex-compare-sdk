@@ -1,9 +1,10 @@
 package com.arextest.diff.model.log;
 
-import com.arextest.diff.utils.ListUti;
 import com.arextest.diff.model.enumeration.UnmatchedType;
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.arextest.diff.utils.ListUti;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.io.Serializable;
 import java.util.List;
@@ -121,9 +122,9 @@ public class LogEntity implements Serializable {
     }
 
     public LogEntity(Object baseValue, Object testValue, UnmatchedPairEntity pathPair) {
-        this.baseValue = baseValue instanceof JSONObject || baseValue instanceof JSONArray || JSONObject.NULL.equals(baseValue)
+        this.baseValue = baseValue instanceof ObjectNode || baseValue instanceof ArrayNode || baseValue instanceof NullNode
                 ? null : baseValue;
-        this.testValue = testValue instanceof JSONObject || testValue instanceof JSONArray || JSONObject.NULL.equals(testValue)
+        this.testValue = testValue instanceof ObjectNode || testValue instanceof ArrayNode || testValue instanceof NullNode
                 ? null : testValue;
         this.pathPair = pathPair;
         processLogInfo(this.baseValue, this.testValue, pathPair.getUnmatchedType());

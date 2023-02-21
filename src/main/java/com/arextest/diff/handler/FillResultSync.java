@@ -2,6 +2,7 @@ package com.arextest.diff.handler;
 
 import com.arextest.diff.factory.TaskThreadFactory;
 import com.arextest.diff.model.parse.MsgObjCombination;
+import com.arextest.diff.utils.JacksonHelperUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,14 +16,18 @@ public class FillResultSync {
         Future<String> submit1 = TaskThreadFactory.jsonObjectThreadPool.submit(new Callable<String>() {
             @Override
             public String call() throws Exception {
-                return response.getBaseObj() == null ? null : response.getBaseObj().toString();
+                return response.getBaseObj() == null
+                        ? null
+                        : JacksonHelperUtil.objectMapper.writeValueAsString(response.getBaseObj());
             }
         });
 
         Future<String> submit2 = TaskThreadFactory.jsonObjectThreadPool.submit(new Callable<String>() {
             @Override
             public String call() throws Exception {
-                return response.getTestObj() == null ? null : response.getTestObj().toString();
+                return response.getTestObj() == null
+                        ? null
+                        : JacksonHelperUtil.objectMapper.writeValueAsString(response.getTestObj());
             }
         });
         list.add(submit1);

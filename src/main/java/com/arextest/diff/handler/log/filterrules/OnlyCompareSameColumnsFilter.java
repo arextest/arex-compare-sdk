@@ -1,6 +1,5 @@
 package com.arextest.diff.handler.log.filterrules;
 
-import com.arextest.diff.handler.parse.sqlparse.select.ArexExpressionVisitorAdapter;
 import com.arextest.diff.model.enumeration.UnmatchedType;
 import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.model.log.NodeEntity;
@@ -54,7 +53,7 @@ public class OnlyCompareSameColumnsFilter implements Predicate<LogEntity> {
                         break;
                     }
                 }
-                if (flag){
+                if (flag) {
                     return true;
                 }
             }

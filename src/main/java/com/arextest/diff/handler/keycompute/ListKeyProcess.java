@@ -5,12 +5,21 @@ import com.arextest.diff.model.key.ListSortEntity;
 import com.arextest.diff.model.key.ReferenceEntity;
 import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.model.log.NodeEntity;
+import com.arextest.diff.utils.JacksonHelperUtil;
 import com.arextest.diff.utils.ListUti;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.Set;
 
 public class ListKeyProcess {
 
@@ -148,10 +157,11 @@ public class ListKeyProcess {
     }
 
     // add node name
-    private String getKeyValueByPath(List<String> relativePath, Object obj) throws JSONException {
+    private String getKeyValueByPath(List<String> relativePath, Object obj) {
         String result = null;
-        if (obj instanceof JSONObject) {
+        if (obj instanceof ObjectNode) {
             String path = relativePath.get(0);
+            ObjectNode jsonObj = (ObjectNode) obj;
 
             if (path.contains("[first]")) {
                 useFirstElementKey = true;
@@ -166,13 +176,14 @@ public class ListKeyProcess {
             currentParentPath.add(path);
             Object subObj = null;
             if (path.equals(Constant.DYNAMIC_PATH)) {
-                String[] names = JSONObject.getNames((JSONObject) obj);
-                if (names.length > 0) {
-                    List<String> rList = new ArrayList<>(names.length);
+                List<String> names = JacksonHelperUtil.getNames(jsonObj);
+                int size = names.size();
+                if (size > 0) {
+                    List<String> rList = new ArrayList<>(size);
                     StringBuilder sb = new StringBuilder();
                     sb.append("{");
                     for (String name : names) {
-                        subObj = ((JSONObject) obj).get(name);
+                        subObj = jsonObj.get(name);
                         if (subObj != null) {
                             ListUti.removeLast(currentParentPath);
                             currentParentPath.add(name);
@@ -189,21 +200,19 @@ public class ListKeyProcess {
                     result = sb.toString();
                 }
             } else {
-                try {
-                    subObj = ((JSONObject) obj).get(path);
-                } catch (JSONException e) {
-                }
+                subObj = jsonObj.get(path);
                 if (subObj != null) {
                     result = getKeyValueByPath(relativePath.subList(1, relativePath.size()), subObj);
                 }
             }
             currentParentPath.remove(currentParentPath.size() - 1);
 
-        } else if (obj instanceof JSONArray) {
-            JSONArray jsonArray = (JSONArray) obj;
+        } else if (obj instanceof ArrayNode) {
+            ArrayNode jsonArray = (ArrayNode) obj;
+            int len = jsonArray.size();
 
-            if (jsonArray.length() > 0) {
-                List<String> list = new ArrayList<>(jsonArray.length());
+            if (len > 0) {
+                List<String> list = new ArrayList<>(len);
                 StringBuilder sb = new StringBuilder();
                 sb.append("[");
                 if (useFirstElementKey) {
@@ -215,7 +224,7 @@ public class ListKeyProcess {
                     currentParentPath.remove(currentParentPath.size() - 1);
                     useFirstElementKey = false;
                 } else {//combination default
-                    for (int i = 0; i < jsonArray.length(); i++) {
+                    for (int i = 0; i < len; i++) {
                         currentParentPath.add(null);
                         String elementKey = getKeyValueByPath(relativePath, jsonArray.get(i));
                         if (elementKey != null) {
@@ -235,7 +244,8 @@ public class ListKeyProcess {
                 result = sb.toString();
             }
 
-        } else if (obj != null && !JSONObject.NULL.equals(obj) && !"".equals(obj.toString())) {
+        } else if (obj != null && !(obj instanceof NullNode) && !"".equals(((JsonNode)obj).asText())) {
+
             // To solve the problem the relativePath exist value caused by the dynamic path, obj is the basic type (excluding %value%)
             if (relativePath.size() > 1 || (relativePath.size() == 1 && !relativePath.get(0).equals("%value%"))) {
                 return null;
@@ -246,7 +256,7 @@ public class ListKeyProcess {
                 referencePaths.add(ListUti.convertToString2(list));
             }
 
-            value = String.valueOf(obj);
+            value = ((JsonNode)obj).asText();
             if (value.matches("\\d+\\.0+")) {
                 value = value.substring(0, value.lastIndexOf('.'));
             }
@@ -287,7 +297,7 @@ public class ListKeyProcess {
         return result;
     }
 
-    public void computeAllListKey(Object obj) throws JSONException {
+    public void computeAllListKey(Object obj) {
         // priority list keys
         ListSortEntity listSortEntity;
 
@@ -295,15 +305,15 @@ public class ListKeyProcess {
             while ((listSortEntity = prioritylistSortEntities.poll()) != null) {
                 List<String> listNodePath = listSortEntity.getListNodepath();
                 Object object = getObject(obj, listNodePath);
-                if (object == null || JSONObject.NULL.equals(object)) {
+                if (object == null || obj instanceof NullNode) {
                     continue;
                 }
-                JSONArray listObj = ((JSONArray) object);
+                ArrayNode listObj = (ArrayNode) object;
 
                 HashMap<String, String> referenceKeyValue = new HashMap<>();
                 referenceKeys.put(ListUti.convertToString2(mergePath(listNodePath, listSortEntity.getReferenceNodeRelativePath())), referenceKeyValue);
 
-                for (int i = 0; i < listObj.length(); i++) {
+                for (int i = 0; i < listObj.size(); i++) {
                     StringBuilder fullKey = new StringBuilder();
                     Object listElement = listObj.get(i);
                     String refValue = getObject(listElement, listSortEntity.getReferenceNodeRelativePath()).toString();
@@ -335,29 +345,26 @@ public class ListKeyProcess {
 
     }
 
-    public void computeNormalListKey(Object obj) throws JSONException {
+    public void computeNormalListKey(Object obj) {
 
-        if (obj instanceof JSONObject) {
-            JSONObject jsonObj = (JSONObject) obj;
-            String[] names = JSONObject.getNames(jsonObj);
-            if (names != null) {
-                for (String fieldName : names) {
-                    currentNodePath.add(new NodeEntity(fieldName, 0));
-                    Object objFieldValue = jsonObj.get(fieldName);
-                    computeNormalListKey(objFieldValue);
-                    currentNodePath.remove(currentNodePath.size() - 1);
-                }
+        if (obj instanceof ObjectNode) {
+            ObjectNode jsonObj = (ObjectNode) obj;
+            List<String> names = JacksonHelperUtil.getNames(jsonObj);
+            for (String fieldName : names) {
+                currentNodePath.add(new NodeEntity(fieldName, 0));
+                Object objFieldValue = jsonObj.get(fieldName);
+                computeNormalListKey(objFieldValue);
+                currentNodePath.remove(currentNodePath.size() - 1);
             }
 
-        } else if (obj instanceof JSONArray) {
-            JSONArray objArray = (JSONArray) obj;
+        } else if (obj instanceof ArrayNode) {
+            ArrayNode objArray = (ArrayNode) obj;
 
             ListSortEntity listSortEntity = findListKeys(currentNodePath);
             if (listSortEntity != null) {
 
                 HashMap<Integer, String> indexKeys = new HashMap<>();
-
-                for (int i = 0; i < objArray.length(); i++) {
+                for (int i = 0; i < objArray.size(); i++) {
 
                     StringBuilder fullKey = new StringBuilder();
                     currentNodePath.add(new NodeEntity(null, i));
@@ -385,7 +392,7 @@ public class ListKeyProcess {
                 }
 
             } else {
-                for (int i = 0; i < objArray.length(); i++) {
+                for (int i = 0; i < objArray.size(); i++) {
                     currentNodePath.add(new NodeEntity(null, i));
                     Object listElement = objArray.get(i);
                     computeNormalListKey(listElement);
@@ -396,16 +403,12 @@ public class ListKeyProcess {
         }
     }
 
-    private Object getObject(Object obj, List<String> listNodePath) throws JSONException {
+    private Object getObject(Object obj, List<String> listNodePath) {
         for (int i = 0; i < listNodePath.size(); i++) {
-            if (JSONObject.NULL.equals(obj)) {
+            if (obj == null || obj instanceof NullNode) {
                 return null;
             }
-            try {
-                obj = ((JSONObject) obj).get(listNodePath.get(i));
-            } catch (Exception e) {
-                return null;
-            }
+            obj = ((ObjectNode) obj).get(listNodePath.get(i));
         }
         return obj;
     }

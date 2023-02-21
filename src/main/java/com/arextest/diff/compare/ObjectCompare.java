@@ -2,27 +2,21 @@ package com.arextest.diff.compare;
 
 import com.arextest.diff.model.compare.CompareContext;
 import com.arextest.diff.model.log.NodeEntity;
+import com.arextest.diff.utils.JacksonHelperUtil;
 import com.arextest.diff.utils.ListUti;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ObjectCompare {
-    public static void objectCompare(Object obj1, Object obj2, CompareContext compareContext) throws JSONException {
+    public static void objectCompare(Object obj1, Object obj2, CompareContext compareContext) {
 
-        JSONObject jsonObj1 = (JSONObject) obj1;
-        JSONObject jsonObj2 = (JSONObject) obj2;
+        ObjectNode jsonObj1 = (ObjectNode) obj1;
+        ObjectNode jsonObj2 = (ObjectNode) obj2;
 
-        String[] names1 = JSONObject.getNames(jsonObj1);
-        String[] names2 = JSONObject.getNames(jsonObj2);
-        if (names1 == null) {
-            names1 = new String[0];
-        }
-        if (names2 == null) {
-            names2 = new String[0];
-        }
+        List<String> names1 = JacksonHelperUtil.getNames(jsonObj1);
+        List<String> names2 = JacksonHelperUtil.getNames(jsonObj2);
 
         List<String> usedFieldNames = new ArrayList<>();
         for (String fieldName : names1) {
@@ -32,12 +26,11 @@ public class ObjectCompare {
             obj1FieldValue = jsonObj1.get(fieldName);
 
             boolean rightExist = false;
-            try {
-                obj2FieldValue = jsonObj2.get(fieldName);
+            obj2FieldValue = jsonObj2.get(fieldName);
+            if (obj2FieldValue != null) {
                 rightExist = true;
                 usedFieldNames.add(fieldName);
                 compareContext.currentNodeRight.add(new NodeEntity(fieldName, 0));
-            } catch (JSONException e) {
             }
 
             GenericCompare.jsonCompare(obj1FieldValue, obj2FieldValue, compareContext);
@@ -57,11 +50,10 @@ public class ObjectCompare {
             obj2FieldValue = jsonObj2.get(fieldName);
 
             boolean leftExist = false;
-            try {
-                obj1FieldValue = jsonObj1.get(fieldName);
+            obj1FieldValue = jsonObj1.get(fieldName);
+            if (obj1FieldValue != null) {
                 leftExist = true;
                 compareContext.currentNodeLeft.add(new NodeEntity(fieldName, 0));
-            } catch (JSONException e) {
             }
 
             GenericCompare.jsonCompare(obj1FieldValue, obj2FieldValue, compareContext);

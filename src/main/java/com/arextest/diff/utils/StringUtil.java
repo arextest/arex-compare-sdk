@@ -1,7 +1,8 @@
 package com.arextest.diff.utils;
 
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class StringUtil {
 
@@ -10,11 +11,11 @@ public class StringUtil {
     }
 
     public static boolean jsonEmpty(Object o) {
-        if (o == null || JSONObject.NULL.equals(o)) {
+        if (o == null || o instanceof NullNode) {
             return true;
         }
-        if (o instanceof JSONArray) {
-            if (((JSONArray) o).length() == 0) {
+        if (o instanceof ArrayNode) {
+            if (((ArrayNode) o).size() == 0) {
                 return true;
             }
         }
@@ -23,14 +24,14 @@ public class StringUtil {
     }
 
     public static boolean jsonEmptyJudge(Object o) {
-        if (o == null || JSONObject.NULL.equals(o)) {
+        if (o == null || o instanceof NullNode) {
             return true;
         }
-        if (o instanceof JSONArray) {
-            if (((JSONArray) o).length() == 0) {
+        if (o instanceof ArrayNode) {
+            if (((ArrayNode) o).size() == 0) {
                 return true;
             }
-        } else if (o instanceof JSONObject) {
+        } else if (o instanceof ObjectNode) {
             return false;
         } else {
             String s = String.valueOf(o);

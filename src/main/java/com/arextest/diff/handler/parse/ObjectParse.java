@@ -3,11 +3,12 @@ package com.arextest.diff.handler.parse;
 import com.arextest.diff.factory.TaskThreadFactory;
 import com.arextest.diff.model.RulesConfig;
 import com.arextest.diff.model.parse.MsgObjCombination;
+import com.arextest.diff.utils.JacksonHelperUtil;
 import com.arextest.diff.utils.StringUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import org.apache.commons.lang3.tuple.MutablePair;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.concurrent.Callable;
 
@@ -31,15 +32,15 @@ public class ObjectParse {
 
     }
 
-    private Object msgToObj(String msg) throws JSONException {
+    private Object msgToObj(String msg) throws JsonProcessingException {
         Object obj = null;
         if (StringUtil.isEmpty(msg)) {
             return obj;
         }
         if (msg.startsWith("[")) {
-            obj = new JSONArray(msg);
+            obj = JacksonHelperUtil.objectMapper.readValue(msg, ArrayNode.class);
         } else {
-            obj = new JSONObject(msg);
+            obj = JacksonHelperUtil.objectMapper.readValue(msg, ObjectNode.class);
         }
         return obj;
     }

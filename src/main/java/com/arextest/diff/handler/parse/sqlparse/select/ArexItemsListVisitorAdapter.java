@@ -1,5 +1,6 @@
 package com.arextest.diff.handler.parse.sqlparse.select;
 
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.RowConstructor;
 import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
@@ -7,7 +8,6 @@ import net.sf.jsqlparser.expression.operators.relational.ItemsListVisitor;
 import net.sf.jsqlparser.expression.operators.relational.MultiExpressionList;
 import net.sf.jsqlparser.expression.operators.relational.NamedExpressionList;
 import net.sf.jsqlparser.statement.select.SubSelect;
-import org.json.JSONArray;
 
 import java.util.List;
 
@@ -16,9 +16,9 @@ import java.util.List;
  */
 public class ArexItemsListVisitorAdapter implements ItemsListVisitor {
 
-    private JSONArray sqlArr;
+    private ArrayNode sqlArr;
 
-    public ArexItemsListVisitorAdapter(JSONArray array) {
+    public ArexItemsListVisitorAdapter(ArrayNode array) {
         sqlArr = array;
     }
 
@@ -35,11 +35,11 @@ public class ArexItemsListVisitorAdapter implements ItemsListVisitor {
             Expression expression1 = expressions.get(0);
             ExpressionList exprList = ((RowConstructor) expression1).getExprList();
             for (Expression expression : exprList.getExpressions()) {
-                sqlArr.put(expression.toString());
+                sqlArr.add(expression.toString());
             }
         } else {
             for (Expression expression : expressions) {
-                sqlArr.put(expression.toString());
+                sqlArr.add(expression.toString());
             }
         }
     }

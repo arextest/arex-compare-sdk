@@ -8,8 +8,8 @@ import com.arextest.diff.model.enumeration.DiffResultCode;
 import com.arextest.diff.utils.CompareUtil;
 import com.arextest.diff.utils.ExceptionToCompareResult;
 import com.arextest.diff.utils.JSONArraySort;
+import com.arextest.diff.utils.JacksonHelperUtil;
 import com.arextest.diff.utils.OptionsToRulesAdapter;
-import org.json.JSONObject;
 
 import java.util.List;
 import java.util.Objects;
@@ -74,12 +74,12 @@ public class CompareSDK {
         int rightSize = testMsgs.size();
 
         while (leftSize < rightSize) {
-            baseMsgs.add(new JSONObject().toString());
+            baseMsgs.add(JacksonHelperUtil.getObjectNode().toString());
             leftSize++;
         }
 
         while (leftSize > rightSize) {
-            testMsgs.add(new JSONObject().toString());
+            testMsgs.add(JacksonHelperUtil.getArrayNode().toString());
             rightSize++;
         }
     }

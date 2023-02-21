@@ -1,26 +1,26 @@
 package com.arextest.diff.utils;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import java.util.List;
 
 public class NameConvertUtil {
 
-    public static void nameConvert(Object object) throws JSONException {
-        if (object == null || JSONObject.NULL.equals(object)) {
+    public static void nameConvert(Object object) {
+        if (object == null || object instanceof NullNode) {
             return;
         }
 
-        if (object instanceof JSONObject) {
-            JSONObject jsonObj1 = (JSONObject) object;
-            String[] names = JSONObject.getNames(jsonObj1);
-            if (names == null) {
-                names = new String[0];
-            }
+        if (object instanceof ObjectNode) {
+            ObjectNode jsonObj1 = (ObjectNode) object;
+            List<String> names = JacksonHelperUtil.getNames(jsonObj1);
 
             for (String fieldName : names) {
-                Object obj1FieldValue = jsonObj1.get(fieldName);
-                jsonObj1.put(fieldName.toLowerCase(), obj1FieldValue);
+                JsonNode obj1FieldValue = jsonObj1.get(fieldName);
+                jsonObj1.set(fieldName.toLowerCase(), obj1FieldValue);
                 nameConvert(obj1FieldValue);
             }
             for (String fieldName : names) {
@@ -28,9 +28,9 @@ public class NameConvertUtil {
                     jsonObj1.remove(fieldName);
                 }
             }
-        } else if (object instanceof JSONArray) {
-            JSONArray obj1Array = (JSONArray) object;
-            int len = obj1Array.length();
+        } else if (object instanceof ArrayNode) {
+            ArrayNode obj1Array = (ArrayNode) object;
+            int len = obj1Array.size();
             for (int i = 0; i < len; i++) {
                 Object element = obj1Array.get(i);
                 nameConvert(element);
@@ -43,20 +43,5 @@ public class NameConvertUtil {
         return name.chars().anyMatch(
                 (int ch) -> Character.isUpperCase((char) ch)
         );
-    }
-
-    public static void main(String[] args) throws JSONException {
-        String str1 = "{\"ADDress\":\"add\",\"nAMe\":null," + "\"family\":[{\"id\":1,\"moTHER\":\"B\",\"father\":\"A\",\"brother\":\"F\",\"sister\":\"D\"}," +
-                "{\"ID\":2,\"moTHER\":\"A\",\"father\":\"F\",\"brother\":\"C\",\"sister\":\"E\"}]," +
-                "\"subObj\":{\"month\":\"5\",\"year\":\"2021\",\"day\":\"17\"},\"alist\":[{\"iD\":1},{\"Id\":2}],\"age\":18}";
-        String str2 = "{\"address\":\"add1\",\"name\":\"222\",\"family\":[{\"id\":3,\"mother\":\"B\",\"father\":\"B\",\"brother\":\"C\",\"sister\":\"C\"}," +
-                "{\"id\":4,\"mother\":\"B\",\"father\":\"A\",\"brother\":\"F\",\"sister\":\"C\"},{\"id\":5,\"mother\":\"A\",\"father\":\"F\",\"brother\":\"G\",\"sister\":\"K\"}]," +
-                "\"subObj\":null,\"alist\":[{\"id\":3},{\"id\":4},{\"id\":5}]}";
-
-        JSONObject jsonObject = new JSONObject(str1);
-        JSONObject jsonObject1 = new JSONObject(str2);
-
-        nameConvert(jsonObject);
-        nameConvert(jsonObject1);
     }
 }
