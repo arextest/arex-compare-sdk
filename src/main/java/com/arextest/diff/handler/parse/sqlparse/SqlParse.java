@@ -44,14 +44,26 @@ public class SqlParse {
             }
 
             // 解析body字段，注意body为数组的情况
-            JsonNode baseDatabaseBody = null;
-            JsonNode testDatabaseBody = null;
+            JsonNode baseDatabaseBody = baseJSONObj.get("body");
+            JsonNode testDatabaseBody = testJSONObj.get("body");
             ArrayNode parsedBaseSql = JacksonHelperUtil.getArrayNode();
             ArrayNode parsedTestSql = JacksonHelperUtil.getArrayNode();
-            try {
-                baseDatabaseBody = baseJSONObj.get("body");
-                testDatabaseBody = testJSONObj.get("body");
 
+            if (baseDatabaseBody == null || testDatabaseBody == null){
+                ObjectNode baseBackUpObj = JacksonHelperUtil.getObjectNode();
+                ObjectNode testBackUpObj = JacksonHelperUtil.getObjectNode();
+                baseBackUpObj.set(ORIGINAL_SQL, baseDatabaseBody);
+                testBackUpObj.set(ORIGINAL_SQL, testDatabaseBody);
+
+                parsedBaseSql.add(baseBackUpObj);
+                parsedTestSql.add(testBackUpObj);
+
+                baseJSONObj.set(PARSED_SQL, parsedBaseSql);
+                testJSONObj.set(PARSED_SQL, parsedTestSql);
+                return;
+            }
+
+            try {
                 if (baseDatabaseBody instanceof TextNode) {
 
                     parsedBaseSql.add(sqlParse(baseDatabaseBody.asText()));
@@ -72,10 +84,8 @@ public class SqlParse {
                     }
                 }
 
-                baseJSONObj.put(PARSED_SQL, parsedBaseSql);
-                testJSONObj.put(PARSED_SQL, parsedTestSql);
-
-
+                baseJSONObj.set(PARSED_SQL, parsedBaseSql);
+                testJSONObj.set(PARSED_SQL, parsedTestSql);
             } catch (Throwable throwable) {
 
                 ObjectNode baseBackUpObj = JacksonHelperUtil.getObjectNode();
@@ -177,8 +187,8 @@ public class SqlParse {
             baseJSONObj.remove("parameters");
             testJSONObj.remove("parameters");
         } catch (Throwable throwable) {
-            baseJSONObj.put("parameters", originalBaseParams);
-            testJSONObj.put("parameters", originalTestParams);
+            baseJSONObj.set("parameters", originalBaseParams);
+            testJSONObj.set("parameters", originalTestParams);
             baseJSONObj.put("body", originalBaseBody);
             testJSONObj.put("body", originalTestBody);
         }
