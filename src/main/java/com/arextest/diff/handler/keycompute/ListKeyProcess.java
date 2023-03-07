@@ -159,6 +159,56 @@ public class ListKeyProcess {
     // add node name
     private String getKeyValueByPath(List<String> relativePath, Object obj) {
         String result = null;
+        if (relativePath == null || relativePath.isEmpty() || (relativePath.size() == 1 && relativePath.get(0).equals("%value%"))) {
+            if (obj != null && !(obj instanceof NullNode) && !"".equals(((JsonNode) obj).asText())) {
+
+                String value;
+                List<String> referencePaths = new ArrayList<>();
+                for (List<String> list : getReferencePath(currentParentPath)) {
+                    referencePaths.add(ListUti.convertToString2(list));
+                }
+
+                value = ((JsonNode) obj).asText();
+                if (value.matches("\\d+\\.0+")) {
+                    value = value.substring(0, value.lastIndexOf('.'));
+                }
+
+                if (referencePaths.size() > 0 && !value.equals("0")) {
+                    int cnt = 0;
+                    for (String referencePath : referencePaths) {
+                        String refKey = null;
+                        if (referenceKeys.containsKey(referencePath)) {
+                            refKey = referenceKeys.get(referencePath).get(value);
+                        }
+                        if (refKey != null) {
+                            cnt++;
+                            value = refKey;
+                        }
+                    }
+
+                    if (cnt == 0) {
+                        LogEntity log = new LogEntity("The referenced node could not be found or the referenced List does not have listKey, fkNodePath: "
+                                + ListUti.convertToString2(currentParentPath) + ", fkNodeValue: " + value);
+                        logs.add(log);
+                    }
+                    if (cnt > 1) {
+                        LogEntity log = new LogEntity("More than one referenced node, fkNodePath: " + ListUti.convertToString2(currentParentPath) + ", fkNodeValue: " + value);
+                        logs.add(log);
+                    }
+                }
+
+                String nodeName = currentParentPath.get(currentParentPath.size() - 1);
+                StringBuilder sb = new StringBuilder();
+                if (nodeName != null) {
+                    sb.append("(").append(nodeName).append(":").append(value).append(")");
+                } else {
+                    sb.append("(").append(value).append(")");
+                }
+                result = sb.toString();
+            }
+            return result;
+        }
+
         if (obj instanceof ObjectNode) {
             String path = relativePath.get(0);
             ObjectNode jsonObj = (ObjectNode) obj;
@@ -243,56 +293,6 @@ public class ListKeyProcess {
                 sb.append("]");
                 result = sb.toString();
             }
-
-        } else if (obj != null && !(obj instanceof NullNode) && !"".equals(((JsonNode)obj).asText())) {
-
-            // To solve the problem the relativePath exist value caused by the dynamic path, obj is the basic type (excluding %value%)
-            if (relativePath.size() > 1 || (relativePath.size() == 1 && !relativePath.get(0).equals("%value%"))) {
-                return null;
-            }
-            String value;
-            List<String> referencePaths = new ArrayList<>();
-            for (List<String> list : getReferencePath(currentParentPath)) {
-                referencePaths.add(ListUti.convertToString2(list));
-            }
-
-            value = ((JsonNode)obj).asText();
-            if (value.matches("\\d+\\.0+")) {
-                value = value.substring(0, value.lastIndexOf('.'));
-            }
-
-            if (referencePaths.size() > 0 && !value.equals("0")) {
-                int cnt = 0;
-                for (String referencePath : referencePaths) {
-                    String refKey = null;
-                    if (referenceKeys.containsKey(referencePath)) {
-                        refKey = referenceKeys.get(referencePath).get(value);
-                    }
-                    if (refKey != null) {
-                        cnt++;
-                        value = refKey;
-                    }
-                }
-
-                if (cnt == 0) {
-                    LogEntity log = new LogEntity("The referenced node could not be found or the referenced List does not have listKey, fkNodePath: "
-                            + ListUti.convertToString2(currentParentPath) + ", fkNodeValue: " + value);
-                    logs.add(log);
-                }
-                if (cnt > 1) {
-                    LogEntity log = new LogEntity("More than one referenced node, fkNodePath: " + ListUti.convertToString2(currentParentPath) + ", fkNodeValue: " + value);
-                    logs.add(log);
-                }
-            }
-
-            String nodeName = currentParentPath.get(currentParentPath.size() - 1);
-            StringBuilder sb = new StringBuilder();
-            if (nodeName != null) {
-                sb.append("(").append(nodeName).append(":").append(value).append(")");
-            } else {
-                sb.append("(").append(value).append(")");
-            }
-            result = sb.toString();
         }
         return result;
     }

@@ -122,10 +122,12 @@ public class LogEntity implements Serializable {
     }
 
     public LogEntity(Object baseValue, Object testValue, UnmatchedPairEntity pathPair) {
-        this.baseValue = baseValue instanceof ObjectNode || baseValue instanceof ArrayNode || baseValue instanceof NullNode
-                ? null : baseValue;
-        this.testValue = testValue instanceof ObjectNode || testValue instanceof ArrayNode || testValue instanceof NullNode
-                ? null : testValue;
+        this.baseValue = baseValue instanceof ObjectNode || baseValue instanceof ArrayNode
+                || baseValue instanceof NullNode || baseValue == null
+                ? null : baseValue.toString();
+        this.testValue = testValue instanceof ObjectNode || testValue instanceof ArrayNode
+                || testValue instanceof NullNode || testValue == null
+                ? null : testValue.toString();
         this.pathPair = pathPair;
         processLogInfo(this.baseValue, this.testValue, pathPair.getUnmatchedType());
         processPath();
