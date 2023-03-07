@@ -1,6 +1,8 @@
 package com.arextest.diff.handler.parse.sqlparse.select;
 
 import com.arextest.diff.handler.parse.sqlparse.constants.Constants;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.sf.jsqlparser.expression.AllValue;
 import net.sf.jsqlparser.expression.AnalyticExpression;
 import net.sf.jsqlparser.expression.AnyComparisonExpression;
@@ -88,22 +90,20 @@ import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.statement.select.AllColumns;
 import net.sf.jsqlparser.statement.select.AllTableColumns;
 import net.sf.jsqlparser.statement.select.SubSelect;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 /**
  * Created by rchen9 on 2023/1/10.
  */
 public class ArexExpressionVisitorAdapter implements ExpressionVisitor {
 
-    private JSONObject sqlObj;
-    private JSONArray andOrObj;
-    private JSONObject columnsObj;
+    private ObjectNode sqlObj;
+    private ArrayNode andOrObj;
+    private ObjectNode columnsObj;
 
-    public ArexExpressionVisitorAdapter(JSONObject object) {
+    public ArexExpressionVisitorAdapter(ObjectNode object) {
         sqlObj = object;
-        andOrObj = object.getJSONArray(Constants.AND_OR);
-        columnsObj = object.getJSONObject(Constants.COLUMNS);
+        andOrObj = (ArrayNode) object.get(Constants.AND_OR);
+        columnsObj = (ObjectNode) object.get(Constants.COLUMNS);
     }
 
     @Override
@@ -208,7 +208,7 @@ public class ArexExpressionVisitorAdapter implements ExpressionVisitor {
 
     @Override
     public void visit(AndExpression andExpression) {
-        andOrObj.put(Constants.AND);
+        andOrObj.add(Constants.AND);
         ArexExpressionVisitorAdapter arexExpressionVisitorAdapter = new ArexExpressionVisitorAdapter(sqlObj);
         Expression leftExpression = andExpression.getLeftExpression();
         Expression rightExpression = andExpression.getRightExpression();
@@ -218,7 +218,7 @@ public class ArexExpressionVisitorAdapter implements ExpressionVisitor {
 
     @Override
     public void visit(OrExpression orExpression) {
-        andOrObj.put(Constants.OR);
+        andOrObj.add(Constants.OR);
         ArexExpressionVisitorAdapter arexExpressionVisitorAdapter = new ArexExpressionVisitorAdapter(sqlObj);
         Expression leftExpression = orExpression.getLeftExpression();
         Expression rightExpression = orExpression.getRightExpression();
@@ -228,7 +228,7 @@ public class ArexExpressionVisitorAdapter implements ExpressionVisitor {
 
     @Override
     public void visit(XorExpression orExpression) {
-        andOrObj.put(Constants.XOR);
+        andOrObj.add(Constants.XOR);
         ArexExpressionVisitorAdapter arexExpressionVisitorAdapter = new ArexExpressionVisitorAdapter(sqlObj);
         Expression leftExpression = orExpression.getLeftExpression();
         Expression rightExpression = orExpression.getRightExpression();

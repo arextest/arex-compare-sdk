@@ -6,15 +6,15 @@ import com.arextest.diff.model.compare.CompareContext;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.utils.IgnoreUtil;
 import com.arextest.diff.utils.ListUti;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.List;
 
 public class GenericCompare {
 
-    public static void jsonCompare(Object obj1, Object obj2, CompareContext compareContext) throws JSONException {
+    public static void jsonCompare(Object obj1, Object obj2, CompareContext compareContext) {
 
         List<NodeEntity> currentNode = compareContext.currentNodeLeft.size() >= compareContext.currentNodeRight.size()
                 ? compareContext.getCurrentNodeLeft() : compareContext.getCurrentNodeRight();
@@ -35,23 +35,24 @@ public class GenericCompare {
             return;
         }
 
-
-        if ((obj1 == null && obj2 != null) ||
-                (obj1 != null && obj2 == null)) {
-            LogRegister.register(obj1, obj2,
-                    obj1 == null ? LogMarker.LEFT_OBJECT_MISSING : LogMarker.RIGHT_OBJECT_MISSING, compareContext);
+        if (obj1 == null && obj2 == null) {
+            return;
+        } else if (obj1 == null) {
+            LogRegister.register(obj1, obj2, LogMarker.LEFT_OBJECT_MISSING, compareContext);
+            return;
+        } else if (obj2 == null) {
+            LogRegister.register(obj1, obj2, LogMarker.RIGHT_OBJECT_MISSING, compareContext);
             return;
         }
 
         // There is a null value in any of the left and right nodes
-        if ((JSONObject.NULL.equals(obj1) && !JSONObject.NULL.equals(obj2)) ||
-                (!JSONObject.NULL.equals(obj1) && JSONObject.NULL.equals(obj2))) {
+        if ((obj1 instanceof NullNode && !(obj2 instanceof NullNode)) ||
+                (!(obj1 instanceof NullNode) && obj2 instanceof NullNode)) {
             if (compareContext.notDistinguishNullAndEmpty) {
                 if (CompareHelper.bothEmptyString(obj1, obj2)) return;
-                if (obj1 instanceof JSONArray && ((JSONArray) obj1).length() == 0) return;
-                if (obj2 instanceof JSONArray && ((JSONArray) obj2).length() == 0) return;
+                if (obj1 instanceof ArrayNode && ((ArrayNode) obj1).size() == 0) return;
+                if (obj2 instanceof ArrayNode && ((ArrayNode) obj2).size() == 0) return;
             }
-
             LogRegister.register(obj1, obj2, LogMarker.NULL_CHECK, compareContext);
             return;
         }
@@ -62,9 +63,9 @@ public class GenericCompare {
             return;
         }
 
-        if (obj1 instanceof JSONObject) {
+        if (obj1 instanceof ObjectNode) {
             ObjectCompare.objectCompare(obj1, obj2, compareContext);
-        } else if (obj1 instanceof JSONArray) {
+        } else if (obj1 instanceof ArrayNode) {
             ArrayCompare.arrayCompare(obj1, obj2, compareContext);
         } else {
             ValueCompare.valueCompare(obj1, obj2, compareContext);

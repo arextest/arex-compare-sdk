@@ -8,8 +8,7 @@ import com.arextest.diff.model.compare.CompareContext;
 import com.arextest.diff.model.compare.IndexPair;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.utils.ListUti;
-import org.json.JSONArray;
-import org.json.JSONException;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,13 +19,13 @@ import java.util.Map;
  */
 public class ArrayCompare {
 
-    public static void arrayCompare(Object obj1, Object obj2, CompareContext compareContext) throws JSONException {
+    public static void arrayCompare(Object obj1, Object obj2, CompareContext compareContext) {
 
-        JSONArray obj1Array = (JSONArray) obj1;
-        JSONArray obj2Array = (JSONArray) obj2;
+        ArrayNode obj1Array = (ArrayNode) obj1;
+        ArrayNode obj2Array = (ArrayNode) obj2;
 
-        if (obj1Array.length() != obj2Array.length()) {
-            LogRegister.register(obj1Array.length(), obj2Array.length(), LogMarker.DIFF_ARRAY_COUNT, compareContext);
+        if (obj1Array.size() != obj2Array.size()) {
+            LogRegister.register(obj1Array.size(), obj2Array.size(), LogMarker.DIFF_ARRAY_COUNT, compareContext);
         }
 
         List<Integer> leftComparedIndexes = new ArrayList<>();
@@ -38,7 +37,7 @@ public class ArrayCompare {
 
         String currentListPath = ListUti.convertPathToStringForShow(compareContext.currentNodeLeft);
 
-        for (int i = 0; i < obj1Array.length(); i++) {
+        for (int i = 0; i < obj1Array.size(); i++) {
             leftComparedIndexes.add(i);
 
             compareContext.currentNodeLeft.add(new NodeEntity(null, i));
@@ -77,7 +76,7 @@ public class ArrayCompare {
             }
         }
 
-        for (int i = 0; i < obj2Array.length(); i++) {
+        for (int i = 0; i < obj2Array.size(); i++) {
             if (rightComparedIndexes.contains(i)) {
                 continue;
             }

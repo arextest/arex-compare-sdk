@@ -1,10 +1,10 @@
 package com.arextest.diff.handler.parse.sqlparse;
 
 import com.arextest.diff.handler.parse.sqlparse.action.ActionFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
-import org.json.JSONObject;
 import org.junit.Test;
 
 /**
@@ -47,7 +47,7 @@ public class InsertExampleTest {
 
     private static void testSqlParse(Statement statement) {
         Parse parse = ActionFactory.selectParse(statement);
-        JSONObject jsonObject = (JSONObject) parse.parse(statement);
+        ObjectNode jsonObject = (ObjectNode) parse.parse(statement);
         System.out.println();
     }
 }

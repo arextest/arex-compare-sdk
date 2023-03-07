@@ -1,7 +1,8 @@
 package com.arextest.diff.handler.parse.sqlparse;
 
-import org.json.JSONObject;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public interface Parse<T> {
-    JSONObject parse(T parseObj);
+    ObjectNode parse(T parseObj);
 }

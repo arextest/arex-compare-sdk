@@ -2,12 +2,16 @@ package com.arextest.diff.handler.parse.sqlparse;
 
 import com.arextest.diff.handler.parse.sqlparse.action.ActionFactory;
 import com.arextest.diff.model.parse.MsgObjCombination;
+import com.arextest.diff.utils.JacksonHelperUtil;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,9 +29,9 @@ public class SqlParse {
         if (baseObj == null || testObj == null) {
             return;
         }
-        if (baseObj instanceof JSONObject && testObj instanceof JSONObject) {
-            JSONObject baseJSONObj = (JSONObject) baseObj;
-            JSONObject testJSONObj = (JSONObject) testObj;
+        if (baseObj instanceof ObjectNode && testObj instanceof ObjectNode) {
+            ObjectNode baseJSONObj = (ObjectNode) baseObj;
+            ObjectNode testJSONObj = (ObjectNode) testObj;
 
             // 仅比较同名字段且parameters采用位置下标，将parameters字段填入sql并移除
             if (onlyCompareSameColumns) {
@@ -40,50 +44,60 @@ public class SqlParse {
             }
 
             // 解析body字段，注意body为数组的情况
-            Object baseDatabaseBody = null;
-            Object testDatabaseBody = null;
-            JSONArray parsedBaseSql = new JSONArray();
-            JSONArray parsedTestSql = new JSONArray();
+            JsonNode baseDatabaseBody = baseJSONObj.get("body");
+            JsonNode testDatabaseBody = testJSONObj.get("body");
+            ArrayNode parsedBaseSql = JacksonHelperUtil.getArrayNode();
+            ArrayNode parsedTestSql = JacksonHelperUtil.getArrayNode();
+
+            if (baseDatabaseBody == null || testDatabaseBody == null){
+                ObjectNode baseBackUpObj = JacksonHelperUtil.getObjectNode();
+                ObjectNode testBackUpObj = JacksonHelperUtil.getObjectNode();
+                baseBackUpObj.set(ORIGINAL_SQL, baseDatabaseBody);
+                testBackUpObj.set(ORIGINAL_SQL, testDatabaseBody);
+
+                parsedBaseSql.add(baseBackUpObj);
+                parsedTestSql.add(testBackUpObj);
+
+                baseJSONObj.set(PARSED_SQL, parsedBaseSql);
+                testJSONObj.set(PARSED_SQL, parsedTestSql);
+                return;
+            }
+
             try {
-                baseDatabaseBody = baseJSONObj.get("body");
-                testDatabaseBody = testJSONObj.get("body");
+                if (baseDatabaseBody instanceof TextNode) {
 
-                if (baseDatabaseBody instanceof String) {
-
-                    parsedBaseSql.put(sqlParse((String) baseDatabaseBody));
-                    parsedTestSql.put(sqlParse((String) testDatabaseBody));
+                    parsedBaseSql.add(sqlParse(baseDatabaseBody.asText()));
+                    parsedTestSql.add(sqlParse(testDatabaseBody.asText()));
 
                 } else {
-                    JSONArray baseDatabaseBodyArray = (JSONArray) baseDatabaseBody;
-                    JSONArray testDatabaseBodyArray = (JSONArray) testDatabaseBody;
+                    ArrayNode baseDatabaseBodyArray = (ArrayNode) baseDatabaseBody;
+                    ArrayNode testDatabaseBodyArray = (ArrayNode) testDatabaseBody;
 
-                    for (int i = 0; i < baseDatabaseBodyArray.length(); i++) {
-                        String itemBaseDatabaseBody = baseDatabaseBodyArray.getString(i);
-                        parsedBaseSql.put(sqlParse(itemBaseDatabaseBody));
+                    for (int i = 0; i < baseDatabaseBodyArray.size(); i++) {
+                        String itemBaseDatabaseBody = baseDatabaseBodyArray.get(i).asText();
+                        parsedBaseSql.add(sqlParse(itemBaseDatabaseBody));
                     }
 
-                    for (int i = 0; i < baseDatabaseBodyArray.length(); i++) {
-                        String itemTestDatabaseBody = testDatabaseBodyArray.getString(i);
-                        parsedTestSql.put(sqlParse(itemTestDatabaseBody));
+                    for (int i = 0; i < baseDatabaseBodyArray.size(); i++) {
+                        String itemTestDatabaseBody = testDatabaseBodyArray.get(i).asText();
+                        parsedTestSql.add(sqlParse(itemTestDatabaseBody));
                     }
                 }
 
-                baseJSONObj.put(PARSED_SQL, parsedBaseSql);
-                testJSONObj.put(PARSED_SQL, parsedTestSql);
-
-
+                baseJSONObj.set(PARSED_SQL, parsedBaseSql);
+                testJSONObj.set(PARSED_SQL, parsedTestSql);
             } catch (Throwable throwable) {
 
-                JSONObject baseBackUpObj = new JSONObject();
-                JSONObject testBackUpObj = new JSONObject();
-                baseBackUpObj.put(ORIGINAL_SQL, baseDatabaseBody);
-                testBackUpObj.put(ORIGINAL_SQL, testDatabaseBody);
+                ObjectNode baseBackUpObj = JacksonHelperUtil.getObjectNode();
+                ObjectNode testBackUpObj = JacksonHelperUtil.getObjectNode();
+                baseBackUpObj.set(ORIGINAL_SQL, baseDatabaseBody);
+                testBackUpObj.set(ORIGINAL_SQL, testDatabaseBody);
 
-                parsedBaseSql.put(baseBackUpObj);
-                parsedTestSql.put(testBackUpObj);
+                parsedBaseSql.add(baseBackUpObj);
+                parsedTestSql.add(testBackUpObj);
 
-                baseJSONObj.put(PARSED_SQL, parsedBaseSql);
-                testJSONObj.put(PARSED_SQL, parsedTestSql);
+                baseJSONObj.set(PARSED_SQL, parsedBaseSql);
+                testJSONObj.set(PARSED_SQL, parsedTestSql);
             }
 
 
@@ -91,33 +105,34 @@ public class SqlParse {
     }
 
     @SuppressWarnings("unchecked")
-    public JSONObject sqlParse(String sql) throws JSQLParserException {
+    public ObjectNode sqlParse(String sql) throws JSQLParserException {
         Statement statement = CCJSqlParserUtil.parse(sql);
         Parse parse = ActionFactory.selectParse(statement);
-        ;
         return parse.parse(statement);
     }
 
-    private boolean judgeParam(JSONObject object) {
+    private boolean judgeParam(ObjectNode object) {
         try {
             Object parameters = object.get("parameters");
-            if (parameters instanceof JSONObject) {
-                JSONObject paramObj = (JSONObject) parameters;
-                return isPositionParam(paramObj);
-            } else if (parameters instanceof JSONArray) {
-                JSONObject paramObj = (JSONObject) ((JSONArray) parameters).get(0);
-                return isPositionParam(paramObj);
-            } else {
-                return false;
+            if (parameters != null) {
+                if (parameters instanceof ObjectNode) {
+                    ObjectNode paramObj = (ObjectNode) parameters;
+                    return isPositionParam(paramObj);
+                } else if (parameters instanceof ArrayNode) {
+                    ObjectNode paramObj = (ObjectNode) ((ArrayNode) parameters).get(0);
+                    return isPositionParam(paramObj);
+                } else {
+                    return false;
+                }
             }
         } catch (Throwable throwable) {
         }
         return false;
     }
 
-    private boolean isPositionParam(JSONObject paramObj) {
-        String[] names = JSONObject.getNames(paramObj);
-        if (names == null || names.length == 0) {
+    private boolean isPositionParam(ObjectNode paramObj) {
+        List<String> names = JacksonHelperUtil.getNames(paramObj);
+        if (names.size() == 0) {
             return false;
         }
         Pattern pattern = Pattern.compile("^[0-9]*[1-9][0-9]*$");
@@ -131,49 +146,49 @@ public class SqlParse {
     }
 
     // onlyCompareSameColumns为true, 且采用数组下标时重构数据库比对报文
-    private void produceNewBody(JSONObject baseJSONObj, JSONObject testJSONObj) {
+    private void produceNewBody(ObjectNode baseJSONObj, ObjectNode testJSONObj) {
 
-        Object originalBaseParams = baseJSONObj.get("parameters");
-        Object originalTestParams = testJSONObj.get("parameters");
-        String originalBaseBody = baseJSONObj.getString("body");
-        String originalTestBody = testJSONObj.getString("body");
+        JsonNode originalBaseParams = baseJSONObj.get("parameters");
+        JsonNode originalTestParams = testJSONObj.get("parameters");
+        String originalBaseBody = baseJSONObj.get("body").asText();
+        String originalTestBody = testJSONObj.get("body").asText();
         if (!Objects.equals(originalBaseParams.getClass(), originalTestParams.getClass())) {
             return;
         }
 
         try {
-            if (originalBaseParams instanceof JSONObject) {
-                JSONObject originalBaseParamsObj = (JSONObject) originalBaseParams;
-                JSONObject originalTestParamsObj = (JSONObject) originalTestParams;
+            if (originalBaseParams instanceof ObjectNode) {
+                ObjectNode originalBaseParamsObj = (ObjectNode) originalBaseParams;
+                ObjectNode originalTestParamsObj = (ObjectNode) originalTestParams;
                 String newBaseBody = processParams(originalBaseParamsObj, originalBaseBody);
                 String newTestBody = processParams(originalTestParamsObj, originalTestBody);
                 baseJSONObj.put("body", newBaseBody);
                 testJSONObj.put("body", newTestBody);
-            } else if (originalBaseParams instanceof JSONArray) {
-                JSONArray originalBaseParamsArr = (JSONArray) originalBaseParams;
-                JSONArray originalTestParamsArr = (JSONArray) originalTestParams;
+            } else if (originalBaseParams instanceof ArrayNode) {
+                ArrayNode originalBaseParamsArr = (ArrayNode) originalBaseParams;
+                ArrayNode originalTestParamsArr = (ArrayNode) originalTestParams;
 
-                JSONArray newBaseBodyList = new JSONArray();
-                for (int i = 0; i < originalBaseParamsArr.length(); i++) {
-                    JSONObject itemBaseParamObj = originalBaseParamsArr.getJSONObject(i);
+                ArrayNode newBaseBodyList = JacksonHelperUtil.getArrayNode();
+                for (int i = 0; i < originalBaseParamsArr.size(); i++) {
+                    ObjectNode itemBaseParamObj = (ObjectNode) originalBaseParamsArr.get(i);
                     String newBaseBody = processParams(itemBaseParamObj, originalBaseBody);
-                    newBaseBodyList.put(newBaseBody);
+                    newBaseBodyList.add(newBaseBody);
                 }
                 baseJSONObj.put("body", newBaseBodyList);
 
-                JSONArray newTestBodyList = new JSONArray();
-                for (int i = 0; i < originalTestParamsArr.length(); i++) {
-                    JSONObject itemTestParamObj = originalTestParamsArr.getJSONObject(i);
+                ArrayNode newTestBodyList = JacksonHelperUtil.getArrayNode();
+                for (int i = 0; i < originalTestParamsArr.size(); i++) {
+                    ObjectNode itemTestParamObj = (ObjectNode) originalTestParamsArr.get(i);
                     String newTestBody = processParams(itemTestParamObj, originalTestBody);
-                    newTestBodyList.put(newTestBody);
+                    newTestBodyList.add(newTestBody);
                 }
                 testJSONObj.put("body", newTestBodyList);
             }
             baseJSONObj.remove("parameters");
             testJSONObj.remove("parameters");
         } catch (Throwable throwable) {
-            baseJSONObj.put("parameters", originalBaseParams);
-            testJSONObj.put("parameters", originalTestParams);
+            baseJSONObj.set("parameters", originalBaseParams);
+            testJSONObj.set("parameters", originalTestParams);
             baseJSONObj.put("body", originalBaseBody);
             testJSONObj.put("body", originalTestBody);
         }
@@ -183,7 +198,7 @@ public class SqlParse {
 
 
     // 产生新的body对象
-    private String processParams(JSONObject paramObj, String sql) {
+    private String processParams(ObjectNode paramObj, String sql) {
         if (sql == null || sql.length() == 0) {
             return sql;
         }
@@ -196,9 +211,9 @@ public class SqlParse {
                 Object paramItem = paramObj.get(String.valueOf(++count));
                 if (paramItem == null) {
                     newSql.append(paramItem);
-                } else if (paramItem instanceof String) {
+                } else if (paramItem instanceof TextNode) {
                     newSql.append("\'");
-                    newSql.append(paramItem);
+                    newSql.append(((TextNode) paramItem).asText());
                     newSql.append("\'");
                 } else {
                     newSql.append(paramItem);
@@ -208,23 +223,6 @@ public class SqlParse {
             }
         }
         return newSql.toString();
-    }
-
-    public static void main(String[] args) {
-
-        SqlParse sqlParse = new SqlParse();
-
-        String sql1 = "{\"database\":\"\",\"body\":\"INSERT INTO MyTable (Text) VALUES ('A'||CHAR(10)||'B')\"}";
-        String sql2 = "{\"database\":\"\",\"body\":\"UPDATE `issuebillprocess` SET `IssueBillID`=?, `ProcessStatus`=?, `ProcessRemark`=? WHERE `BillProcessID`=?\"}";
-
-        JSONObject obj1 = new JSONObject(sql1);
-        JSONObject obj2 = new JSONObject(sql2);
-        MsgObjCombination msgObjCombination = new MsgObjCombination();
-        msgObjCombination.setBaseObj(obj1);
-        msgObjCombination.setTestObj(obj2);
-
-        // sqlParse.doHandler(msgObjCombination);
-        System.out.println();
     }
 
 }

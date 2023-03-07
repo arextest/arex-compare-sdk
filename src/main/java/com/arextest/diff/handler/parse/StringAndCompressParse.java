@@ -3,14 +3,22 @@ package com.arextest.diff.handler.parse;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.service.DecompressService;
 import com.arextest.diff.utils.DeCompressUtil;
+import com.arextest.diff.utils.JacksonHelperUtil;
 import com.arextest.diff.utils.ListUti;
 import com.arextest.diff.utils.StringUtil;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.NullNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
 import org.apache.commons.lang3.tuple.MutablePair;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class StringAndCompressParse {
@@ -41,27 +49,23 @@ public class StringAndCompressParse {
         this.decompressConfig = decompressConfig;
     }
 
-    public void getJSONParse(Object obj, Object preObj) throws JSONException {
-        if (obj == null || JSONObject.NULL.equals(obj)) {
+    public void getJSONParse(Object obj, Object preObj) {
+        if (obj == null || obj instanceof NullNode) {
             return;
         }
 
-        if (obj instanceof JSONObject) {
-            JSONObject jsonObject = (JSONObject) obj;
-            String[] names = JSONObject.getNames(jsonObject);
-            if (names == null) {
-                names = new String[0];
-            }
-
+        if (obj instanceof ObjectNode) {
+            ObjectNode jsonObject = (ObjectNode) obj;
+            List<String> names = JacksonHelperUtil.getNames(jsonObject);
             for (String fieldName : names) {
                 currentNode.add(new NodeEntity(fieldName, 0));
                 Object objFieldValue = jsonObject.get(fieldName);
                 getJSONParse(objFieldValue, obj);
                 ListUti.removeLast(currentNode);
             }
-        } else if (obj instanceof JSONArray) {
-            JSONArray objArray = (JSONArray) obj;
-            for (int i = 0; i < objArray.length(); i++) {
+        } else if (obj instanceof ArrayNode) {
+            ArrayNode objArray = (ArrayNode) obj;
+            for (int i = 0; i < objArray.size(); i++) {
                 currentNode.add(new NodeEntity(null, i));
                 Object element = objArray.get(i);
                 getJSONParse(element, obj);
@@ -70,10 +74,12 @@ public class StringAndCompressParse {
 
         } else {
 
-            String value = obj.toString();
+            String value = ((JsonNode)obj).asText();
             // TODO: 2022/9/20 improve the method to speed up
-            List<String> nodePath = nameToLower ? ListUti.convertToStringList(currentNode).stream().map(String::toLowerCase).collect(Collectors.toList()) : ListUti.convertToStringList(currentNode);
-            MutablePair<Object, Boolean> objectBooleanPair = null;
+            List<String> nodePath = nameToLower
+                    ? ListUti.convertToStringList(currentNode).stream().map(String::toLowerCase).collect(Collectors.toList())
+                    : ListUti.convertToStringList(currentNode);
+            MutablePair<JsonNode, Boolean> objectBooleanPair = null;
             if (decompressConfig != null && decompressConfig.containsKey(nodePath)) {
                 String beanPath = decompressConfig.get(nodePath);
                 objectBooleanPair = processCompress(value, beanPath, preObj);
@@ -89,11 +95,11 @@ public class StringAndCompressParse {
             }
 
             String currentName = getCurrentName(currentNode);
-            if (preObj instanceof JSONObject) {
-                ((JSONObject) preObj).put(currentName, objectBooleanPair.getKey());
+            if (preObj instanceof ObjectNode) {
+                ((ObjectNode) preObj).set(currentName, objectBooleanPair.getKey());
                 original.put(new ArrayList<>(currentNode), value);
-            } else if (preObj instanceof JSONArray) {
-                ((JSONArray) preObj).put(Integer.valueOf(currentName), objectBooleanPair.getKey());
+            } else if (preObj instanceof ArrayNode) {
+                ((ArrayNode) preObj).set(Integer.parseInt(currentName), objectBooleanPair.getKey());
                 original.put(new ArrayList<>(currentNode), value);
             }
         }
@@ -117,7 +123,7 @@ public class StringAndCompressParse {
      * k: show weather successfully process，if return null:fail,if return not null:success
      * v: show Object instanceof JSONObject or JSONArray which need to further performance getJSONParse
      */
-    private MutablePair<Object, Boolean> processCompress(String value, String beanPath, Object preObj) {
+    private MutablePair<JsonNode, Boolean> processCompress(String value, String beanPath, Object preObj) {
         String unCompressStr;
         try {
             unCompressStr = (String) DeCompressUtil.deCompressPlugin(decompressServices,
@@ -126,12 +132,12 @@ public class StringAndCompressParse {
             return new MutablePair<>(null, Boolean.FALSE);
         }
 
-        MutablePair<Object, Boolean> objectBooleanPair = processStringParse(unCompressStr, preObj);
+        MutablePair<JsonNode, Boolean> objectBooleanPair = processStringParse(unCompressStr, preObj);
         if (objectBooleanPair.getKey() == null) {
             if (StringUtil.isEmpty(unCompressStr)) {
                 return new MutablePair<>(null, Boolean.FALSE);
             } else {
-                return new MutablePair<>(unCompressStr, Boolean.FALSE);
+                return new MutablePair<>(new TextNode(unCompressStr), Boolean.FALSE);
             }
         } else {
             return objectBooleanPair;
@@ -139,9 +145,9 @@ public class StringAndCompressParse {
     }
 
 
-    private MutablePair<Object, Boolean> processStringParse(String value, Object preObj) {
+    private MutablePair<JsonNode, Boolean> processStringParse(String value, Object preObj) {
 
-        Object objTemp = null;
+        JsonNode objTemp = null;
 
         if (StringUtil.isEmpty(value)) {
             return new MutablePair<>(null, Boolean.FALSE);
@@ -149,17 +155,18 @@ public class StringAndCompressParse {
 
         if (value.startsWith("{") && value.endsWith("}")) {
             try {
-                objTemp = new JSONObject(value);
-            } catch (JSONException e) {
+                objTemp = JacksonHelperUtil.objectMapper.readValue(value, ObjectNode.class);
+            } catch (JsonProcessingException e) {
             }
-
         } else if (value.startsWith("[") && value.endsWith("]")) {
             try {
-                objTemp = new JSONArray(value);
-            } catch (JSONException e) {
+                objTemp = JacksonHelperUtil.objectMapper.readValue(value, ArrayNode.class);
+            } catch (JsonProcessingException e) {
             }
         }
-        return objTemp == null ? new MutablePair<>(null, Boolean.FALSE) : new MutablePair<>(objTemp, Boolean.TRUE);
+        return objTemp == null
+                ? new MutablePair<>(null, Boolean.FALSE)
+                : new MutablePair<>(objTemp, Boolean.TRUE);
     }
 
 }

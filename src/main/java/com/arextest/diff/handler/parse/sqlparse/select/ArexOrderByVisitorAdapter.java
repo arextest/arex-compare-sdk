@@ -1,18 +1,18 @@
 package com.arextest.diff.handler.parse.sqlparse.select;
 
 import com.arextest.diff.handler.parse.sqlparse.constants.Constants;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.sf.jsqlparser.statement.select.OrderByElement;
 import net.sf.jsqlparser.statement.select.OrderByVisitor;
-import org.json.JSONObject;
 
 /**
  * Created by rchen9 on 2023/1/11.
  */
 public class ArexOrderByVisitorAdapter implements OrderByVisitor {
 
-    private JSONObject sqlObject;
+    private ObjectNode sqlObject;
 
-    public ArexOrderByVisitorAdapter(JSONObject object) {
+    public ArexOrderByVisitorAdapter(ObjectNode object) {
         sqlObject = object;
     }
 

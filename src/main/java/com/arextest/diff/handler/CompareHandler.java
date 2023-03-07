@@ -7,7 +7,6 @@ import com.arextest.diff.model.key.KeyComputeResponse;
 import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.model.parse.MsgStructure;
 import org.apache.commons.lang3.tuple.MutablePair;
-import org.json.JSONException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,8 +14,9 @@ import java.util.concurrent.CompletableFuture;
 
 public class CompareHandler {
 
-    public List<LogEntity> doHandler(RulesConfig rulesConfig, KeyComputeResponse keyComputeResponse, CompletableFuture<MutablePair<MsgStructure, MsgStructure>> msgStructureFuture,
-                                     Object baseObj, Object testObj) throws JSONException {
+    public List<LogEntity> doHandler(RulesConfig rulesConfig, KeyComputeResponse keyComputeResponse,
+                                     CompletableFuture<MutablePair<MsgStructure, MsgStructure>> msgStructureFuture,
+                                     Object baseObj, Object testObj) {
         CompareContext compareContext = new CompareContext();
         List<LogEntity> logs = new ArrayList<>();
         compareContext.setLogs(logs);

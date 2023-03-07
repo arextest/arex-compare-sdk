@@ -6,6 +6,9 @@ import com.arextest.diff.handler.parse.sqlparse.select.ArexExpressionVisitorAdap
 import com.arextest.diff.handler.parse.sqlparse.select.ArexFromItemVisitorAdapter;
 import com.arextest.diff.handler.parse.sqlparse.select.ArexOrderByVisitorAdapter;
 import com.arextest.diff.handler.parse.sqlparse.select.utils.JoinParseUtil;
+import com.arextest.diff.utils.JacksonHelperUtil;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Table;
@@ -15,8 +18,6 @@ import net.sf.jsqlparser.statement.select.Limit;
 import net.sf.jsqlparser.statement.select.OrderByElement;
 import net.sf.jsqlparser.statement.update.Update;
 import net.sf.jsqlparser.statement.update.UpdateSet;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +27,8 @@ import java.util.List;
  */
 public class UpdateParse implements Parse<Update> {
     @Override
-    public JSONObject parse(Update parseObj) {
-        JSONObject sqlObject = new JSONObject();
+    public ObjectNode parse(Update parseObj) {
+        ObjectNode sqlObject = JacksonHelperUtil.getObjectNode();
         sqlObject.put(Constants.ACTION, Constants.UPDATE);
 
         // table parse
@@ -39,28 +40,28 @@ public class UpdateParse implements Parse<Update> {
         // startJoins parse
         List<Join> startJoins = parseObj.getStartJoins();
         if (startJoins != null && !startJoins.isEmpty()) {
-            JSONArray joinArr = new JSONArray();
+            ArrayNode joinArr = JacksonHelperUtil.getArrayNode();
             startJoins.forEach(item -> {
-                joinArr.put(JoinParseUtil.parse(item));
+                joinArr.add(JoinParseUtil.parse(item));
             });
-            sqlObject.put(Constants.START_JOINS, joinArr);
+            sqlObject.set(Constants.START_JOINS, joinArr);
         }
 
         // from parse
         FromItem fromItem = parseObj.getFromItem();
         if (fromItem != null) {
-            JSONObject fromObj = new JSONObject();
+            ObjectNode fromObj = JacksonHelperUtil.getObjectNode();
             ArexFromItemVisitorAdapter arexFromItemVisitorAdapter = new ArexFromItemVisitorAdapter(fromObj);
             fromItem.accept(arexFromItemVisitorAdapter);
-            sqlObject.put(Constants.FROM, fromObj);
+            sqlObject.set(Constants.FROM, fromObj);
         }
 
         // joins parse
         List<Join> joins = parseObj.getJoins();
         if (joins != null && !joins.isEmpty()) {
-            JSONArray joinArr = new JSONArray();
+            ArrayNode joinArr = JacksonHelperUtil.getArrayNode();
             joins.forEach(item -> {
-                joinArr.put(JoinParseUtil.parse(item));
+                joinArr.add(JoinParseUtil.parse(item));
             });
             sqlObject.put(Constants.JOIN, joinArr);
         }
@@ -68,7 +69,7 @@ public class UpdateParse implements Parse<Update> {
         // updateSet parse
         List<UpdateSet> updateSets = parseObj.getUpdateSets();
         if (updateSets != null && !updateSets.isEmpty()) {
-            JSONObject setObj = new JSONObject();
+            ObjectNode setObj = JacksonHelperUtil.getObjectNode();
             for (UpdateSet updateSet : updateSets) {
                 ArrayList<Column> columns = updateSet.getColumns();
                 ArrayList<Expression> expressions = updateSet.getExpressions();
@@ -80,9 +81,9 @@ public class UpdateParse implements Parse<Update> {
         // where parse
         Expression where = parseObj.getWhere();
         if (where != null) {
-            JSONObject whereObj = new JSONObject();
-            whereObj.put(Constants.AND_OR, new JSONArray());
-            whereObj.put(Constants.COLUMNS, new JSONObject());
+            ObjectNode whereObj = JacksonHelperUtil.getObjectNode();
+            whereObj.set(Constants.AND_OR, JacksonHelperUtil.getArrayNode());
+            whereObj.set(Constants.COLUMNS, JacksonHelperUtil.getObjectNode());
             where.accept(new ArexExpressionVisitorAdapter(whereObj));
             sqlObject.put(Constants.WHERE, whereObj);
         }
@@ -90,7 +91,7 @@ public class UpdateParse implements Parse<Update> {
         // order parse
         List<OrderByElement> orderByElements = parseObj.getOrderByElements();
         if (orderByElements != null && !orderByElements.isEmpty()) {
-            JSONObject orderByObj = new JSONObject();
+            ObjectNode orderByObj = JacksonHelperUtil.getObjectNode();
             ArexOrderByVisitorAdapter arexOrderByVisitorAdapter = new ArexOrderByVisitorAdapter(orderByObj);
             orderByElements.forEach(item -> {
                 item.accept(arexOrderByVisitorAdapter);

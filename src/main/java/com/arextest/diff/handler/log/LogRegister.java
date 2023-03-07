@@ -9,12 +9,13 @@ import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.model.parse.MsgStructure;
 import com.arextest.diff.utils.ListUti;
 import com.arextest.diff.utils.StringUtil;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.fasterxml.jackson.databind.node.NullNode;
 
 import java.util.List;
 
-import static com.arextest.diff.compare.CompareHelper.*;
+import static com.arextest.diff.compare.CompareHelper.findReferenceNode;
+import static com.arextest.diff.compare.CompareHelper.getPkNodePath;
+import static com.arextest.diff.compare.CompareHelper.getUnmatchedPair;
 
 public class LogRegister {
 
@@ -73,7 +74,7 @@ public class LogRegister {
     }
 
     private static LogEntity nullCheck(Object obj1, Object obj2, LogMarker logMarker, CompareContext compareContext) {
-        boolean leftNull = (obj1 == null || JSONObject.NULL.equals(obj1));
+        boolean leftNull = (obj1 == null || obj1 instanceof NullNode);
         List<String> currentListKeys = leftNull ? compareContext.getCurrentListKeysRight() : compareContext.getCurrentListKeysLeft();
         return produceLog(obj1, obj2, UnmatchedType.UNMATCHED, ErrorType.NULL_EXIST, currentListKeys, compareContext);
     }
@@ -171,7 +172,7 @@ public class LogRegister {
         return false;
     }
 
-    private static void addReferencePath(LogEntity log, boolean left, Object obj, CompareContext compareContext) throws JSONException {
+    private static void addReferencePath(LogEntity log, boolean left, Object obj, CompareContext compareContext) {
         List<ReferenceEntity> references = findReferenceNode(left ? compareContext.getCurrentNodeLeft() : compareContext.getCurrentNodeRight(), compareContext.getResponseReferences());
         if (!references.isEmpty()) {
             List<NodeEntity> pkNodePath = getPkNodePath(references, left, obj, compareContext);

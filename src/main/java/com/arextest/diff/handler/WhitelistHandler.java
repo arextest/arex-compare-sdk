@@ -3,9 +3,10 @@ package com.arextest.diff.handler;
 import com.arextest.diff.factory.TaskThreadFactory;
 import com.arextest.diff.model.enumeration.Constant;
 import com.arextest.diff.model.parse.MsgObjCombination;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.arextest.diff.utils.JacksonHelperUtil;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import java.util.List;
 import java.util.Objects;
@@ -25,8 +26,10 @@ public class WhitelistHandler {
         return new MsgObjCombination(baseObj, testObj);
     }
 
-    private Object getInclusionsTask(Object obj, List<List<String>> whiteList) throws JSONException {
-        Object whiteObj = obj instanceof JSONObject ? new JSONObject() : new JSONArray();
+    private Object getInclusionsTask(Object obj, List<List<String>> whiteList) {
+        Object whiteObj = obj instanceof ObjectNode
+                ? JacksonHelperUtil.getObjectNode()
+                : JacksonHelperUtil.getArrayNode();
         if (obj == null) {
             return null;
         }
@@ -36,76 +39,71 @@ public class WhitelistHandler {
         return whiteObj;
     }
 
-    private void getInclusionsObj(Object obj, Object whiteObj, List<String> white) throws JSONException {
+    private void getInclusionsObj(Object obj, Object whiteObj, List<String> white) {
         for (int i = 0; i < white.size(); i++) {
             String nodePath = white.get(i);
             Object tempObj = null;
             Object tempWhiteObj = null;
-            if (obj instanceof JSONObject) {
-                JSONObject jsonObject = ((JSONObject) obj);
-                JSONObject jsonWhiteObj = ((JSONObject) whiteObj);
+            if (obj instanceof ObjectNode) {
+                ObjectNode jsonObject = ((ObjectNode) obj);
+                ObjectNode jsonWhiteObj = ((ObjectNode) whiteObj);
                 if (Objects.equals(nodePath, Constant.DYNAMIC_PATH)) {
-                    String[] names = JSONObject.getNames(jsonObject);
-                    if (names == null) {
-                        names = new String[0];
-                    }
+                    List<String> names = JacksonHelperUtil.getNames(jsonObject);
                     for (String name : names) {
                         tempObj = jsonObject.get(name);
                         if (i != white.size() - 1) {
-                            try {
-                                tempWhiteObj = jsonWhiteObj.get(name);
+                            tempWhiteObj = jsonWhiteObj.get(name);
+                            if (tempWhiteObj != null) {
                                 getInclusionsObj(tempObj, tempWhiteObj, white.subList(i + 1, white.size()));
-                            } catch (JSONException e) {
-                                if (jsonObject.get(name) instanceof JSONObject) {
-                                    tempWhiteObj = new JSONObject();
+                            } else {
+                                if (tempObj instanceof ObjectNode) {
+                                    tempWhiteObj = JacksonHelperUtil.getObjectNode();
                                     getInclusionsObj(tempObj, tempWhiteObj, white.subList(i + 1, white.size()));
-                                    jsonWhiteObj.put(name, tempWhiteObj);
-                                } else if (jsonObject.get(name) instanceof JSONArray) {
-                                    tempWhiteObj = new JSONArray();
+                                    jsonWhiteObj.set(name, (ObjectNode) tempWhiteObj);
+                                } else if (tempObj instanceof ArrayNode) {
+                                    tempWhiteObj = JacksonHelperUtil.getArrayNode();
                                     getInclusionsObj(tempObj, tempWhiteObj, white.subList(i + 1, white.size()));
-                                    jsonWhiteObj.put(name, tempWhiteObj);
+                                    jsonWhiteObj.set(name, (ArrayNode) tempWhiteObj);
                                 }
                             }
                         } else {
-                            jsonWhiteObj.put(name, tempObj);
+                            jsonWhiteObj.set(name, (JsonNode) tempObj);
                         }
                     }
                     return;
                 } else {
-                    try {
-                        tempObj = jsonObject.get(nodePath);
-                        try {
-                            tempWhiteObj = jsonWhiteObj.get(nodePath);
-                        } catch (JSONException e) {
-                            if (tempObj instanceof JSONObject) {
-                                tempWhiteObj = new JSONObject();
-                                jsonWhiteObj.put(nodePath, tempWhiteObj);
-                            } else if (tempObj instanceof JSONArray) {
-                                tempWhiteObj = new JSONArray();
-                                jsonWhiteObj.put(nodePath, tempWhiteObj);
-                            }
-                        }
-                    } catch (JSONException e) {
+                    tempObj = jsonObject.get(nodePath);
+                    if (tempObj == null) {
                         return;
                     }
+                    tempWhiteObj = jsonWhiteObj.get(nodePath);
+                    if (tempWhiteObj == null) {
+                        if (tempObj instanceof ObjectNode) {
+                            tempWhiteObj = JacksonHelperUtil.getObjectNode();
+                            jsonWhiteObj.set(nodePath, (ObjectNode) tempWhiteObj);
+                        } else if (tempObj instanceof ArrayNode) {
+                            tempWhiteObj = JacksonHelperUtil.getArrayNode();
+                            jsonWhiteObj.set(nodePath, (ArrayNode) tempWhiteObj);
+                        }
+                    }
                 }
-            } else if (obj instanceof JSONArray) {
-                JSONArray objArr = (JSONArray) obj;
-                JSONArray whiteObjArr = (JSONArray) whiteObj;
-                for (int j = 0; j < objArr.length(); j++) {
+            } else if (obj instanceof ArrayNode) {
+                ArrayNode objArr = (ArrayNode) obj;
+                ArrayNode whiteObjArr = (ArrayNode) whiteObj;
+                for (int j = 0; j < objArr.size(); j++) {
                     tempObj = objArr.get(j);
-                    try {
-                        tempWhiteObj = whiteObjArr.get(j);
+                    tempWhiteObj = whiteObjArr.get(j);
+                    if (tempWhiteObj != null) {
                         getInclusionsObj(tempObj, tempWhiteObj, white.subList(i, white.size()));
-                    } catch (JSONException e) {
-                        if (tempObj instanceof JSONObject) {
-                            tempWhiteObj = new JSONObject();
+                    } else {
+                        if (tempObj instanceof ObjectNode) {
+                            tempWhiteObj = JacksonHelperUtil.getObjectNode();
                             getInclusionsObj(tempObj, tempWhiteObj, white.subList(i, white.size()));
-                            whiteObjArr.put(j, tempWhiteObj);
-                        } else if (tempObj instanceof JSONArray) {
-                            tempWhiteObj = new JSONArray();
+                            whiteObjArr.set(j, (ObjectNode) tempWhiteObj);
+                        } else if (tempObj instanceof ArrayNode) {
+                            tempWhiteObj = JacksonHelperUtil.getArrayNode();
                             getInclusionsObj(tempObj, tempWhiteObj, white.subList(i, white.size()));
-                            whiteObjArr.put(j, tempWhiteObj);
+                            whiteObjArr.set(j, (ArrayNode) tempWhiteObj);
                         }
                     }
                 }
@@ -114,8 +112,8 @@ public class WhitelistHandler {
                 return;
             }
             if (i == white.size() - 1) {
-                if (whiteObj instanceof JSONObject) {
-                    ((JSONObject) whiteObj).put(nodePath, tempObj);
+                if (whiteObj instanceof ObjectNode) {
+                    ((ObjectNode) whiteObj).set(nodePath, (JsonNode) tempObj);
                 }
             }
             obj = tempObj;
