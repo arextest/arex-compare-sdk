@@ -49,17 +49,18 @@ public class SqlParse {
             ArrayNode parsedBaseSql = JacksonHelperUtil.getArrayNode();
             ArrayNode parsedTestSql = JacksonHelperUtil.getArrayNode();
 
-            if (baseDatabaseBody == null || testDatabaseBody == null){
-                ObjectNode baseBackUpObj = JacksonHelperUtil.getObjectNode();
-                ObjectNode testBackUpObj = JacksonHelperUtil.getObjectNode();
-                baseBackUpObj.set(ORIGINAL_SQL, baseDatabaseBody);
-                testBackUpObj.set(ORIGINAL_SQL, testDatabaseBody);
-
-                parsedBaseSql.add(baseBackUpObj);
-                parsedTestSql.add(testBackUpObj);
-
-                baseJSONObj.set(PARSED_SQL, parsedBaseSql);
-                testJSONObj.set(PARSED_SQL, parsedTestSql);
+            if (baseDatabaseBody == null || testDatabaseBody == null) {
+                if (testDatabaseBody != null) {
+                    ObjectNode testBackUpObj = JacksonHelperUtil.getObjectNode();
+                    testBackUpObj.set(ORIGINAL_SQL, testDatabaseBody);
+                    parsedTestSql.add(testBackUpObj);
+                    testJSONObj.set(PARSED_SQL, parsedTestSql);
+                } else if (baseDatabaseBody != null) {
+                    ObjectNode baseBackUpObj = JacksonHelperUtil.getObjectNode();
+                    baseBackUpObj.set(ORIGINAL_SQL, baseDatabaseBody);
+                    parsedBaseSql.add(baseBackUpObj);
+                    baseJSONObj.set(PARSED_SQL, parsedBaseSql);
+                }
                 return;
             }
 
