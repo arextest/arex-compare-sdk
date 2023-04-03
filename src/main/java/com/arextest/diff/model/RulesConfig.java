@@ -43,6 +43,8 @@ public class RulesConfig {
 
     private boolean onlyCompareCoincidentColumn;
 
+    private long ignoredTimePrecision;
+
     public RulesConfig() {
         this.nameToLower = false;
         this.nullEqualsEmpty = false;
@@ -160,5 +162,13 @@ public class RulesConfig {
 
     public void setOnlyCompareCoincidentColumn(boolean onlyCompareCoincidentColumn) {
         this.onlyCompareCoincidentColumn = onlyCompareCoincidentColumn;
+    }
+
+    public long getIgnoredTimePrecision() {
+        return ignoredTimePrecision;
+    }
+
+    public void setIgnoredTimePrecision(long ignoredTimePrecision) {
+        this.ignoredTimePrecision = ignoredTimePrecision;
     }
 }

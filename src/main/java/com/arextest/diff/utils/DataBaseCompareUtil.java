@@ -6,6 +6,7 @@ import com.arextest.diff.handler.WhitelistHandler;
 import com.arextest.diff.handler.keycompute.KeyCompute;
 import com.arextest.diff.handler.log.LogProcess;
 import com.arextest.diff.handler.log.filterrules.OnlyCompareSameColumnsFilter;
+import com.arextest.diff.handler.log.filterrules.TimePrecisionFilter;
 import com.arextest.diff.handler.parse.JSONParse;
 import com.arextest.diff.handler.parse.JSONStructureParse;
 import com.arextest.diff.handler.parse.ObjectParse;
@@ -20,7 +21,6 @@ import com.arextest.diff.model.parse.MsgStructure;
 import org.apache.commons.lang3.tuple.MutablePair;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -50,7 +50,8 @@ public class DataBaseCompareUtil {
 
     private static JSONStructureParse jsonStructureParse = new JSONStructureParse();
 
-    private static List<Predicate<LogEntity>> logFilterRules = Arrays.asList(new OnlyCompareSameColumnsFilter());
+    private static OnlyCompareSameColumnsFilter onlyCompareSameColumnsFilter =
+            new OnlyCompareSameColumnsFilter();
 
     public static CompareResult jsonCompare(RulesConfig rulesConfig) {
 
@@ -92,8 +93,17 @@ public class DataBaseCompareUtil {
             List<LogEntity> logs = compareHandler.doHandler(rulesConfig, keyComputeResponse, msgStructureFuture,
                     msgWhiteObj.getBaseObj(), msgWhiteObj.getTestObj());
 
-            LogProcessResponse logProcessResponse = logProcess.process(logs,
-                    rulesConfig.isOnlyCompareCoincidentColumn() ? logFilterRules : Collections.emptyList());
+            // process logEntity
+            List<Predicate<LogEntity>> logFilterRules = Arrays.asList(
+                    new TimePrecisionFilter(rulesConfig.getIgnoredTimePrecision())
+            );
+            if (rulesConfig.isOnlyCompareCoincidentColumn()) {
+                logFilterRules.add(onlyCompareSameColumnsFilter);
+            }
+            LogProcessResponse logProcessResponse = logProcess.process(
+                    logs,
+                    logFilterRules
+            );
 
             result.setCode(logProcessResponse.getExistDiff());
             result.setMessage("compare successfully");

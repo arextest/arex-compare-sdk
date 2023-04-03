@@ -107,4 +107,22 @@ public class CompareSDKTest {
         System.out.println();
     }
 
+    @Test
+    public void testTimePrecisionFilter() {
+        CompareSDK sdk = new CompareSDK();
+        sdk.getGlobalOptions()
+                .putNameToLower(true)
+                .putNullEqualsEmpty(true)
+                .putIgnoredTimePrecision(1000);
+
+        String str1 = "{\"time\":\"2022-05-27T15:35:37.213+0800\"}";
+
+        String str2 = "{\"time\":\"2022-05-27T15:35:37.223+0800\"}";
+
+        CompareOptions compareOptions = CompareOptions.options();
+
+        CompareResult result = sdk.compare(str1, str2, compareOptions);
+        System.out.println();
+    }
+
 }

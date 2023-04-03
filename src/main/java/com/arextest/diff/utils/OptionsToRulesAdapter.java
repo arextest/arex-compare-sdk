@@ -55,6 +55,7 @@ public class OptionsToRulesAdapter {
         rulesConfig.setDecompressServices(globalOptions.getDecompressServices());
         rulesConfig.setNameToLower(globalOptions.isNameToLower());
         rulesConfig.setNullEqualsEmpty(globalOptions.isNullEqualsEmpty());
+        rulesConfig.setIgnoredTimePrecision(globalOptions.getIgnoredTimePrecision());
     }
 
     private static void optionsToRules(CompareOptions compareOptions, RulesConfig rulesConfig) {
