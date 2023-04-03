@@ -1,13 +1,17 @@
 package com.arextest.diff.model;
 
+import com.arextest.diff.service.DecompressService;
 import com.arextest.diff.utils.DeCompressUtil;
 import com.arextest.diff.utils.StringUtil;
-import com.arextest.diff.service.DecompressService;
 
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.ServiceLoader;
 
 public class GlobalOptions {
 
@@ -29,6 +33,14 @@ public class GlobalOptions {
      * for example：the baseMsg: {"age":""} is consistent with testMsg: "{\"age\":null}"
      */
     private boolean nullEqualsEmpty;
+
+    /**
+     * This refers to ignoring the precision of specified time fields when comparing them,
+     * which means that if the difference between two fields is less than or equal to a certain parameter,
+     * they are considered to be no error.
+     * Unit of time: mm
+     */
+    private long ignoredTimePrecision;
 
     public GlobalOptions() {
         this.nameToLower = false;
@@ -55,6 +67,11 @@ public class GlobalOptions {
         return this;
     }
 
+    public GlobalOptions putIgnoredTimePrecision(long ignoredTimePrecision) {
+        this.ignoredTimePrecision = ignoredTimePrecision;
+        return this;
+    }
+
     public String getPluginJarUrl() {
         return pluginJarUrl;
     }
@@ -69,6 +86,10 @@ public class GlobalOptions {
 
     public boolean isNullEqualsEmpty() {
         return nullEqualsEmpty;
+    }
+
+    public long getIgnoredTimePrecision() {
+        return ignoredTimePrecision;
     }
 
     private Map<String, DecompressService> getDecompressServices(String decompressJarUrl) {

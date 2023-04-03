@@ -5,6 +5,7 @@ import com.arextest.diff.handler.FillResultSync;
 import com.arextest.diff.handler.WhitelistHandler;
 import com.arextest.diff.handler.keycompute.KeyCompute;
 import com.arextest.diff.handler.log.LogProcess;
+import com.arextest.diff.handler.log.filterrules.TimePrecisionFilter;
 import com.arextest.diff.handler.parse.JSONParse;
 import com.arextest.diff.handler.parse.JSONStructureParse;
 import com.arextest.diff.handler.parse.ObjectParse;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
+import java.util.function.Predicate;
 
 /**
  * Created by rchen9 on 2023/1/30.
@@ -80,7 +82,11 @@ public class NormalCompareUtil {
             List<LogEntity> logs = compareHandler.doHandler(rulesConfig, keyComputeResponse, msgStructureFuture,
                     msgWhiteObj.getBaseObj(), msgWhiteObj.getTestObj());
 
-            LogProcessResponse logProcessResponse = logProcess.process(logs, Collections.emptyList());
+            // process LogEntity
+            List<Predicate<LogEntity>> logFilterRules = Collections.singletonList(
+                    new TimePrecisionFilter(rulesConfig.getIgnoredTimePrecision())
+            );
+            LogProcessResponse logProcessResponse = logProcess.process(logs, logFilterRules);
 
             result.setCode(logProcessResponse.getExistDiff());
             result.setMessage("compare successfully");
