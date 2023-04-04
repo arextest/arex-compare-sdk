@@ -20,7 +20,7 @@ import com.arextest.diff.model.parse.MsgObjCombination;
 import com.arextest.diff.model.parse.MsgStructure;
 import org.apache.commons.lang3.tuple.MutablePair;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -49,9 +49,6 @@ public class DataBaseCompareUtil {
     private static LogProcess logProcess = new LogProcess();
 
     private static JSONStructureParse jsonStructureParse = new JSONStructureParse();
-
-    private static OnlyCompareSameColumnsFilter onlyCompareSameColumnsFilter =
-            new OnlyCompareSameColumnsFilter();
 
     public static CompareResult jsonCompare(RulesConfig rulesConfig) {
 
@@ -94,11 +91,11 @@ public class DataBaseCompareUtil {
                     msgWhiteObj.getBaseObj(), msgWhiteObj.getTestObj());
 
             // process logEntity
-            List<Predicate<LogEntity>> logFilterRules = Arrays.asList(
-                    new TimePrecisionFilter(rulesConfig.getIgnoredTimePrecision())
-            );
+            List<Predicate<LogEntity>> logFilterRules = new ArrayList<Predicate<LogEntity>>() {{
+                add(new TimePrecisionFilter(rulesConfig.getIgnoredTimePrecision()));
+            }};
             if (rulesConfig.isOnlyCompareCoincidentColumn()) {
-                logFilterRules.add(onlyCompareSameColumnsFilter);
+                logFilterRules.add(new OnlyCompareSameColumnsFilter());
             }
             LogProcessResponse logProcessResponse = logProcess.process(
                     logs,
