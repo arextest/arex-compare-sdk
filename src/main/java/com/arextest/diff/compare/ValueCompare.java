@@ -2,7 +2,7 @@ package com.arextest.diff.compare;
 
 import com.arextest.diff.compare.feature.ReferenceFeature;
 import com.arextest.diff.handler.log.LogMarker;
-import com.arextest.diff.handler.log.LogRegister;
+import com.arextest.diff.handler.log.register.LogRegister;
 import com.arextest.diff.model.compare.CompareContext;
 import com.arextest.diff.model.key.ReferenceEntity;
 

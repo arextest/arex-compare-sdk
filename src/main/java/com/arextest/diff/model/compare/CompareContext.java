@@ -53,6 +53,8 @@ public class CompareContext {
 
     public boolean notDistinguishNullAndEmpty = false;
 
+    public boolean nullEqualsNotExist = false;
+
     public CompareContext() {
         this.currentTraceLeft = Lists.newArrayList();
         this.currentTraceRight = Lists.newArrayList();
@@ -257,5 +259,13 @@ public class CompareContext {
 
     public void setNotDistinguishNullAndEmpty(boolean notDistinguishNullAndEmpty) {
         this.notDistinguishNullAndEmpty = notDistinguishNullAndEmpty;
+    }
+
+    public boolean isNullEqualsNotExist() {
+        return nullEqualsNotExist;
+    }
+
+    public void setNullEqualsNotExist(boolean nullEqualsNotExist) {
+        this.nullEqualsNotExist = nullEqualsNotExist;
     }
 }

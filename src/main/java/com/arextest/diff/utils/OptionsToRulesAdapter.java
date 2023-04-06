@@ -56,6 +56,7 @@ public class OptionsToRulesAdapter {
         rulesConfig.setNameToLower(globalOptions.isNameToLower());
         rulesConfig.setNullEqualsEmpty(globalOptions.isNullEqualsEmpty());
         rulesConfig.setIgnoredTimePrecision(globalOptions.getIgnoredTimePrecision());
+        rulesConfig.setNullEqualsNotExist(globalOptions.isNullEqualsNotExist());
     }
 
     private static void optionsToRules(CompareOptions compareOptions, RulesConfig rulesConfig) {
@@ -68,6 +69,13 @@ public class OptionsToRulesAdapter {
         rulesConfig.setDecompressConfig(compareOptions.getDecompressConfig());
         rulesConfig.setReferenceEntities(referenceConfigConvert(compareOptions.getReferenceConfig()));
         rulesConfig.setListSortEntities(listSortConfigConvert(compareOptions.getListSortConfig(), rulesConfig.getReferenceEntities()));
+        if (compareOptions.getSqlBodyParse() != null) {
+            rulesConfig.setSqlBodyParse(compareOptions.getSqlBodyParse());
+        }
+        if (compareOptions.getOnlyCompareCoincidentColumn() != null) {
+            rulesConfig.setOnlyCompareCoincidentColumn(compareOptions.getOnlyCompareCoincidentColumn());
+        }
+
         // if CompareOptions exist nameToLower or nullEqualsEmpty, override GlobalOptions
         if (compareOptions.getNameToLower() != null) {
             rulesConfig.setNameToLower(compareOptions.getNameToLower());
@@ -75,11 +83,11 @@ public class OptionsToRulesAdapter {
         if (compareOptions.getNullEqualsEmpty() != null) {
             rulesConfig.setNullEqualsEmpty(compareOptions.getNullEqualsEmpty());
         }
-        if (compareOptions.getSqlBodyParse() != null) {
-            rulesConfig.setSqlBodyParse(compareOptions.getSqlBodyParse());
+        if (compareOptions.getIgnoredTimePrecision() != null) {
+            rulesConfig.setIgnoredTimePrecision(compareOptions.getIgnoredTimePrecision());
         }
-        if (compareOptions.getOnlyCompareCoincidentColumn() != null) {
-            rulesConfig.setOnlyCompareCoincidentColumn(compareOptions.getOnlyCompareCoincidentColumn());
+        if (compareOptions.getNullEqualsNotExist() != null) {
+            rulesConfig.setNullEqualsNotExist(compareOptions.getNullEqualsNotExist());
         }
     }
 

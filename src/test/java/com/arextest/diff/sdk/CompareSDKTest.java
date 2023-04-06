@@ -3,6 +3,7 @@ package com.arextest.diff.sdk;
 import com.arextest.diff.model.CompareOptions;
 import com.arextest.diff.model.CompareResult;
 import com.arextest.diff.model.enumeration.CategoryType;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -104,7 +105,7 @@ public class CompareSDKTest {
         compareOptions.putOnlyCompareCoincidentColumn(true);
 
         CompareResult result = sdk.compare(str1, str2, compareOptions);
-        System.out.println();
+        Assert.assertEquals(result.getLogs().size(), 1);
     }
 
     @Test
@@ -122,7 +123,19 @@ public class CompareSDKTest {
         CompareOptions compareOptions = CompareOptions.options();
 
         CompareResult result = sdk.compare(str1, str2, compareOptions);
-        System.out.println();
+        Assert.assertEquals(result.getLogs().size(), 0);
+    }
+
+    @Test
+    public void testNullAndNotExist() {
+        CompareSDK sdk = new CompareSDK();
+        sdk.getGlobalOptions()
+                .putNullEqualsNotExist(true);
+        String str1 = "{\"array\":null}";
+        String str2 = "{\"arr\":null}";
+        CompareOptions compareOptions = CompareOptions.options();
+        CompareResult result = sdk.compare(str1, str2, compareOptions);
+        Assert.assertEquals(result.getLogs().size(), 0);
     }
 
 }

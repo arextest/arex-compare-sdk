@@ -1,7 +1,7 @@
 package com.arextest.diff.compare;
 
 import com.arextest.diff.handler.log.LogMarker;
-import com.arextest.diff.handler.log.LogRegister;
+import com.arextest.diff.handler.log.register.LogRegister;
 import com.arextest.diff.model.compare.CompareContext;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.utils.IgnoreUtil;
@@ -35,6 +35,7 @@ public class GenericCompare {
             return;
         }
 
+        // field missing
         if (obj1 == null && obj2 == null) {
             return;
         } else if (obj1 == null) {
@@ -48,11 +49,6 @@ public class GenericCompare {
         // There is a null value in any of the left and right nodes
         if ((obj1 instanceof NullNode && !(obj2 instanceof NullNode)) ||
                 (!(obj1 instanceof NullNode) && obj2 instanceof NullNode)) {
-            if (compareContext.notDistinguishNullAndEmpty) {
-                if (CompareHelper.bothEmptyString(obj1, obj2)) return;
-                if (obj1 instanceof ArrayNode && ((ArrayNode) obj1).size() == 0) return;
-                if (obj2 instanceof ArrayNode && ((ArrayNode) obj2).size() == 0) return;
-            }
             LogRegister.register(obj1, obj2, LogMarker.NULL_CHECK, compareContext);
             return;
         }

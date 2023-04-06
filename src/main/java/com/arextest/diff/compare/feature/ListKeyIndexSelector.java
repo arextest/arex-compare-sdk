@@ -1,7 +1,7 @@
 package com.arextest.diff.compare.feature;
 
 import com.arextest.diff.handler.log.LogMarker;
-import com.arextest.diff.handler.log.LogRegister;
+import com.arextest.diff.handler.log.register.LogRegister;
 import com.arextest.diff.model.compare.CompareContext;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 
