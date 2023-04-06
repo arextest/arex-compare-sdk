@@ -3,7 +3,7 @@ package com.arextest.diff.compare.feature;
 import com.arextest.diff.compare.CompareHelper;
 import com.arextest.diff.compare.GenericCompare;
 import com.arextest.diff.handler.log.LogMarker;
-import com.arextest.diff.handler.log.LogRegister;
+import com.arextest.diff.handler.log.register.LogRegister;
 import com.arextest.diff.model.compare.CompareContext;
 import com.arextest.diff.model.compare.IndexPair;
 import com.arextest.diff.model.key.ReferenceEntity;

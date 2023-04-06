@@ -73,6 +73,19 @@ public class CompareOptions {
      */
     private Boolean onlyCompareCoincidentColumn = null;
 
+    /**
+     * This refers to ignoring the precision of specified time fields when comparing them,
+     * which means that if the difference between two fields is less than or equal to a certain parameter,
+     * they are considered to be no error.
+     * Unit of time: mm
+     */
+    private Long ignoredTimePrecision;
+
+    /**
+     * This option is true, The "null" and the situation that the field is not existed are equal
+     * for example：the baseMsg: {"age":null} is consistent with testMsg: "{}"
+     */
+    private Boolean nullEqualsNotExist;
 
     public CompareOptions() {
     }
@@ -208,12 +221,24 @@ public class CompareOptions {
         return this;
     }
 
-    public void putSqlBodyParse(Boolean sqlBodyParse) {
+    public CompareOptions putSqlBodyParse(Boolean sqlBodyParse) {
         this.sqlBodyParse = sqlBodyParse;
+        return this;
     }
 
-    public void putOnlyCompareCoincidentColumn(Boolean onlyCompareCoincidentColumn) {
+    public CompareOptions putOnlyCompareCoincidentColumn(Boolean onlyCompareCoincidentColumn) {
         this.onlyCompareCoincidentColumn = onlyCompareCoincidentColumn;
+        return this;
+    }
+
+    public CompareOptions putIgnoredTimePrecision() {
+        this.ignoredTimePrecision = ignoredTimePrecision;
+        return this;
+    }
+
+    public CompareOptions putNullEqualsNotExist(Boolean nullEqualsNotExist) {
+        this.nullEqualsNotExist = nullEqualsNotExist;
+        return this;
     }
 
     public String getCategoryType() {
@@ -254,5 +279,13 @@ public class CompareOptions {
 
     public Boolean getOnlyCompareCoincidentColumn() {
         return onlyCompareCoincidentColumn;
+    }
+
+    public Long getIgnoredTimePrecision() {
+        return ignoredTimePrecision;
+    }
+
+    public Boolean getNullEqualsNotExist() {
+        return nullEqualsNotExist;
     }
 }

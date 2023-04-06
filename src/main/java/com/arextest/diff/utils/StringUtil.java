@@ -22,21 +22,4 @@ public class StringUtil {
         String s = String.valueOf(o);
         return s.equals("null") || s.equals("");
     }
-
-    public static boolean jsonEmptyJudge(Object o) {
-        if (o == null || o instanceof NullNode) {
-            return true;
-        }
-        if (o instanceof ArrayNode) {
-            if (((ArrayNode) o).size() == 0) {
-                return true;
-            }
-        } else if (o instanceof ObjectNode) {
-            return false;
-        } else {
-            String s = String.valueOf(o);
-            return s.equals("");
-        }
-        return false;
-    }
 }

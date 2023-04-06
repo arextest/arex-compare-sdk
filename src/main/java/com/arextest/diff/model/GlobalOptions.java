@@ -42,6 +42,12 @@ public class GlobalOptions {
      */
     private long ignoredTimePrecision;
 
+    /**
+     * This option is true, The "null" and the situation that the field is not existed are equal
+     * for example：the baseMsg: {"age":null} is consistent with testMsg: "{}"
+     */
+    private boolean nullEqualsNotExist;
+
     public GlobalOptions() {
         this.nameToLower = false;
         this.nullEqualsEmpty = false;
@@ -72,6 +78,11 @@ public class GlobalOptions {
         return this;
     }
 
+    public GlobalOptions putNullEqualsNotExist(boolean nullEqualsNotExist){
+        this.nullEqualsNotExist = nullEqualsNotExist;
+        return this;
+    }
+
     public String getPluginJarUrl() {
         return pluginJarUrl;
     }
@@ -90,6 +101,10 @@ public class GlobalOptions {
 
     public long getIgnoredTimePrecision() {
         return ignoredTimePrecision;
+    }
+
+    public boolean isNullEqualsNotExist() {
+        return nullEqualsNotExist;
     }
 
     private Map<String, DecompressService> getDecompressServices(String decompressJarUrl) {

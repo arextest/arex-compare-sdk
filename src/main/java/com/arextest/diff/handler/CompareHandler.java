@@ -28,6 +28,7 @@ public class CompareHandler {
         compareContext.setListIndexKeysLeft(keyComputeResponse.getListIndexKeysLeft());
         compareContext.setListIndexKeysRight(keyComputeResponse.getListIndexKeysRight());
         compareContext.setNotDistinguishNullAndEmpty(rulesConfig.isNullEqualsEmpty());
+        compareContext.setNullEqualsNotExist(rulesConfig.isNullEqualsNotExist());
         if (msgStructureFuture != null) {
             MutablePair<MsgStructure, MsgStructure> msgStructureMutablePair = msgStructureFuture.join();
             compareContext.setBaseMsgStructure(msgStructureMutablePair.getLeft());

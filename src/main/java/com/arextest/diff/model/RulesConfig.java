@@ -45,11 +45,9 @@ public class RulesConfig {
 
     private long ignoredTimePrecision;
 
+    private boolean nullEqualsNotExist;
+
     public RulesConfig() {
-        this.nameToLower = false;
-        this.nullEqualsEmpty = false;
-        this.sqlBodyParse = false;
-        this.onlyCompareCoincidentColumn = false;
     }
 
     public String getCategoryType() {
@@ -170,5 +168,13 @@ public class RulesConfig {
 
     public void setIgnoredTimePrecision(long ignoredTimePrecision) {
         this.ignoredTimePrecision = ignoredTimePrecision;
+    }
+
+    public boolean isNullEqualsNotExist() {
+        return nullEqualsNotExist;
+    }
+
+    public void setNullEqualsNotExist(boolean nullEqualsNotExist) {
+        this.nullEqualsNotExist = nullEqualsNotExist;
     }
 }
