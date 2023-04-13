@@ -1,6 +1,7 @@
 package com.arextest.diff.handler.parse.sqlparse;
 
 import com.arextest.diff.handler.parse.sqlparse.action.ActionFactory;
+import com.arextest.diff.model.exception.SelectParseException;
 import com.arextest.diff.model.parse.MsgObjCombination;
 import com.arextest.diff.utils.JacksonHelperUtil;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -23,7 +24,7 @@ public class SqlParse {
     private static final String ORIGINAL_SQL = "originalSql";
     private static final String PARSED_SQL = "parsedSql";
 
-    public void doHandler(MsgObjCombination msgObjCombination, boolean onlyCompareSameColumns) {
+    public void doHandler(MsgObjCombination msgObjCombination, boolean onlyCompareSameColumns) throws SelectParseException {
         Object baseObj = msgObjCombination.getBaseObj();
         Object testObj = msgObjCombination.getTestObj();
         if (baseObj == null || testObj == null) {
@@ -87,6 +88,8 @@ public class SqlParse {
 
                 baseJSONObj.set(PARSED_SQL, parsedBaseSql);
                 testJSONObj.set(PARSED_SQL, parsedTestSql);
+            } catch (SelectParseException exception) {
+                throw exception;
             } catch (Throwable throwable) {
 
                 ObjectNode baseBackUpObj = JacksonHelperUtil.getObjectNode();
@@ -106,7 +109,7 @@ public class SqlParse {
     }
 
     @SuppressWarnings("unchecked")
-    public ObjectNode sqlParse(String sql) throws JSQLParserException {
+    public ObjectNode sqlParse(String sql) throws JSQLParserException, SelectParseException {
         Statement statement = CCJSqlParserUtil.parse(sql);
         Parse parse = ActionFactory.selectParse(statement);
         return parse.parse(statement);

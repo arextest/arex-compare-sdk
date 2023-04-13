@@ -118,7 +118,7 @@ public class CompareSDKTest {
 
         String str1 = "{\"time\":\"2022-05-27T15:35:37.213+0800\"}";
 
-        String str2 = "{\"time\":\"2022-05-27T15:35:37.223+0800\"}";
+        String str2 = "{\"time\":\"2022-05-27T15:38:37.223+0800\"}";
 
         CompareOptions compareOptions = CompareOptions.options();
 

@@ -4,9 +4,8 @@ import com.arextest.diff.model.CompareOptions;
 import com.arextest.diff.model.CompareResult;
 import com.arextest.diff.model.GlobalOptions;
 import com.arextest.diff.model.RulesConfig;
-import com.arextest.diff.model.enumeration.DiffResultCode;
+import com.arextest.diff.utils.CompareResultBuilder;
 import com.arextest.diff.utils.CompareUtil;
-import com.arextest.diff.utils.ExceptionToCompareResult;
 import com.arextest.diff.utils.JSONArraySort;
 import com.arextest.diff.utils.JacksonHelperUtil;
 import com.arextest.diff.utils.OptionsToRulesAdapter;
@@ -38,7 +37,7 @@ public class CompareSDK {
 
     private CompareResult compare(RulesConfig rulesConfig) {
         if (Objects.equals(rulesConfig.getBaseMsg(), rulesConfig.getTestMsg())) {
-            return getEqualsResult(rulesConfig.getBaseMsg(), rulesConfig.getTestMsg());
+            return CompareResultBuilder.noError(rulesConfig.getBaseMsg(), rulesConfig.getTestMsg());
         }
         return CompareUtil.jsonCompare(rulesConfig);
     }
@@ -52,7 +51,7 @@ public class CompareSDK {
      * @return the compare result
      */
     public static CompareResult fromException(String baseMsg, String testMsg, String remark) {
-        return ExceptionToCompareResult.fromException(baseMsg, testMsg, remark);
+        return CompareResultBuilder.fromException(baseMsg, testMsg, remark);
     }
 
 
@@ -85,13 +84,13 @@ public class CompareSDK {
     }
 
 
-    private CompareResult getEqualsResult(String baseMsg, String testMsg) {
-        CompareResult result = new CompareResult();
-        result.setCode(DiffResultCode.COMPARED_WITHOUT_DIFFERENCE);
-        result.setMessage("compare successfully");
-        result.setProcessedBaseMsg(baseMsg);
-        result.setProcessedTestMsg(testMsg);
-        return result;
-    }
+    // private CompareResult getEqualsResult(String baseMsg, String testMsg) {
+    //     CompareResult result = new CompareResult();
+    //     result.setCode(DiffResultCode.COMPARED_WITHOUT_DIFFERENCE);
+    //     result.setMessage("compare successfully");
+    //     result.setProcessedBaseMsg(baseMsg);
+    //     result.setProcessedTestMsg(testMsg);
+    //     return result;
+    // }
 
 }

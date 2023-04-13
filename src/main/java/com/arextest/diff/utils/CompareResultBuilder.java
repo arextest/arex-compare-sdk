@@ -14,7 +14,16 @@ import java.util.List;
 /**
  * Created by rchen9 on 2023/1/30.
  */
-public class ExceptionToCompareResult {
+public class CompareResultBuilder {
+
+    public static CompareResult noError(String baseMsg, String testMsg) {
+        CompareResult result = new CompareResult();
+        result.setCode(DiffResultCode.COMPARED_WITHOUT_DIFFERENCE);
+        result.setMessage("compare successfully");
+        result.setProcessedBaseMsg(baseMsg);
+        result.setProcessedTestMsg(testMsg);
+        return result;
+    }
 
     public static CompareResult fromException(String baseMsg, String testMsg, String remark) {
         CompareResult result = new CompareResult();

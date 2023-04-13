@@ -13,6 +13,7 @@ import com.arextest.diff.handler.parse.ObjectParse;
 import com.arextest.diff.handler.parse.sqlparse.SqlParse;
 import com.arextest.diff.model.CompareResult;
 import com.arextest.diff.model.RulesConfig;
+import com.arextest.diff.model.exception.SelectParseException;
 import com.arextest.diff.model.key.KeyComputeResponse;
 import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.model.log.LogProcessResponse;
@@ -60,7 +61,7 @@ public class DataBaseCompareUtil {
             try {
                 msgObjCombination = objectParse.doHandler(rulesConfig);
             } catch (Exception e) {
-                return ExceptionToCompareResult.addUnMatchedException(rulesConfig.getBaseMsg(), rulesConfig.getTestMsg());
+                return CompareResultBuilder.addUnMatchedException(rulesConfig.getBaseMsg(), rulesConfig.getTestMsg());
             }
 
             // Parse string and compressed fields in JSONObject
@@ -68,7 +69,11 @@ public class DataBaseCompareUtil {
                     msgObjCombination.getTestObj());
             // If enables sql parsing, fill in the field of "parsedsql"
             if (rulesConfig.isSqlBodyParse()) {
-                sqlParse.doHandler(msgObjCombination, rulesConfig.isOnlyCompareCoincidentColumn());
+                try {
+                    sqlParse.doHandler(msgObjCombination, rulesConfig.isOnlyCompareCoincidentColumn());
+                } catch (SelectParseException exception) {
+                    return CompareResultBuilder.noError(rulesConfig.getBaseMsg(), rulesConfig.getTestMsg());
+                }
             }
 
             // Parse JSON structure
@@ -111,7 +116,7 @@ public class DataBaseCompareUtil {
             result.setParseNodePaths(parsePaths);
 
         } catch (Exception e) {
-            return ExceptionToCompareResult.fromException(rulesConfig.getBaseMsg(), rulesConfig.getTestMsg(), ExceptionToCompareResult.exceptionToString(e));
+            return CompareResultBuilder.fromException(rulesConfig.getBaseMsg(), rulesConfig.getTestMsg(), CompareResultBuilder.exceptionToString(e));
         }
 
         return result;
