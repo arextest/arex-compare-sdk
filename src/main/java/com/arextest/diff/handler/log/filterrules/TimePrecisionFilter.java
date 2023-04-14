@@ -1,7 +1,6 @@
 package com.arextest.diff.handler.log.filterrules;
 
 import com.arextest.diff.model.log.LogEntity;
-import com.fasterxml.jackson.databind.node.TextNode;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -57,29 +56,27 @@ public class TimePrecisionFilter implements Predicate<LogEntity> {
             return true;
         }
 
-        if (baseValue instanceof TextNode && testValue instanceof TextNode) {
-            String baseStr = ((TextNode) baseValue).asText();
-            String testStr = ((TextNode) testValue).asText();
+        String baseStr = (String) baseValue;
+        String testStr = (String) testValue;
 
-            int baseStrLen = baseStr.length();
-            int testStrLen = testStr.length();
-            if (baseStrLen < 12 || baseStrLen > 29
-                    || testStrLen < 12 || testStrLen > 29) {
+        int baseStrLen = baseStr.length();
+        int testStrLen = testStr.length();
+        if (baseStrLen < 12 || baseStrLen > 29
+                || testStrLen < 12 || testStrLen > 29) {
+            return true;
+        }
+
+        if ((baseStr.startsWith("0") || baseStr.startsWith("1") || baseStr.startsWith("2")) &&
+                (testStr.startsWith("0") || testStr.startsWith("1") || testStr.startsWith("2"))) {
+            Date baseTime = dataProcessor.process(baseStr);
+            Date testTime = dataProcessor.process(testStr);
+            if (baseTime == null || testTime == null) {
                 return true;
             }
 
-            if ((baseStr.startsWith("0") || baseStr.startsWith("1") || baseStr.startsWith("2")) &&
-                    (testStr.startsWith("0") || testStr.startsWith("1") || testStr.startsWith("2"))) {
-                Date baseTime = dataProcessor.process(baseStr);
-                Date testTime = dataProcessor.process(testStr);
-                if (baseTime == null || testTime == null) {
-                    return true;
-                }
-
-                long durationMillis = baseTime.getTime() - testTime.getTime();
-                if (Math.abs(durationMillis) <= ignoredTimePrecision) {
-                    return false;
-                }
+            long durationMillis = baseTime.getTime() - testTime.getTime();
+            if (Math.abs(durationMillis) <= ignoredTimePrecision) {
+                return false;
             }
         }
         return true;

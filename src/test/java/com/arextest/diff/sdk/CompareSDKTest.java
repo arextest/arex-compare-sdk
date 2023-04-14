@@ -138,4 +138,22 @@ public class CompareSDKTest {
         Assert.assertEquals(result.getLogs().size(), 0);
     }
 
+    @Test
+    public void testArexPrefixFilter() {
+        CompareSDK sdk = new CompareSDK();
+        String str1 = "{\"array\":\"http://www.baidu.com\"}";
+        String str2 = "{\"array\":\"http://arex_www.baidu.com\"}";
+        CompareResult result = sdk.compare(str1, str2);
+        Assert.assertEquals(result.getLogs().size(), 0);
+    }
+
+    @Test
+    public void testGuidFilter() {
+        CompareSDK sdk = new CompareSDK();
+        String str1 = "{\"guid\":\"f4c6d9c9-9d8f-4b1f-9d5c-6e9d7a8c6b2e\"}";
+        String str2 = "{\"guid\":\"f4c6d9c9-9d8f-4b1f-9d5c-6e9d7a8c6b2f\"}";
+        CompareResult result = sdk.compare(str1, str2);
+        Assert.assertEquals(result.getLogs().size(), 0);
+    }
+
 }
