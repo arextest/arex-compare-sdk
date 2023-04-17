@@ -5,6 +5,8 @@ import com.arextest.diff.handler.FillResultSync;
 import com.arextest.diff.handler.WhitelistHandler;
 import com.arextest.diff.handler.keycompute.KeyCompute;
 import com.arextest.diff.handler.log.LogProcess;
+import com.arextest.diff.handler.log.filterrules.ArexPrefixFilter;
+import com.arextest.diff.handler.log.filterrules.GuidFilter;
 import com.arextest.diff.handler.log.filterrules.OnlyCompareSameColumnsFilter;
 import com.arextest.diff.handler.log.filterrules.TimePrecisionFilter;
 import com.arextest.diff.handler.parse.JSONParse;
@@ -93,6 +95,8 @@ public class DataBaseCompareUtil {
             // process logEntity
             List<Predicate<LogEntity>> logFilterRules = new ArrayList<Predicate<LogEntity>>() {{
                 add(new TimePrecisionFilter(rulesConfig.getIgnoredTimePrecision()));
+                add(new ArexPrefixFilter());
+                add(new GuidFilter());
             }};
             if (rulesConfig.isOnlyCompareCoincidentColumn()) {
                 logFilterRules.add(new OnlyCompareSameColumnsFilter());
