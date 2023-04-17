@@ -60,11 +60,13 @@ public class CompareOptions {
      */
     private Boolean nullEqualsEmpty = null;
 
-    /**
-     * parse the field of "body"
-     * This configuration works only when compareType is CompareType.DATABASE
-     */
-    private Boolean sqlBodyParse = null;
+    // /**
+    //  * parse the field of "body"
+    //  * This configuration works only when compareType is CompareType.DATABASE
+    //  */
+    // private Boolean sqlBodyParse = null;
+
+    private Boolean selectIgnoreCompare = null;
 
     /**
      * only compare the overlapping columns
@@ -221,9 +223,13 @@ public class CompareOptions {
         return this;
     }
 
-    public CompareOptions putSqlBodyParse(Boolean sqlBodyParse) {
-        this.sqlBodyParse = sqlBodyParse;
-        return this;
+    // public CompareOptions putSqlBodyParse(Boolean sqlBodyParse) {
+    //     this.sqlBodyParse = sqlBodyParse;
+    //     return this;
+    // }
+
+    public CompareOptions putSelectIgnoreCompare() {
+
     }
 
     public CompareOptions putOnlyCompareCoincidentColumn(Boolean onlyCompareCoincidentColumn) {
@@ -273,9 +279,9 @@ public class CompareOptions {
         return nullEqualsEmpty;
     }
 
-    public Boolean getSqlBodyParse() {
-        return sqlBodyParse;
-    }
+    // public Boolean getSqlBodyParse() {
+    //     return sqlBodyParse;
+    // }
 
     public Boolean getOnlyCompareCoincidentColumn() {
         return onlyCompareCoincidentColumn;

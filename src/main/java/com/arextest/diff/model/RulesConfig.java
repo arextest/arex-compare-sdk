@@ -39,7 +39,7 @@ public class RulesConfig {
 
     private boolean nullEqualsEmpty;
 
-    private boolean sqlBodyParse;
+    // private boolean sqlBodyParse;
 
     private boolean onlyCompareCoincidentColumn;
 
@@ -146,13 +146,13 @@ public class RulesConfig {
         this.nullEqualsEmpty = nullEqualsEmpty;
     }
 
-    public boolean isSqlBodyParse() {
-        return sqlBodyParse;
-    }
-
-    public void setSqlBodyParse(boolean sqlBodyParse) {
-        this.sqlBodyParse = sqlBodyParse;
-    }
+    // public boolean isSqlBodyParse() {
+    //     return sqlBodyParse;
+    // }
+    //
+    // public void setSqlBodyParse(boolean sqlBodyParse) {
+    //     this.sqlBodyParse = sqlBodyParse;
+    // }
 
     public boolean isOnlyCompareCoincidentColumn() {
         return onlyCompareCoincidentColumn;

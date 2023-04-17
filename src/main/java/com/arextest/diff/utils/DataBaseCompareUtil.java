@@ -68,13 +68,13 @@ public class DataBaseCompareUtil {
             Map<String, List<String>> parsePaths = jsonParse.doHandler(rulesConfig, msgObjCombination.getBaseObj(),
                     msgObjCombination.getTestObj());
             // If enables sql parsing, fill in the field of "parsedsql"
-            if (rulesConfig.isSqlBodyParse()) {
-                try {
-                    sqlParse.doHandler(msgObjCombination, rulesConfig.isOnlyCompareCoincidentColumn());
-                } catch (SelectParseException exception) {
-                    return CompareResultBuilder.noError(rulesConfig.getBaseMsg(), rulesConfig.getTestMsg());
-                }
+            // if (rulesConfig.isSqlBodyParse()) {
+            try {
+                sqlParse.doHandler(msgObjCombination, rulesConfig.isOnlyCompareCoincidentColumn());
+            } catch (SelectParseException exception) {
+                return CompareResultBuilder.noError(rulesConfig.getBaseMsg(), rulesConfig.getTestMsg());
             }
+            // }
 
             // Parse JSON structure
             CompletableFuture<MutablePair<MsgStructure, MsgStructure>> msgStructureFuture =

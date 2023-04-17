@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
+import net.sf.jsqlparser.statement.select.Select;
 
 import java.util.List;
 import java.util.Objects;
@@ -111,6 +112,9 @@ public class SqlParse {
     @SuppressWarnings("unchecked")
     public ObjectNode sqlParse(String sql) throws JSQLParserException, SelectParseException {
         Statement statement = CCJSqlParserUtil.parse(sql);
+        if (statement instanceof Select) {
+            throw new SelectParseException();
+        }
         Parse parse = ActionFactory.selectParse(statement);
         return parse.parse(statement);
     }
