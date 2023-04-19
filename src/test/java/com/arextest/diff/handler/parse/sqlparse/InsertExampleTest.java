@@ -1,6 +1,7 @@
 package com.arextest.diff.handler.parse.sqlparse;
 
 import com.arextest.diff.handler.parse.sqlparse.action.ActionFactory;
+import com.arextest.diff.model.exception.SelectIgnoreException;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
@@ -46,7 +47,8 @@ public class InsertExampleTest {
     }
 
     private static void testSqlParse(Statement statement) {
-        Parse parse = ActionFactory.selectParse(statement);
+        Parse parse = null;
+        parse = ActionFactory.selectParse(statement);
         ObjectNode jsonObject = (ObjectNode) parse.parse(statement);
         System.out.println();
     }

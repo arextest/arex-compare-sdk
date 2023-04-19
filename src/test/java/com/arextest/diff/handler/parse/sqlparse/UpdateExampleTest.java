@@ -46,7 +46,8 @@ public class UpdateExampleTest {
     }
     
     private static void testSqlParse(Statement statement) {
-        Parse parse = ActionFactory.selectParse(statement);
+        Parse parse = null;
+        parse = ActionFactory.selectParse(statement);
         ObjectNode jsonObject = (ObjectNode) parse.parse(statement);
         System.out.println();
     }

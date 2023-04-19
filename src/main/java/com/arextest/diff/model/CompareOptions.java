@@ -59,12 +59,10 @@ public class CompareOptions {
      * for example：the baseMsg: {"age":""} is consistent with testMsg: "{\"age\":null}"
      */
     private Boolean nullEqualsEmpty = null;
-
     /**
-     * parse the field of "body"
-     * This configuration works only when compareType is CompareType.DATABASE
+     * This option is tru, the select statement does not compare
      */
-    private Boolean sqlBodyParse = null;
+    private Boolean selectIgnoreCompare = null;
 
     /**
      * only compare the overlapping columns
@@ -221,8 +219,8 @@ public class CompareOptions {
         return this;
     }
 
-    public CompareOptions putSqlBodyParse(Boolean sqlBodyParse) {
-        this.sqlBodyParse = sqlBodyParse;
+    public CompareOptions putSelectIgnoreCompare(Boolean selectIgnoreCompare) {
+        this.selectIgnoreCompare = selectIgnoreCompare;
         return this;
     }
 
@@ -231,7 +229,7 @@ public class CompareOptions {
         return this;
     }
 
-    public CompareOptions putIgnoredTimePrecision() {
+    public CompareOptions putIgnoredTimePrecision(Long ignoredTimePrecision) {
         this.ignoredTimePrecision = ignoredTimePrecision;
         return this;
     }
@@ -273,8 +271,8 @@ public class CompareOptions {
         return nullEqualsEmpty;
     }
 
-    public Boolean getSqlBodyParse() {
-        return sqlBodyParse;
+    public Boolean getSelectIgnoreCompare() {
+        return selectIgnoreCompare;
     }
 
     public Boolean getOnlyCompareCoincidentColumn() {

@@ -58,7 +58,7 @@ public class NormalCompareUtil {
             try {
                 msgObjCombination = objectParse.doHandler(rulesConfig);
             } catch (Exception e) {
-                return ExceptionToCompareResult.addUnMatchedException(rulesConfig.getBaseMsg(), rulesConfig.getTestMsg());
+                return CompareResultBuilder.addUnMatchedException(rulesConfig.getBaseMsg(), rulesConfig.getTestMsg());
             }
 
             // Parse string and compressed fields in JSONObject
@@ -101,7 +101,7 @@ public class NormalCompareUtil {
             result.setParseNodePaths(parsePaths);
 
         } catch (Exception e) {
-            return ExceptionToCompareResult.fromException(rulesConfig.getBaseMsg(), rulesConfig.getTestMsg(), ExceptionToCompareResult.exceptionToString(e));
+            return CompareResultBuilder.fromException(rulesConfig.getBaseMsg(), rulesConfig.getTestMsg(), CompareResultBuilder.exceptionToString(e));
         }
 
         return result;
