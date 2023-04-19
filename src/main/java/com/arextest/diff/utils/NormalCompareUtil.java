@@ -5,6 +5,8 @@ import com.arextest.diff.handler.FillResultSync;
 import com.arextest.diff.handler.WhitelistHandler;
 import com.arextest.diff.handler.keycompute.KeyCompute;
 import com.arextest.diff.handler.log.LogProcess;
+import com.arextest.diff.handler.log.filterrules.ArexPrefixFilter;
+import com.arextest.diff.handler.log.filterrules.GuidFilter;
 import com.arextest.diff.handler.log.filterrules.TimePrecisionFilter;
 import com.arextest.diff.handler.parse.JSONParse;
 import com.arextest.diff.handler.parse.JSONStructureParse;
@@ -18,7 +20,7 @@ import com.arextest.diff.model.parse.MsgObjCombination;
 import com.arextest.diff.model.parse.MsgStructure;
 import org.apache.commons.lang3.tuple.MutablePair;
 
-import java.util.Collections;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -83,9 +85,11 @@ public class NormalCompareUtil {
                     msgWhiteObj.getBaseObj(), msgWhiteObj.getTestObj());
 
             // process LogEntity
-            List<Predicate<LogEntity>> logFilterRules = Collections.singletonList(
-                    new TimePrecisionFilter(rulesConfig.getIgnoredTimePrecision())
-            );
+            List<Predicate<LogEntity>> logFilterRules = new ArrayList<Predicate<LogEntity>>() {{
+                add(new TimePrecisionFilter(rulesConfig.getIgnoredTimePrecision()));
+                add(new ArexPrefixFilter());
+                add(new GuidFilter());
+            }};
             LogProcessResponse logProcessResponse = logProcess.process(logs, logFilterRules);
 
             result.setCode(logProcessResponse.getExistDiff());

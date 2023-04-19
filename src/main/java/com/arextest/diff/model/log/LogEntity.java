@@ -2,6 +2,7 @@ package com.arextest.diff.model.log;
 
 import com.arextest.diff.model.enumeration.UnmatchedType;
 import com.arextest.diff.utils.ListUti;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -124,10 +125,10 @@ public class LogEntity implements Serializable {
     public LogEntity(Object baseValue, Object testValue, UnmatchedPairEntity pathPair) {
         this.baseValue = baseValue instanceof ObjectNode || baseValue instanceof ArrayNode
                 || baseValue instanceof NullNode || baseValue == null
-                ? null : baseValue;
+                ? null : ((JsonNode) baseValue).asText();
         this.testValue = testValue instanceof ObjectNode || testValue instanceof ArrayNode
                 || testValue instanceof NullNode || testValue == null
-                ? null : testValue;
+                ? null : ((JsonNode) testValue).asText();
         this.pathPair = pathPair;
         processLogInfo(this.baseValue, this.testValue, pathPair.getUnmatchedType());
         processPath();
