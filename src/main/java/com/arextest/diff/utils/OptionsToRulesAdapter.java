@@ -69,9 +69,9 @@ public class OptionsToRulesAdapter {
         rulesConfig.setDecompressConfig(compareOptions.getDecompressConfig());
         rulesConfig.setReferenceEntities(referenceConfigConvert(compareOptions.getReferenceConfig()));
         rulesConfig.setListSortEntities(listSortConfigConvert(compareOptions.getListSortConfig(), rulesConfig.getReferenceEntities()));
-        // if (compareOptions.getSqlBodyParse() != null) {
-        //     rulesConfig.setSqlBodyParse(compareOptions.getSqlBodyParse());
-        // }
+        if (compareOptions.getSelectIgnoreCompare() != null) {
+            rulesConfig.setSelectIgnoreCompare(compareOptions.getSelectIgnoreCompare());
+        }
         if (compareOptions.getOnlyCompareCoincidentColumn() != null) {
             rulesConfig.setOnlyCompareCoincidentColumn(compareOptions.getOnlyCompareCoincidentColumn());
         }

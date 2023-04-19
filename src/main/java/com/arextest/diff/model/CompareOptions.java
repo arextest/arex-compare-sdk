@@ -59,13 +59,9 @@ public class CompareOptions {
      * for example：the baseMsg: {"age":""} is consistent with testMsg: "{\"age\":null}"
      */
     private Boolean nullEqualsEmpty = null;
-
-    // /**
-    //  * parse the field of "body"
-    //  * This configuration works only when compareType is CompareType.DATABASE
-    //  */
-    // private Boolean sqlBodyParse = null;
-
+    /**
+     * This option is tru, the select statement does not compare
+     */
     private Boolean selectIgnoreCompare = null;
 
     /**
@@ -223,13 +219,9 @@ public class CompareOptions {
         return this;
     }
 
-    // public CompareOptions putSqlBodyParse(Boolean sqlBodyParse) {
-    //     this.sqlBodyParse = sqlBodyParse;
-    //     return this;
-    // }
-
-    public CompareOptions putSelectIgnoreCompare() {
-
+    public CompareOptions putSelectIgnoreCompare(Boolean selectIgnoreCompare) {
+        this.selectIgnoreCompare = selectIgnoreCompare;
+        return this;
     }
 
     public CompareOptions putOnlyCompareCoincidentColumn(Boolean onlyCompareCoincidentColumn) {
@@ -237,7 +229,7 @@ public class CompareOptions {
         return this;
     }
 
-    public CompareOptions putIgnoredTimePrecision() {
+    public CompareOptions putIgnoredTimePrecision(Long ignoredTimePrecision) {
         this.ignoredTimePrecision = ignoredTimePrecision;
         return this;
     }
@@ -279,9 +271,9 @@ public class CompareOptions {
         return nullEqualsEmpty;
     }
 
-    // public Boolean getSqlBodyParse() {
-    //     return sqlBodyParse;
-    // }
+    public Boolean getSelectIgnoreCompare() {
+        return selectIgnoreCompare;
+    }
 
     public Boolean getOnlyCompareCoincidentColumn() {
         return onlyCompareCoincidentColumn;

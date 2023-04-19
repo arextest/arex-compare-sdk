@@ -101,8 +101,8 @@ public class CompareSDKTest {
         CompareOptions compareOptions = CompareOptions.options();
         compareOptions.putExclusions(Arrays.asList("body"));
         compareOptions.putCategoryType(CategoryType.DATABASE);
-        compareOptions.putSqlBodyParse(true);
         compareOptions.putOnlyCompareCoincidentColumn(true);
+        compareOptions.putSelectIgnoreCompare(true);
 
         CompareResult result = sdk.compare(str1, str2, compareOptions);
         Assert.assertEquals(result.getLogs().size(), 1);
@@ -136,6 +136,26 @@ public class CompareSDKTest {
         CompareOptions compareOptions = CompareOptions.options();
         CompareResult result = sdk.compare(str1, str2, compareOptions);
         Assert.assertEquals(result.getLogs().size(), 0);
+    }
+
+    @Test
+    public void testIgnoreSelectSql() {
+        CompareSDK sdk = new CompareSDK();
+        sdk.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true);
+
+        String str1 = "{\"dbname\":\"FltOrderDB_Shard_RW\",\"body\":\"SELECT e.c3, e.c4, e.c5 FROM t1 e JOIN t2 d USING (id) " +
+                "WHERE c2 = 'SA_REP' AND c6 = 2500  ORDER BY e.c3 FOR UPDATE OF e ;\"}";
+
+        String str2 = "{\"dbname\":\"FltOrderDB_Shard_RW\",\"body\":\"SELECT e.c3, e.c4, e.c5 FROM t1 e JOIN t2 d USING (id)" +
+                " WHERE c2 = 'SA_REP' AND c6 = 2500  ORDER BY e.c3 FOR UPDATE OF e ;\"}";
+
+        CompareOptions compareOptions = CompareOptions.options();
+        compareOptions.putExclusions(Arrays.asList("body"));
+        compareOptions.putCategoryType(CategoryType.DATABASE);
+        compareOptions.putSelectIgnoreCompare(true);
+
+        CompareResult result = sdk.compare(str1, str2, compareOptions);
+        Assert.assertEquals(result.getLogs().size(), 1);
     }
 
 }

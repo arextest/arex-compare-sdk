@@ -13,7 +13,7 @@ import com.arextest.diff.handler.parse.ObjectParse;
 import com.arextest.diff.handler.parse.sqlparse.SqlParse;
 import com.arextest.diff.model.CompareResult;
 import com.arextest.diff.model.RulesConfig;
-import com.arextest.diff.model.exception.SelectParseException;
+import com.arextest.diff.model.exception.SelectIgnoreException;
 import com.arextest.diff.model.key.KeyComputeResponse;
 import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.model.log.LogProcessResponse;
@@ -68,13 +68,12 @@ public class DataBaseCompareUtil {
             Map<String, List<String>> parsePaths = jsonParse.doHandler(rulesConfig, msgObjCombination.getBaseObj(),
                     msgObjCombination.getTestObj());
             // If enables sql parsing, fill in the field of "parsedsql"
-            // if (rulesConfig.isSqlBodyParse()) {
             try {
-                sqlParse.doHandler(msgObjCombination, rulesConfig.isOnlyCompareCoincidentColumn());
-            } catch (SelectParseException exception) {
+                sqlParse.doHandler(msgObjCombination, rulesConfig.isOnlyCompareCoincidentColumn(),
+                        rulesConfig.isSelectIgnoreCompare());
+            } catch (SelectIgnoreException exception) {
                 return CompareResultBuilder.noError(rulesConfig.getBaseMsg(), rulesConfig.getTestMsg());
             }
-            // }
 
             // Parse JSON structure
             CompletableFuture<MutablePair<MsgStructure, MsgStructure>> msgStructureFuture =

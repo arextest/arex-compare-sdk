@@ -1,7 +1,7 @@
 package com.arextest.diff.handler.parse.sqlparse;
 
 import com.arextest.diff.handler.parse.sqlparse.action.ActionFactory;
-import com.arextest.diff.model.exception.SelectParseException;
+import com.arextest.diff.model.exception.SelectIgnoreException;
 import com.arextest.diff.model.parse.MsgObjCombination;
 import com.arextest.diff.utils.JacksonHelperUtil;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -12,7 +12,9 @@ import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.select.Select;
+import org.apache.commons.lang3.tuple.MutablePair;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.regex.Matcher;
@@ -25,7 +27,8 @@ public class SqlParse {
     private static final String ORIGINAL_SQL = "originalSql";
     private static final String PARSED_SQL = "parsedSql";
 
-    public void doHandler(MsgObjCombination msgObjCombination, boolean onlyCompareSameColumns) throws SelectParseException {
+    public void doHandler(MsgObjCombination msgObjCombination, boolean onlyCompareSameColumns,
+                          boolean selectIgnoreCompare) throws SelectIgnoreException {
         Object baseObj = msgObjCombination.getBaseObj();
         Object testObj = msgObjCombination.getTestObj();
         if (baseObj == null || testObj == null) {
@@ -35,7 +38,8 @@ public class SqlParse {
             ObjectNode baseJSONObj = (ObjectNode) baseObj;
             ObjectNode testJSONObj = (ObjectNode) testObj;
 
-            // 仅比较同名字段且parameters采用位置下标，将parameters字段填入sql并移除
+            // Only compare fields with the same name and parameters use positional subscripts,
+            // fill the parameters field into sql and remove the parameters
             if (onlyCompareSameColumns) {
                 try {
                     if (judgeParam(baseJSONObj) && judgeParam(testJSONObj)) {
@@ -45,78 +49,69 @@ public class SqlParse {
                 }
             }
 
-            // 解析body字段，注意body为数组的情况
+            // parse the body field, compatible with the case where the body is an array
             JsonNode baseDatabaseBody = baseJSONObj.get("body");
             JsonNode testDatabaseBody = testJSONObj.get("body");
-            ArrayNode parsedBaseSql = JacksonHelperUtil.getArrayNode();
-            ArrayNode parsedTestSql = JacksonHelperUtil.getArrayNode();
 
             if (baseDatabaseBody == null || testDatabaseBody == null) {
                 if (testDatabaseBody != null) {
-                    ObjectNode testBackUpObj = JacksonHelperUtil.getObjectNode();
-                    testBackUpObj.set(ORIGINAL_SQL, testDatabaseBody);
-                    parsedTestSql.add(testBackUpObj);
-                    testJSONObj.set(PARSED_SQL, parsedTestSql);
+                    fillOriginalSql(testJSONObj, testDatabaseBody);
                 } else if (baseDatabaseBody != null) {
-                    ObjectNode baseBackUpObj = JacksonHelperUtil.getObjectNode();
-                    baseBackUpObj.set(ORIGINAL_SQL, baseDatabaseBody);
-                    parsedBaseSql.add(baseBackUpObj);
-                    baseJSONObj.set(PARSED_SQL, parsedBaseSql);
+                    fillOriginalSql(baseJSONObj, baseDatabaseBody);
                 }
                 return;
             }
 
-            try {
-                if (baseDatabaseBody instanceof TextNode) {
-
-                    parsedBaseSql.add(sqlParse(baseDatabaseBody.asText()));
-                    parsedTestSql.add(sqlParse(testDatabaseBody.asText()));
-
-                } else {
-                    ArrayNode baseDatabaseBodyArray = (ArrayNode) baseDatabaseBody;
-                    ArrayNode testDatabaseBodyArray = (ArrayNode) testDatabaseBody;
-
-                    for (int i = 0; i < baseDatabaseBodyArray.size(); i++) {
-                        String itemBaseDatabaseBody = baseDatabaseBodyArray.get(i).asText();
-                        parsedBaseSql.add(sqlParse(itemBaseDatabaseBody));
-                    }
-
-                    for (int i = 0; i < baseDatabaseBodyArray.size(); i++) {
-                        String itemTestDatabaseBody = testDatabaseBodyArray.get(i).asText();
-                        parsedTestSql.add(sqlParse(itemTestDatabaseBody));
+            ParsedResult baseParsedResult = sqlParse(baseDatabaseBody);
+            ParsedResult testParsedResult = sqlParse(testDatabaseBody);
+            if (baseParsedResult != null && testParsedResult != null) {
+                baseJSONObj.set(PARSED_SQL, baseParsedResult.getParsedSql());
+                testJSONObj.set(PARSED_SQL, testParsedResult.getParsedSql());
+                List<Boolean> isSelectInBase = baseParsedResult.getIsSelect();
+                List<Boolean> isSelectInTest = testParsedResult.getIsSelect();
+                if (selectIgnoreCompare) {
+                    if (!isSelectInBase.isEmpty() && !isSelectInTest.isEmpty() &&
+                            isSelectInBase.get(0) && isSelectInTest.get(0)) {
+                        throw new SelectIgnoreException();
                     }
                 }
-
-                baseJSONObj.set(PARSED_SQL, parsedBaseSql);
-                testJSONObj.set(PARSED_SQL, parsedTestSql);
-            } catch (SelectParseException exception) {
-                throw exception;
-            } catch (Throwable throwable) {
-
-                ObjectNode baseBackUpObj = JacksonHelperUtil.getObjectNode();
-                ObjectNode testBackUpObj = JacksonHelperUtil.getObjectNode();
-                baseBackUpObj.set(ORIGINAL_SQL, baseDatabaseBody);
-                testBackUpObj.set(ORIGINAL_SQL, testDatabaseBody);
-
-                parsedBaseSql.add(baseBackUpObj);
-                parsedTestSql.add(testBackUpObj);
-
-                baseJSONObj.set(PARSED_SQL, parsedBaseSql);
-                testJSONObj.set(PARSED_SQL, parsedTestSql);
+            } else {
+                fillOriginalSql(baseJSONObj, baseDatabaseBody);
+                fillOriginalSql(testJSONObj, testDatabaseBody);
             }
-
-
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public ObjectNode sqlParse(String sql) throws JSQLParserException, SelectParseException {
-        Statement statement = CCJSqlParserUtil.parse(sql);
-        if (statement instanceof Select) {
-            throw new SelectParseException();
+    // if return null, indicate the sql parsed fail.
+    public ParsedResult sqlParse(JsonNode databaseBody) {
+        ArrayNode parsedSql = JacksonHelperUtil.getArrayNode();
+        List<Boolean> isSelect = new ArrayList<>();
+        try {
+            if (databaseBody instanceof TextNode) {
+                MutablePair<JsonNode, Boolean> tempMutablePair = sqlParse(databaseBody.asText());
+                parsedSql.add(tempMutablePair.getLeft());
+                isSelect.add(tempMutablePair.getRight());
+            } else if (databaseBody instanceof ArrayNode) {
+                ArrayNode databaseBodyArray = (ArrayNode) databaseBody;
+                for (int i = 0; i < databaseBodyArray.size(); i++) {
+                    MutablePair<JsonNode, Boolean> tempMutablePair = sqlParse(databaseBodyArray.get(i).asText());
+                    parsedSql.add(tempMutablePair.getLeft());
+                    isSelect.add(tempMutablePair.getRight());
+                }
+            } else {
+                return null;
+            }
+        } catch (Throwable throwable) {
+            return null;
         }
+        return new ParsedResult(parsedSql, isSelect);
+    }
+
+    @SuppressWarnings("unchecked")
+    public MutablePair<JsonNode, Boolean> sqlParse(String sql) throws JSQLParserException {
+        Statement statement = CCJSqlParserUtil.parse(sql);
         Parse parse = ActionFactory.selectParse(statement);
-        return parse.parse(statement);
+        return new MutablePair<>(parse.parse(statement), statement instanceof Select);
     }
 
     private boolean judgeParam(ObjectNode object) {
@@ -153,7 +148,8 @@ public class SqlParse {
         return true;
     }
 
-    // onlyCompareSameColumns为true, 且采用数组下标时重构数据库比对报文
+    // when onlyCompareSameColumns is true and use array subscripts,
+    // generate a new database comparison message
     private void produceNewBody(ObjectNode baseJSONObj, ObjectNode testJSONObj) {
 
         JsonNode originalBaseParams = baseJSONObj.get("parameters");
@@ -205,7 +201,7 @@ public class SqlParse {
     }
 
 
-    // 产生新的body对象
+    // generate a new body object
     private String processParams(ObjectNode paramObj, String sql) {
         if (sql == null || sql.length() == 0) {
             return sql;
@@ -233,4 +229,33 @@ public class SqlParse {
         return newSql.toString();
     }
 
+    private void fillOriginalSql(ObjectNode objectNode, JsonNode databaseBody) {
+        ObjectNode backUpObj = JacksonHelperUtil.getObjectNode();
+        backUpObj.set(ORIGINAL_SQL, databaseBody);
+        ArrayNode parsedSql = JacksonHelperUtil.getArrayNode();
+        parsedSql.add(backUpObj);
+        objectNode.set(PARSED_SQL, parsedSql);
+    }
+
+    private class ParsedResult {
+        public ParsedResult() {
+
+        }
+
+        public ParsedResult(ArrayNode parsedSql, List<Boolean> isSelect) {
+            this.parsedSql = parsedSql;
+            this.isSelect = isSelect;
+        }
+
+        private ArrayNode parsedSql;
+        private List<Boolean> isSelect;
+
+        public ArrayNode getParsedSql() {
+            return parsedSql;
+        }
+
+        public List<Boolean> getIsSelect() {
+            return isSelect;
+        }
+    }
 }
