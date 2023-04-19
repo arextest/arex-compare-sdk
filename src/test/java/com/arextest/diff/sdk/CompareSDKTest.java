@@ -173,7 +173,7 @@ public class CompareSDKTest {
         compareOptions.putSelectIgnoreCompare(true);
 
         CompareResult result = sdk.compare(str1, str2, compareOptions);
-        Assert.assertEquals(result.getLogs().size(), 1);
+        Assert.assertEquals(result.getCode(), 0);
     }
 
 }
