@@ -123,15 +123,24 @@ public class LogEntity implements Serializable {
     }
 
     public LogEntity(Object baseValue, Object testValue, UnmatchedPairEntity pathPair) {
-        this.baseValue = baseValue instanceof ObjectNode || baseValue instanceof ArrayNode
-                || baseValue instanceof NullNode || baseValue == null
-                ? null : ((JsonNode) baseValue).asText();
-        this.testValue = testValue instanceof ObjectNode || testValue instanceof ArrayNode
-                || testValue instanceof NullNode || testValue == null
-                ? null : ((JsonNode) testValue).asText();
+        this.baseValue = valueToString(baseValue);
+        this.testValue = valueToString(testValue);
         this.pathPair = pathPair;
         processLogInfo(this.baseValue, this.testValue, pathPair.getUnmatchedType());
         processPath();
+    }
+
+    private String valueToString(Object value) {
+        if (value instanceof NullNode || value == null) {
+            return null;
+        }
+        if (value instanceof ObjectNode || value instanceof ArrayNode) {
+            return null;
+        }
+        if (value instanceof JsonNode) {
+            return ((JsonNode) value).asText();
+        }
+        return value.toString();
     }
 
     private void processPath() {
