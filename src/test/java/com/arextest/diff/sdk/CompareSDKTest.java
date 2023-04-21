@@ -19,8 +19,6 @@ public class CompareSDKTest {
         sdk.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true)
                 .putPluginJarUrl("./lib/arex-compare-sdk-plugin-0.1.0-jar-with-dependencies.jar");
 
-        System.out.println(System.currentTimeMillis() - start);
-
         String str1 = "{\"address\":\"add\",\"name\":null,"
                 + "\"family\":[{\"id\":1,\"subject\":{\"mother\":\"B\",\"father\":\"A\",\"brother\":\"F\",\"sister\":\"D\"},\"bug\":{\"helper\":\"1\"},\"list\":[\"1\",\"2\"]},"
                 + "{\"id\":2,\"subject\":{\"mother\":\"A\",\"father\":\"F\",\"brother\":\"C\",\"sister\":\"E\"},\"bug\":{\"helper\":\"2\"},\"list\":[\"1\",\"2\"]}],"
@@ -48,6 +46,7 @@ public class CompareSDKTest {
 
         CompareResult result = sdk.compare(str1, str2, compareOptions);
         long end = System.currentTimeMillis();
+        Assert.assertEquals(result.getLogs().size(), 7);
         System.out.println("toatal cost:" + (end - start) + " ms");
     }
 
@@ -161,10 +160,10 @@ public class CompareSDKTest {
         CompareSDK sdk = new CompareSDK();
         sdk.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true);
 
-        String str1 = "{\"dbname\":\"FltOrderDB_Shard_RW\",\"body\":\"SELECT e.c3, e.c4, e.c5 FROM t1 e JOIN t2 d USING (id) " +
+        String str1 = "{\"dbname\":\"dbmame\",\"body\":\"SELECT e.c3, e.c4, e.c5 FROM t1 e JOIN t2 d USING (id) " +
                 "WHERE c2 = 'SA_REP' AND c6 = 2500  ORDER BY e.c3 FOR UPDATE OF e ;\"}";
 
-        String str2 = "{\"dbname\":\"FltOrderDB_Shard_RW\",\"body\":\"SELECT e.c3, e.c4, e.c5 FROM t1 e JOIN t2 d USING (id)" +
+        String str2 = "{\"dbname\":\"dbmame\",\"body\":\"SELECT e.c3, e.c4, e.c5 FROM t1 e JOIN t2 d USING (id)" +
                 " WHERE c2 = 'SA_REP' AND c6 = 2500  ORDER BY e.c3 FOR UPDATE OF e ;\"}";
 
         CompareOptions compareOptions = CompareOptions.options();
