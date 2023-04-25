@@ -90,14 +90,14 @@ public class NormalCompareUtil {
                 add(new ArexPrefixFilter());
                 add(new GuidFilter());
             }};
-            LogProcessResponse logProcessResponse = logProcess.process(logs, logFilterRules);
+            LogProcessResponse logProcessResponse = logProcess.process(
+                    logs, logFilterRules, rulesConfig);
 
             result.setCode(logProcessResponse.getExistDiff());
             result.setMessage("compare successfully");
             result.setLogs(logProcessResponse.getLogs());
             result.setProcessedBaseMsg(list.get(0).get());
             result.setProcessedTestMsg(list.get(1).get());
-            result.setInConsistentPaths(logProcessResponse.getInConsistentPaths());
             result.setParseNodePaths(parsePaths);
 
         } catch (Exception e) {

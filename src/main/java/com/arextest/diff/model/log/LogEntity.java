@@ -11,7 +11,10 @@ import java.io.Serializable;
 import java.util.List;
 
 public class LogEntity implements Serializable {
-
+    /**
+     * baseValue and testValue will only have values ​​at leaf nodes, and non-leaf nodes are empty
+     * The final output baseValue and testValue are String
+     */
     private Object baseValue;
     private Object testValue;
     private String logInfo;
@@ -20,9 +23,9 @@ public class LogEntity implements Serializable {
     private String addRefPkNodePathRight;
     private LogTag logTag = new LogTag();
     private int warn;
-    private String path;
-    private String leftPath;
-    private String rightPath;
+    // private String path;
+    // private String leftPath;
+    // private String rightPath;
 
     public Object getBaseValue() {
         return baseValue;
@@ -88,29 +91,29 @@ public class LogEntity implements Serializable {
         this.logTag = logTag;
     }
 
-    public String getPath() {
-        return path;
-    }
-
-    public void setPath(String path) {
-        this.path = path;
-    }
-
-    public String getLeftPath() {
-        return leftPath;
-    }
-
-    public void setLeftPath(String leftPath) {
-        this.leftPath = leftPath;
-    }
-
-    public String getRightPath() {
-        return rightPath;
-    }
-
-    public void setRightPath(String rightPath) {
-        this.rightPath = rightPath;
-    }
+    // public String getPath() {
+    //     return path;
+    // }
+    //
+    // public void setPath(String path) {
+    //     this.path = path;
+    // }
+    //
+    // public String getLeftPath() {
+    //     return leftPath;
+    // }
+    //
+    // public void setLeftPath(String leftPath) {
+    //     this.leftPath = leftPath;
+    // }
+    //
+    // public String getRightPath() {
+    //     return rightPath;
+    // }
+    //
+    // public void setRightPath(String rightPath) {
+    //     this.rightPath = rightPath;
+    // }
 
     public LogEntity(String logInfo) {
         this.logInfo = logInfo;
@@ -127,7 +130,7 @@ public class LogEntity implements Serializable {
         this.testValue = valueToString(testValue);
         this.pathPair = pathPair;
         processLogInfo(this.baseValue, this.testValue, pathPair.getUnmatchedType());
-        processPath();
+        // processPath();
     }
 
     private String valueToString(Object value) {
@@ -143,17 +146,17 @@ public class LogEntity implements Serializable {
         return value.toString();
     }
 
-    private void processPath() {
-        if (this.pathPair != null) {
-            if (this.pathPair.getLeftUnmatchedPath().size() >= this.pathPair.getRightUnmatchedPath().size()) {
-                this.path = ListUti.convertPathToStringForShow(this.pathPair.getLeftUnmatchedPath());
-            } else {
-                this.path = ListUti.convertPathToStringForShow(this.pathPair.getRightUnmatchedPath());
-            }
-            this.leftPath = ListUti.convertPathToStringForShow(this.pathPair.getLeftUnmatchedPath());
-            this.rightPath = ListUti.convertPathToStringForShow(this.pathPair.getRightUnmatchedPath());
-        }
-    }
+    // private void processPath() {
+    //     if (this.pathPair != null) {
+    //         if (this.pathPair.getLeftUnmatchedPath().size() >= this.pathPair.getRightUnmatchedPath().size()) {
+    //             this.path = ListUti.convertPathToStringForShow(this.pathPair.getLeftUnmatchedPath());
+    //         } else {
+    //             this.path = ListUti.convertPathToStringForShow(this.pathPair.getRightUnmatchedPath());
+    //         }
+    //         this.leftPath = ListUti.convertPathToStringForShow(this.pathPair.getLeftUnmatchedPath());
+    //         this.rightPath = ListUti.convertPathToStringForShow(this.pathPair.getRightUnmatchedPath());
+    //     }
+    // }
 
     private void processLogInfo(Object baseValue, Object testValue, int unmatchedType) {
         List<NodeEntity> leftUnmatchedPath = pathPair.getLeftUnmatchedPath();

@@ -1,13 +1,9 @@
 package com.arextest.diff.model.log;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 public class LogProcessResponse {
-
-    private Set<String> inConsistentPaths = new HashSet<>();
 
     private int existDiff;
 
@@ -16,18 +12,9 @@ public class LogProcessResponse {
     public LogProcessResponse() {
     }
 
-    public LogProcessResponse(Set<String> inConsistentPaths, int existDiff, List<LogEntity> logs) {
-        this.inConsistentPaths = inConsistentPaths;
+    public LogProcessResponse(int existDiff, List<LogEntity> logs) {
         this.existDiff = existDiff;
         this.logs = logs;
-    }
-
-    public Set<String> getInConsistentPaths() {
-        return inConsistentPaths;
-    }
-
-    public void setInConsistentPaths(Set<String> inConsistentPaths) {
-        this.inConsistentPaths = inConsistentPaths;
     }
 
     public int getExistDiff() {

@@ -16,8 +16,6 @@ public class CompareResult {
     private String message;
     // inconsistent record
     private List<LogEntity> logs;
-    // inconsistent nodes Paths (including ignored ones)
-    private Set<String> inConsistentPaths;
     private String processedBaseMsg;
     private String processedTestMsg;
     // parsed node path and original value
@@ -48,14 +46,6 @@ public class CompareResult {
 
     public void setLogs(List<LogEntity> logs) {
         this.logs = logs;
-    }
-
-    public Set<String> getInConsistentPaths() {
-        return inConsistentPaths;
-    }
-
-    public void setInConsistentPaths(Set<String> inConsistentPaths) {
-        this.inConsistentPaths = inConsistentPaths;
     }
 
     public String getProcessedBaseMsg() {
