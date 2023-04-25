@@ -106,16 +106,13 @@ public class DataBaseCompareUtil {
                 logFilterRules.add(new OnlyCompareSameColumnsFilter());
             }
             LogProcessResponse logProcessResponse = logProcess.process(
-                    logs,
-                    logFilterRules
-            );
+                    logs, logFilterRules, rulesConfig);
 
             result.setCode(logProcessResponse.getExistDiff());
             result.setMessage("compare successfully");
             result.setLogs(logProcessResponse.getLogs());
             result.setProcessedBaseMsg(list.get(0).get());
             result.setProcessedTestMsg(list.get(1).get());
-            result.setInConsistentPaths(logProcessResponse.getInConsistentPaths());
             result.setParseNodePaths(parsePaths);
 
         } catch (Exception e) {

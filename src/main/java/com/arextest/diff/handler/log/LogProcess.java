@@ -1,18 +1,18 @@
 package com.arextest.diff.handler.log;
 
 import com.arextest.diff.handler.log.filterrules.UnmatchedTypeFilter;
+import com.arextest.diff.model.RulesConfig;
 import com.arextest.diff.model.enumeration.DiffResultCode;
 import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.model.log.LogProcessResponse;
+import com.arextest.diff.plugin.LogEntityFilter;
+import com.arextest.diff.plugin.PluginServiceFactory;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static com.arextest.diff.utils.LogHandler.processInConsistentPaths;
 
 public class LogProcess {
 
@@ -20,7 +20,7 @@ public class LogProcess {
         add(new UnmatchedTypeFilter());
     }};
 
-    public LogProcessResponse process(List<LogEntity> logEntities, List<Predicate<LogEntity>> filterRules) {
+    public LogProcessResponse process(List<LogEntity> logEntities, List<Predicate<LogEntity>> filterRules, RulesConfig rulesConfig) {
 
         Stream<LogEntity> stream = logEntities.stream();
         for (Predicate<LogEntity> filterRule : globalFilterRules) {
@@ -30,16 +30,19 @@ public class LogProcess {
             stream = stream.filter(filterRule);
         }
 
-        Set<String> inConsistentPaths = new HashSet<>();
-        List<LogEntity> filterLogs = new ArrayList<>();
+        for (LogEntityFilter logEntityFilter : PluginServiceFactory.getLogEntityFilterList()) {
+            stream = stream.filter(item -> {
+                try {
+                    return !logEntityFilter.isIgnore(item, rulesConfig);
+                } catch (Throwable e) {
+                }
+                return true;
+            });
+        }
 
-        stream.forEach(item -> {
-            processInConsistentPaths(item, inConsistentPaths);
-            filterLogs.add(item);
-        });
-
-        return new LogProcessResponse(inConsistentPaths,
-                !filterLogs.isEmpty() ? DiffResultCode.COMPARED_WITH_DIFFERENCE : DiffResultCode.COMPARED_WITHOUT_DIFFERENCE,
+        List<LogEntity> filterLogs = stream.collect(Collectors.toList());
+        return new LogProcessResponse(
+                filterLogs.isEmpty() ? DiffResultCode.COMPARED_WITHOUT_DIFFERENCE : DiffResultCode.COMPARED_WITH_DIFFERENCE,
                 filterLogs);
     }
 
