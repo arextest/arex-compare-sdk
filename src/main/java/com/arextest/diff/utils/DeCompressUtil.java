@@ -1,19 +1,19 @@
 package com.arextest.diff.utils;
 
+import com.arextest.diff.handler.decompress.DeCompressServiceBuilder;
+import com.arextest.diff.model.DeCompressConfig;
 import com.arextest.diff.service.DecompressService;
-
-import java.util.Map;
 
 public class DeCompressUtil {
 
-    public static Object deCompressPlugin(Map<String, DecompressService> decompressServices, String beanPath, String arg) throws Throwable {
-        if (decompressServices == null || decompressServices.isEmpty()) {
+    public static String deCompressPlugin(String pluginJarUrl, DeCompressConfig deCompressConfig, String fieldValue) throws Throwable {
+        String name = deCompressConfig.getName();
+        String args = deCompressConfig.getArgs();
+        DecompressService decompressService = DeCompressServiceBuilder.getDecompressService(pluginJarUrl, name);
+        if (decompressService == null) {
             throw new Exception("decompressService not exist");
         }
-        if (!decompressServices.containsKey(beanPath)) {
-            throw new Exception("decompressService not exist");
-        }
-        return decompressServices.get(beanPath).decompress(arg);
+        return decompressService.decompress(fieldValue, args);
     }
 
 }

@@ -1,6 +1,8 @@
 package com.arextest.diff.utils;
 
+import com.arextest.diff.handler.decompress.DeCompressServiceBuilder;
 import com.arextest.diff.model.CompareOptions;
+import com.arextest.diff.model.DeCompressConfig;
 import com.arextest.diff.model.GlobalOptions;
 import com.arextest.diff.model.RulesConfig;
 import com.arextest.diff.model.SystemConfig;
@@ -38,7 +40,7 @@ public class OptionsToRulesAdapter {
         rulesConfig.setInclusions(listListToLower(rulesConfig.getInclusions()));
         rulesConfig.setExclusions(listListToLower(rulesConfig.getExclusions()));
         rulesConfig.setIgnoreNodeSet(setToLower(rulesConfig.getIgnoreNodeSet()));
-        rulesConfig.setDecompressConfig(mapKeyToLower(rulesConfig.getDecompressConfig()));
+        rulesConfig.setDeCompressConfigMap(mapKeyToLower(rulesConfig.getDeCompressConfigMap()));
         referenceToLower(rulesConfig.getReferenceEntities());
         keyConfigToLower(rulesConfig.getListSortEntities());
     }
@@ -52,7 +54,6 @@ public class OptionsToRulesAdapter {
         if (globalOptions == null) {
             return;
         }
-        rulesConfig.setDecompressServices(globalOptions.getDecompressServices());
         rulesConfig.setNameToLower(globalOptions.isNameToLower());
         rulesConfig.setNullEqualsEmpty(globalOptions.isNullEqualsEmpty());
         rulesConfig.setIgnoredTimePrecision(globalOptions.getIgnoredTimePrecision());
@@ -64,9 +65,10 @@ public class OptionsToRulesAdapter {
             return;
         }
         rulesConfig.setCategoryType(compareOptions.getCategoryType());
+        rulesConfig.setPluginJarUrl(compareOptions.getPluginJarUrl());
+        rulesConfig.setDeCompressConfigMap(deCompressConfigConvert(compareOptions.getDeCompressConfigList()));
         rulesConfig.setInclusions(compareOptions.getInclusions() == null ? null : new ArrayList<>(compareOptions.getInclusions()));
         rulesConfig.setExclusions(compareOptions.getExclusions() == null ? null : new ArrayList<>(compareOptions.getExclusions()));
-        rulesConfig.setDecompressConfig(compareOptions.getDecompressConfig());
         rulesConfig.setReferenceEntities(referenceConfigConvert(compareOptions.getReferenceConfig()));
         rulesConfig.setListSortEntities(listSortConfigConvert(compareOptions.getListSortConfig(), rulesConfig.getReferenceEntities()));
         if (compareOptions.getSelectIgnoreCompare() != null) {
@@ -91,15 +93,14 @@ public class OptionsToRulesAdapter {
         }
     }
 
-    private static Map<String, List<List<String>>> mapKeyToLower(Map<String, List<List<String>>> map) {
+    private static <V> Map<List<String>, V> mapKeyToLower(Map<List<String>, V> map) {
         if (map == null) {
             return null;
         }
-        Map<String, List<List<String>>> result = new HashMap<>();
+        Map<List<String>, V> result = new HashMap<>();
         map.forEach((k, v) -> {
             if (k != null && v != null) {
-                result.put(k, v.stream().map(item -> item.stream().map(String::toLowerCase).collect(Collectors.toList()))
-                        .collect(Collectors.toList()));
+                result.put(k.stream().map(String::toLowerCase).collect(Collectors.toList()), v);
             }
         });
         return result;
@@ -178,6 +179,26 @@ public class OptionsToRulesAdapter {
                 result.add(collect);
             }
         });
+        return result;
+    }
+
+    private static Map<List<String>, DeCompressConfig> deCompressConfigConvert(List<DeCompressConfig> deCompressConfigList) {
+        if (deCompressConfigList == null || deCompressConfigList.isEmpty()) {
+            return Collections.emptyMap();
+        }
+        Map<List<String>, DeCompressConfig> result = new HashMap<>();
+        for (DeCompressConfig deCompressConfig : deCompressConfigList) {
+            List<List<String>> nodePathList = deCompressConfig.getNodePath();
+            if (nodePathList == null) {
+                continue;
+            }
+            for (List<String> nodePath : nodePathList) {
+                if (nodePath == null || nodePath.isEmpty()) {
+                    continue;
+                }
+                result.put(nodePath, deCompressConfig);
+            }
+        }
         return result;
     }
 

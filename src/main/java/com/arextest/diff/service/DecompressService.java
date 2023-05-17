@@ -4,5 +4,5 @@ public interface DecompressService {
 
     String getAliasName();
 
-    String decompress(String str) throws Throwable;
+    String decompress(String str, String args);
 }
