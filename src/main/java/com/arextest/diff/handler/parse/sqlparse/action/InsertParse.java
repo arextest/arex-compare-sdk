@@ -34,18 +34,23 @@ public class InsertParse implements Parse<Insert> {
         // columns parse
         List<Column> columns = parseObj.getColumns();
         if (columns != null && !columns.isEmpty()) {
-            ObjectNode columnObj = JacksonHelperUtil.getObjectNode();
+            // ObjectNode columnObj = JacksonHelperUtil.getObjectNode();
+            // ArrayNode values = JacksonHelperUtil.getArrayNode();
+            // ItemsList itemsList = parseObj.getItemsList();
+            // itemsList.accept(new ArexItemsListVisitorAdapter(values));
+            // for (int i = 0; i < columns.size(); i++) {
+            //     JsonNode value = new TextNode("?");
+            //     if (i < values.size()) {
+            //         value = values.get(i);
+            //     }
+            //     columnObj.set(columns.get(i).toString(), value);
+            // }
+            ArrayNode columnArr = JacksonHelperUtil.getArrayNode();
             ArrayNode values = JacksonHelperUtil.getArrayNode();
             ItemsList itemsList = parseObj.getItemsList();
             itemsList.accept(new ArexItemsListVisitorAdapter(values));
-            for (int i = 0; i < columns.size(); i++) {
-                JsonNode value = new TextNode("?");
-                if (i < values.size()) {
-                    value = values.get(i);
-                }
-                columnObj.set(columns.get(i).toString(), value);
-            }
-            sqlObject.set(Constants.COLUMNS, columnObj);
+
+            sqlObject.set(Constants.COLUMNS, columnArr);
         }
 
         // setColumns parse

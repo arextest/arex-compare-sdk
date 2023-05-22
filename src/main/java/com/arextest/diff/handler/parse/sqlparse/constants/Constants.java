@@ -9,6 +9,7 @@ public class Constants {
     public static final String INSERT = "insert";
     public static final String UPDATE = "update";
     public static final String DELETE = "delete";
+    public static final String REPLACE = "replace";
 
     public static final String ACTION = "action";
     public static final String COLUMNS = "columns";

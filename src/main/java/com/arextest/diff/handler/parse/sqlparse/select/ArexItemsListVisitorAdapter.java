@@ -1,5 +1,6 @@
 package com.arextest.diff.handler.parse.sqlparse.select;
 
+import com.arextest.diff.utils.JacksonHelperUtil;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.RowConstructor;
@@ -30,16 +31,20 @@ public class ArexItemsListVisitorAdapter implements ItemsListVisitor {
     @Override
     public void visit(ExpressionList expressionList) {
         List<Expression> expressions = expressionList.getExpressions();
-        // 仅考虑values只有一个的情况
         if (expressions.get(0) instanceof RowConstructor) {
-            Expression expression1 = expressions.get(0);
-            ExpressionList exprList = ((RowConstructor) expression1).getExprList();
-            for (Expression expression : exprList.getExpressions()) {
-                sqlArr.add(expression.toString());
+            for (Expression expression : expressions) {
+                ExpressionList exprList = ((RowConstructor) expression).getExprList();
+                ArrayNode arrayNode = JacksonHelperUtil.getArrayNode();
+                for (Expression expressionItem : exprList.getExpressions()) {
+                    arrayNode.add(expressionItem.toString());
+                }
+                sqlArr.add(arrayNode);
             }
         } else {
             for (Expression expression : expressions) {
-                sqlArr.add(expression.toString());
+                ArrayNode arrayNode = JacksonHelperUtil.getArrayNode();
+                arrayNode.add(expression.toString());
+                sqlArr.add(arrayNode);
             }
         }
     }
@@ -51,6 +56,12 @@ public class ArexItemsListVisitorAdapter implements ItemsListVisitor {
 
     @Override
     public void visit(MultiExpressionList multiExprList) {
-
+        System.out.println();
+        List<ExpressionList> expressionLists = multiExprList.getExpressionLists();
+        // Optional.ofNullable(expressionLists).orElse(Collections.emptyList())
+        //         .forEach(item -> {
+        //             List<Expression> expressions = item.getExpressions();
+        //             for ()
+        //         });
     }
 }
