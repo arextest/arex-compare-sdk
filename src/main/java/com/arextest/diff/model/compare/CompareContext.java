@@ -4,7 +4,6 @@ import com.arextest.diff.model.key.ReferenceEntity;
 import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.model.parse.MsgStructure;
-import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -56,10 +55,10 @@ public class CompareContext {
     public boolean nullEqualsNotExist = false;
 
     public CompareContext() {
-        this.currentTraceLeft = Lists.newArrayList();
-        this.currentTraceRight = Lists.newArrayList();
-        this.currentTraceLeftForShow = Lists.newArrayList();
-        this.currentTraceRightForShow = Lists.newArrayList();
+        this.currentTraceLeft = new ArrayList<>();
+        this.currentTraceRight = new ArrayList<>();
+        this.currentTraceLeftForShow = new ArrayList<>();
+        this.currentTraceRightForShow = new ArrayList<>();
     }
 
     public Object getBaseObj() {

@@ -1,6 +1,7 @@
 package com.arextest.diff.model;
 
 import com.arextest.diff.model.enumeration.CategoryType;
+import com.arextest.diff.utils.StringUtil;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,6 +19,12 @@ public class CompareOptions {
     private String categoryType;
 
     /**
+     * The url address of the plug-in jar which is specified by the interface http or absolute path.
+     * The decompressService which is loaded from this pluginJarUrl is the level of each compare.
+     */
+    private String pluginJarUrl;
+
+    /**
      * the collection of the node path chosen to compare
      */
     private Set<List<String>> inclusions;
@@ -32,7 +39,7 @@ public class CompareOptions {
      * key：The bean name of the decompression method which is implement the DecompressService interface, you can use an alias
      * value：the collection of the node path need to decompress
      */
-    private Map<String, List<List<String>>> decompressConfig;
+    private List<DecompressConfig> decompressConfigList;
 
     /**
      * reference config
@@ -92,8 +99,14 @@ public class CompareOptions {
         return new CompareOptions();
     }
 
-    public void putCategoryType(String categoryType) {
+    public CompareOptions putCategoryType(String categoryType) {
         this.categoryType = categoryType;
+        return this;
+    }
+
+    public CompareOptions putPluginJarUrl(String pluginJarUrl) {
+        this.pluginJarUrl = pluginJarUrl;
+        return this;
     }
 
     public CompareOptions putInclusions(List<String> path) {
@@ -140,34 +153,27 @@ public class CompareOptions {
         return this;
     }
 
-    public CompareOptions putDecompressConfig(String beanName, List<String> path) {
-        if (this.decompressConfig == null) {
-            this.decompressConfig = new HashMap<>();
-        }
-        List<List<String>> orDefault = this.decompressConfig.getOrDefault(beanName, new ArrayList<>());
-        orDefault.add(path);
-        this.decompressConfig.put(beanName, orDefault);
-        return this;
-    }
-
-    public CompareOptions putDecompressConfig(String beanName, Collection<List<String>> paths) {
-        if (this.decompressConfig == null) {
-            this.decompressConfig = new HashMap<>();
-        }
-        List<List<String>> orDefault = this.decompressConfig.getOrDefault(beanName, new ArrayList<>());
-        orDefault.addAll(paths);
-        this.decompressConfig.put(beanName, orDefault);
-        return this;
-    }
-
-    public CompareOptions putDecompressConfig(Map<String, List<List<String>>> decompressConfig) {
-        if (decompressConfig == null || decompressConfig.isEmpty()) {
+    public CompareOptions putDecompressConfig(DecompressConfig decompressConfig) {
+        if (decompressConfig == null || StringUtil.isEmpty(decompressConfig.getName())) {
             return this;
         }
-        if (this.decompressConfig == null) {
-            this.decompressConfig = new HashMap<>();
+        if (this.decompressConfigList == null) {
+            this.decompressConfigList = new ArrayList<>();
         }
-        this.decompressConfig.putAll(decompressConfig);
+        this.decompressConfigList.add(decompressConfig);
+        return this;
+    }
+
+    public CompareOptions putDecompressConfig(Collection<DecompressConfig> decompressConfigList) {
+        if (decompressConfigList == null || decompressConfigList.isEmpty()) {
+            return this;
+        }
+        if (this.decompressConfigList == null) {
+            this.decompressConfigList = new ArrayList<>();
+        }
+        for (DecompressConfig decompressConfig : decompressConfigList) {
+            this.putDecompressConfig(decompressConfig);
+        }
         return this;
     }
 
@@ -243,6 +249,10 @@ public class CompareOptions {
         return categoryType;
     }
 
+    public String getPluginJarUrl() {
+        return pluginJarUrl;
+    }
+
     public Set<List<String>> getInclusions() {
         return inclusions;
     }
@@ -251,8 +261,8 @@ public class CompareOptions {
         return exclusions;
     }
 
-    public Map<String, List<List<String>>> getDecompressConfig() {
-        return decompressConfig;
+    public List<DecompressConfig> getDecompressConfigList() {
+        return decompressConfigList;
     }
 
     public Map<List<String>, List<String>> getReferenceConfig() {
