@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * Created by rchen9 on 2023/4/26.
  */
-public class DeCompressConfig {
+public class DecompressConfig {
     /**
      * The bean name of the decompression method which is implement the DecompressService interface, you can use an alias
      */
@@ -21,15 +21,15 @@ public class DeCompressConfig {
      */
     private String args;
 
-    public DeCompressConfig() {
+    public DecompressConfig() {
     }
 
-    public DeCompressConfig(String name, List<List<String>> nodePath) {
+    public DecompressConfig(String name, List<List<String>> nodePath) {
         this.name = name;
         this.nodePath = nodePath;
     }
 
-    public DeCompressConfig(String name, List<List<String>> nodePath, String args) {
+    public DecompressConfig(String name, List<List<String>> nodePath, String args) {
         this.name = name;
         this.nodePath = nodePath;
         this.args = args;

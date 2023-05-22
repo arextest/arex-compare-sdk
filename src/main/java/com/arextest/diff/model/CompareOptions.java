@@ -39,7 +39,7 @@ public class CompareOptions {
      * key：The bean name of the decompression method which is implement the DecompressService interface, you can use an alias
      * value：the collection of the node path need to decompress
      */
-    private List<DeCompressConfig> deCompressConfigList;
+    private List<DecompressConfig> decompressConfigList;
 
     /**
      * reference config
@@ -153,26 +153,26 @@ public class CompareOptions {
         return this;
     }
 
-    public CompareOptions putDecompressConfig(DeCompressConfig deCompressConfig) {
-        if (deCompressConfig == null || StringUtil.isEmpty(deCompressConfig.getName())) {
+    public CompareOptions putDecompressConfig(DecompressConfig decompressConfig) {
+        if (decompressConfig == null || StringUtil.isEmpty(decompressConfig.getName())) {
             return this;
         }
-        if (this.deCompressConfigList == null) {
-            this.deCompressConfigList = new ArrayList<>();
+        if (this.decompressConfigList == null) {
+            this.decompressConfigList = new ArrayList<>();
         }
-        this.deCompressConfigList.add(deCompressConfig);
+        this.decompressConfigList.add(decompressConfig);
         return this;
     }
 
-    public CompareOptions putDecompressConfig(Collection<DeCompressConfig> deCompressConfigList) {
-        if (deCompressConfigList == null || deCompressConfigList.isEmpty()) {
+    public CompareOptions putDecompressConfig(Collection<DecompressConfig> decompressConfigList) {
+        if (decompressConfigList == null || decompressConfigList.isEmpty()) {
             return this;
         }
-        if (this.deCompressConfigList == null) {
-            this.deCompressConfigList = new ArrayList<>();
+        if (this.decompressConfigList == null) {
+            this.decompressConfigList = new ArrayList<>();
         }
-        for (DeCompressConfig deCompressConfig : deCompressConfigList) {
-            this.putDecompressConfig(deCompressConfig);
+        for (DecompressConfig decompressConfig : decompressConfigList) {
+            this.putDecompressConfig(decompressConfig);
         }
         return this;
     }
@@ -261,8 +261,8 @@ public class CompareOptions {
         return exclusions;
     }
 
-    public List<DeCompressConfig> getDeCompressConfigList() {
-        return deCompressConfigList;
+    public List<DecompressConfig> getDecompressConfigList() {
+        return decompressConfigList;
     }
 
     public Map<List<String>, List<String>> getReferenceConfig() {

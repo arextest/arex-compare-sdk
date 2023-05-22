@@ -25,7 +25,7 @@ public class RulesConfig {
      */
     private String pluginJarUrl;
 
-    private Map<List<String>, DeCompressConfig> deCompressConfigMap;
+    private Map<List<String>, DecompressConfig> decompressConfigMap;
 
     private List<List<String>> inclusions;
 
@@ -109,12 +109,12 @@ public class RulesConfig {
     }
 
 
-    public Map<List<String>, DeCompressConfig> getDeCompressConfigMap() {
-        return deCompressConfigMap;
+    public Map<List<String>, DecompressConfig> getDecompressConfigMap() {
+        return decompressConfigMap;
     }
 
-    public void setDeCompressConfigMap(Map<List<String>, DeCompressConfig> deCompressConfigMap) {
-        this.deCompressConfigMap = deCompressConfigMap;
+    public void setDecompressConfigMap(Map<List<String>, DecompressConfig> decompressConfigMap) {
+        this.decompressConfigMap = decompressConfigMap;
     }
 
     public List<ReferenceEntity> getReferenceEntities() {

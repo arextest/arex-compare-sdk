@@ -2,7 +2,7 @@ package com.arextest.diff.sdk;
 
 import com.arextest.diff.model.CompareOptions;
 import com.arextest.diff.model.CompareResult;
-import com.arextest.diff.model.DeCompressConfig;
+import com.arextest.diff.model.DecompressConfig;
 import com.arextest.diff.model.enumeration.CategoryType;
 import org.junit.Assert;
 import org.junit.Test;
@@ -41,7 +41,7 @@ public class CompareSDKTest {
                         put(Arrays.asList("alist"), Arrays.asList(Arrays.asList("aid", "id")));
                     }
                 })
-                .putDecompressConfig(new DeCompressConfig("Gzip", Arrays.asList(Arrays.asList("subObj"))))
+                .putDecompressConfig(new DecompressConfig("Gzip", Arrays.asList(Arrays.asList("subObj"))))
                 .putExclusions(Arrays.asList(Arrays.asList("family", "mother"), Arrays.asList("age")));
         // .putInclusions(Arrays.asList(Arrays.asList("alist", "test"), Arrays.asList("nullList")));
 
@@ -185,10 +185,10 @@ public class CompareSDKTest {
         String str1 = "{\"content\":\"eyJhIjoiMSJ9\"}";
         String str2 = "{\"content\":\"eyJhIjoiMiJ9\"}";
         CompareOptions options = CompareOptions.options();
-        DeCompressConfig deCompressConfig = new DeCompressConfig();
-        deCompressConfig.setNodePath(Arrays.asList(Arrays.asList("content")));
-        deCompressConfig.setName("Base64");
-        options.putDecompressConfig(deCompressConfig);
+        DecompressConfig decompressConfig = new DecompressConfig();
+        decompressConfig.setNodePath(Arrays.asList(Arrays.asList("content")));
+        decompressConfig.setName("Base64");
+        options.putDecompressConfig(decompressConfig);
 
         CompareResult compare = sdk.compare(str1, str2, options);
         System.out.println();

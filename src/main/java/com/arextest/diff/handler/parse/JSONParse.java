@@ -21,7 +21,7 @@ public class JSONParse {
         Callable<Map<List<NodeEntity>, String>> callable1 = () -> {
             baseParse.setNameToLower(rulesConfig.isNameToLower());
             baseParse.setPluginJarUrl(rulesConfig.getPluginJarUrl());
-            baseParse.setDecompressConfig(rulesConfig.getDeCompressConfigMap());
+            baseParse.setDecompressConfig(rulesConfig.getDecompressConfigMap());
             baseParse.getJSONParse(baseObj, baseObj);
             // Convert field names in JSONObject to lowercase
             if (rulesConfig.isNameToLower()) {
@@ -33,7 +33,7 @@ public class JSONParse {
         Callable<Map<List<NodeEntity>, String>> callable2 = () -> {
             testParse.setNameToLower(rulesConfig.isNameToLower());
             testParse.setPluginJarUrl(rulesConfig.getPluginJarUrl());
-            testParse.setDecompressConfig(rulesConfig.getDeCompressConfigMap());
+            testParse.setDecompressConfig(rulesConfig.getDecompressConfigMap());
             testParse.getJSONParse(testObj, testObj);
             // Convert field names in JSONObject to lowercase
             if (rulesConfig.isNameToLower()) {

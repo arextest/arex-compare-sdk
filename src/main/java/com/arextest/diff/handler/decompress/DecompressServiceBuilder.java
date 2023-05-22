@@ -20,9 +20,9 @@ import java.util.logging.Logger;
 /**
  * Created by rchen9 on 2023/4/26.
  */
-public class DeCompressServiceBuilder {
+public class DecompressServiceBuilder {
 
-    private static Logger logger = Logger.getLogger(DeCompressServiceBuilder.class.getName());
+    private static Logger logger = Logger.getLogger(DecompressServiceBuilder.class.getName());
 
     private static Map<String, DecompressService> systemDecompressServiceMap = new HashMap<>();
 
@@ -79,7 +79,7 @@ public class DeCompressServiceBuilder {
             if (decompressJarUrl.startsWith("http")) {
                 resource = new URL(decompressJarUrl);
             } else {
-                resource = DeCompressServiceBuilder.class.getClassLoader().getResource(decompressJarUrl);
+                resource = DecompressServiceBuilder.class.getClassLoader().getResource(decompressJarUrl);
             }
             if (resource == null) {
                 resource = new File(decompressJarUrl).toURI().toURL();

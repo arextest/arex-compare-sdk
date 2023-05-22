@@ -1,8 +1,7 @@
 package com.arextest.diff.utils;
 
-import com.arextest.diff.handler.decompress.DeCompressServiceBuilder;
 import com.arextest.diff.model.CompareOptions;
-import com.arextest.diff.model.DeCompressConfig;
+import com.arextest.diff.model.DecompressConfig;
 import com.arextest.diff.model.GlobalOptions;
 import com.arextest.diff.model.RulesConfig;
 import com.arextest.diff.model.SystemConfig;
@@ -40,7 +39,7 @@ public class OptionsToRulesAdapter {
         rulesConfig.setInclusions(listListToLower(rulesConfig.getInclusions()));
         rulesConfig.setExclusions(listListToLower(rulesConfig.getExclusions()));
         rulesConfig.setIgnoreNodeSet(setToLower(rulesConfig.getIgnoreNodeSet()));
-        rulesConfig.setDeCompressConfigMap(mapKeyToLower(rulesConfig.getDeCompressConfigMap()));
+        rulesConfig.setDecompressConfigMap(mapKeyToLower(rulesConfig.getDecompressConfigMap()));
         referenceToLower(rulesConfig.getReferenceEntities());
         keyConfigToLower(rulesConfig.getListSortEntities());
     }
@@ -66,7 +65,7 @@ public class OptionsToRulesAdapter {
         }
         rulesConfig.setCategoryType(compareOptions.getCategoryType());
         rulesConfig.setPluginJarUrl(compareOptions.getPluginJarUrl());
-        rulesConfig.setDeCompressConfigMap(deCompressConfigConvert(compareOptions.getDeCompressConfigList()));
+        rulesConfig.setDecompressConfigMap(decompressConfigConvert(compareOptions.getDecompressConfigList()));
         rulesConfig.setInclusions(compareOptions.getInclusions() == null ? null : new ArrayList<>(compareOptions.getInclusions()));
         rulesConfig.setExclusions(compareOptions.getExclusions() == null ? null : new ArrayList<>(compareOptions.getExclusions()));
         rulesConfig.setReferenceEntities(referenceConfigConvert(compareOptions.getReferenceConfig()));
@@ -182,13 +181,13 @@ public class OptionsToRulesAdapter {
         return result;
     }
 
-    private static Map<List<String>, DeCompressConfig> deCompressConfigConvert(List<DeCompressConfig> deCompressConfigList) {
-        if (deCompressConfigList == null || deCompressConfigList.isEmpty()) {
+    private static Map<List<String>, DecompressConfig> decompressConfigConvert(List<DecompressConfig> decompressConfigList) {
+        if (decompressConfigList == null || decompressConfigList.isEmpty()) {
             return Collections.emptyMap();
         }
-        Map<List<String>, DeCompressConfig> result = new HashMap<>();
-        for (DeCompressConfig deCompressConfig : deCompressConfigList) {
-            List<List<String>> nodePathList = deCompressConfig.getNodePath();
+        Map<List<String>, DecompressConfig> result = new HashMap<>();
+        for (DecompressConfig decompressConfig : decompressConfigList) {
+            List<List<String>> nodePathList = decompressConfig.getNodePath();
             if (nodePathList == null) {
                 continue;
             }
@@ -196,7 +195,7 @@ public class OptionsToRulesAdapter {
                 if (nodePath == null || nodePath.isEmpty()) {
                     continue;
                 }
-                result.put(nodePath, deCompressConfig);
+                result.put(nodePath, decompressConfig);
             }
         }
         return result;
