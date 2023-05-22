@@ -31,7 +31,7 @@ public class ArexItemsListVisitorAdapter implements ItemsListVisitor {
     @Override
     public void visit(ExpressionList expressionList) {
         List<Expression> expressions = expressionList.getExpressions();
-        if (expressions.get(0) instanceof RowConstructor) {
+        if (expressions.size() > 0 && expressions.get(0) instanceof RowConstructor) {
             for (Expression expression : expressions) {
                 ExpressionList exprList = ((RowConstructor) expression).getExprList();
                 ArrayNode arrayNode = JacksonHelperUtil.getArrayNode();
@@ -56,12 +56,14 @@ public class ArexItemsListVisitorAdapter implements ItemsListVisitor {
 
     @Override
     public void visit(MultiExpressionList multiExprList) {
-        System.out.println();
         List<ExpressionList> expressionLists = multiExprList.getExpressionLists();
-        // Optional.ofNullable(expressionLists).orElse(Collections.emptyList())
-        //         .forEach(item -> {
-        //             List<Expression> expressions = item.getExpressions();
-        //             for ()
-        //         });
+        for (ExpressionList expressionList : expressionLists) {
+            ArrayNode arrayNode = JacksonHelperUtil.getArrayNode();
+            List<Expression> expressions = expressionList.getExpressions();
+            for (Expression expression : expressions) {
+                arrayNode.add(expression.toString());
+            }
+            sqlArr.add(arrayNode);
+        }
     }
 }

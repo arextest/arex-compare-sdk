@@ -14,9 +14,23 @@ public class ReplaceExampleTest {
 
     @Test
     public void testReplace() throws JSQLParserException {
-        String sql = "REPLACE INTO fltordershardstrategy(OrderId, MainOrderId, DataChange_LastTime, userdata_location) " +
+        String sql = "REPLACE INTO orderTable(OrderId, InfoId, DataChange_LastTime, userdata_location) " +
                 "VALUES (36768383786, 36768317034, '2023-05-14 18:00:34.556', '')," +
                 "(36768317034, 36768317034, '2023-05-14 18:00:34.556', '')";
+        Statement statement = CCJSqlParserUtil.parse(sql);
+        testSqlParse(statement);
+    }
+
+    @Test
+    public void testReplace2() throws JSQLParserException {
+        String sql = "replace into tb1(name, title, mood) select  rname, rtitle, rmood from tb2";
+        Statement statement = CCJSqlParserUtil.parse(sql);
+        testSqlParse(statement);
+    }
+
+    @Test
+    public void testReplace3() throws JSQLParserException {
+        String sql = "replace into tb1 set name = 'name', title='title',mood=1";
         Statement statement = CCJSqlParserUtil.parse(sql);
         testSqlParse(statement);
     }

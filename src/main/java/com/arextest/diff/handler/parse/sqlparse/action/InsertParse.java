@@ -34,28 +34,30 @@ public class InsertParse implements Parse<Insert> {
         // columns parse
         List<Column> columns = parseObj.getColumns();
         if (columns != null && !columns.isEmpty()) {
-            // ObjectNode columnObj = JacksonHelperUtil.getObjectNode();
-            // ArrayNode values = JacksonHelperUtil.getArrayNode();
-            // ItemsList itemsList = parseObj.getItemsList();
-            // itemsList.accept(new ArexItemsListVisitorAdapter(values));
-            // for (int i = 0; i < columns.size(); i++) {
-            //     JsonNode value = new TextNode("?");
-            //     if (i < values.size()) {
-            //         value = values.get(i);
-            //     }
-            //     columnObj.set(columns.get(i).toString(), value);
-            // }
-            ArrayNode columnArr = JacksonHelperUtil.getArrayNode();
+            ArrayNode sqlColumnArr = JacksonHelperUtil.getArrayNode();
             ArrayNode values = JacksonHelperUtil.getArrayNode();
             ItemsList itemsList = parseObj.getItemsList();
             itemsList.accept(new ArexItemsListVisitorAdapter(values));
-
-            sqlObject.set(Constants.COLUMNS, columnArr);
+            for (int i = 0; i < values.size(); i++) {
+                ObjectNode sqlColumnItem = JacksonHelperUtil.getObjectNode();
+                ArrayNode columnValueArray = (ArrayNode) values.get(i);
+                int columnValueSize = columnValueArray.size();
+                for (int columnIndex = 0; columnIndex < columns.size(); columnIndex++) {
+                    JsonNode value = new TextNode("?");
+                    if (columnIndex < columnValueSize) {
+                        value = columnValueArray.get(columnIndex);
+                    }
+                    sqlColumnItem.set(columns.get(columnIndex).toString(), value);
+                }
+                sqlColumnArr.add(sqlColumnItem);
+            }
+            sqlObject.set(Constants.COLUMNS, sqlColumnArr);
         }
 
         // setColumns parse
         List<Column> setColumns = parseObj.getSetColumns();
         if (setColumns != null && !setColumns.isEmpty()) {
+            ArrayNode sqlColumnArr = JacksonHelperUtil.getArrayNode();
             ObjectNode setColumnObj = JacksonHelperUtil.getObjectNode();
             ArrayNode values = JacksonHelperUtil.getArrayNode();
             List<Expression> setExpressionList = parseObj.getSetExpressionList();
@@ -69,9 +71,8 @@ public class InsertParse implements Parse<Insert> {
                 }
                 setColumnObj.putPOJO(setColumns.get(i).toString(), value);
             }
-
-
-            sqlObject.set(Constants.COLUMNS, setColumnObj);
+            sqlColumnArr.add(setColumnObj);
+            sqlObject.set(Constants.COLUMNS, sqlColumnArr);
         }
 
         return sqlObject;
