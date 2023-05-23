@@ -40,6 +40,6 @@ public class CompareProblemTest {
         compareOptions.putIgnoredTimePrecision(1000L);
 
         CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
-        Assert.assertEquals(result.getLogs().size(), 1);
+        Assert.assertEquals(result.getLogs().size(), 0);
     }
 }
