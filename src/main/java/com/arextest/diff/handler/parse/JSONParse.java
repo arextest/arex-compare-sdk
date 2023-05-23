@@ -6,7 +6,6 @@ import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.utils.JSONParseUtil;
 import com.arextest.diff.utils.NameConvertUtil;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -21,8 +20,8 @@ public class JSONParse {
 
         Callable<Map<List<NodeEntity>, String>> callable1 = () -> {
             baseParse.setNameToLower(rulesConfig.isNameToLower());
-            baseParse.setDecompressServices(rulesConfig.getDecompressServices());
-            baseParse.setDecompressConfig(convertDecompressConfig(rulesConfig.getDecompressConfig()));
+            baseParse.setPluginJarUrl(rulesConfig.getPluginJarUrl());
+            baseParse.setDecompressConfig(rulesConfig.getDecompressConfigMap());
             baseParse.getJSONParse(baseObj, baseObj);
             // Convert field names in JSONObject to lowercase
             if (rulesConfig.isNameToLower()) {
@@ -33,8 +32,8 @@ public class JSONParse {
 
         Callable<Map<List<NodeEntity>, String>> callable2 = () -> {
             testParse.setNameToLower(rulesConfig.isNameToLower());
-            testParse.setDecompressServices(rulesConfig.getDecompressServices());
-            testParse.setDecompressConfig(convertDecompressConfig(rulesConfig.getDecompressConfig()));
+            testParse.setPluginJarUrl(rulesConfig.getPluginJarUrl());
+            testParse.setDecompressConfig(rulesConfig.getDecompressConfigMap());
             testParse.getJSONParse(testObj, testObj);
             // Convert field names in JSONObject to lowercase
             if (rulesConfig.isNameToLower()) {
@@ -47,20 +46,5 @@ public class JSONParse {
         Map<List<NodeEntity>, String> testOriginal = TaskThreadFactory.jsonObjectThreadPool.submit(callable2).get();
 
         return JSONParseUtil.getTotalParses(baseOriginal, testOriginal);
-    }
-
-    private Map<List<String>, String> convertDecompressConfig(Map<String, List<List<String>>> decompressConfig) {
-        if (decompressConfig == null) {
-            return null;
-        }
-        Map<List<String>, String> result = new HashMap<>();
-        decompressConfig.forEach((k, v) -> {
-            if (v != null) {
-                v.forEach(item -> {
-                    result.put(item, k);
-                });
-            }
-        });
-        return result;
     }
 }

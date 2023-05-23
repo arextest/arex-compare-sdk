@@ -3,7 +3,6 @@ package com.arextest.diff.model;
 import com.arextest.diff.model.enumeration.CategoryType;
 import com.arextest.diff.model.key.ListSortEntity;
 import com.arextest.diff.model.key.ReferenceEntity;
-import com.arextest.diff.service.DecompressService;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,15 +20,18 @@ public class RulesConfig {
 
     private String testMsg;
 
+    /**
+     * to receive the field "pluginJarUrl" in CompareOptions
+     */
+    private String pluginJarUrl;
+
+    private Map<List<String>, DecompressConfig> decompressConfigMap;
+
     private List<List<String>> inclusions;
 
     private List<List<String>> exclusions;
 
     private Set<String> ignoreNodeSet;
-
-    private Map<String, DecompressService> decompressServices;
-
-    private Map<String, List<List<String>>> decompressConfig;
 
     private List<ReferenceEntity> referenceEntities = Collections.emptyList();
 
@@ -74,6 +76,14 @@ public class RulesConfig {
         this.testMsg = testMsg;
     }
 
+    public String getPluginJarUrl() {
+        return pluginJarUrl;
+    }
+
+    public void setPluginJarUrl(String pluginJarUrl) {
+        this.pluginJarUrl = pluginJarUrl;
+    }
+
     public List<List<String>> getInclusions() {
         return inclusions;
     }
@@ -98,20 +108,13 @@ public class RulesConfig {
         this.ignoreNodeSet = ignoreNodeSet;
     }
 
-    public Map<String, DecompressService> getDecompressServices() {
-        return decompressServices;
+
+    public Map<List<String>, DecompressConfig> getDecompressConfigMap() {
+        return decompressConfigMap;
     }
 
-    public void setDecompressServices(Map<String, DecompressService> decompressServices) {
-        this.decompressServices = decompressServices;
-    }
-
-    public Map<String, List<List<String>>> getDecompressConfig() {
-        return decompressConfig;
-    }
-
-    public void setDecompressConfig(Map<String, List<List<String>>> decompressConfig) {
-        this.decompressConfig = decompressConfig;
+    public void setDecompressConfigMap(Map<List<String>, DecompressConfig> decompressConfigMap) {
+        this.decompressConfigMap = decompressConfigMap;
     }
 
     public List<ReferenceEntity> getReferenceEntities() {
