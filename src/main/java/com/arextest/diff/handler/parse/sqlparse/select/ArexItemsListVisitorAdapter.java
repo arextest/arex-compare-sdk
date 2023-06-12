@@ -42,11 +42,11 @@ public class ArexItemsListVisitorAdapter implements ItemsListVisitor {
                 sqlArr.add(arrayNode);
             }
         } else {
+            ArrayNode arrayNode = JacksonHelperUtil.getArrayNode();
             for (Expression expression : expressions) {
-                ArrayNode arrayNode = JacksonHelperUtil.getArrayNode();
                 arrayNode.add(expressionToString(expression));
-                sqlArr.add(arrayNode);
             }
+            sqlArr.add(arrayNode);
         }
     }
 

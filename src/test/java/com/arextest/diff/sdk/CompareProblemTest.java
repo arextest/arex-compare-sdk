@@ -42,4 +42,64 @@ public class CompareProblemTest {
         CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
         Assert.assertEquals(result.getLogs().size(), 0);
     }
+
+    @Test
+    public void testInsertParse() {
+        CompareSDK sdk = new CompareSDK();
+        sdk.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true);
+        String baseMsg = "{\n" +
+                "    \"parameters\": [\n" +
+                "        {\n" +
+                "            \"pr\": {\n" +
+                "                \"dd\": \"18\",\n" +
+                "                \"re\": \"2023-06-08 23:30\",\n" +
+                "                \"ud\": \"Mxxxx\",\n" +
+                "                \"rk\": \"客人\",\n" +
+                "                \"rn\": \"Message\",\n" +
+                "                \"re\": 21\n" +
+                "            },\n" +
+                "            \"sd\": 39,\n" +
+                "            \"oe\": 3,\n" +
+                "            \"od\": 1,\n" +
+                "            \"is\": true,\n" +
+                "            \"de\": \"2023-06-08 22:32:18.059\",\n" +
+                "            \"fd\": 27\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"body\": \"INSERT INTO `oy` (`sd`, `oe`, `od`, `pr`, `is`, `De`, `fd`) VALUES (?, ?, ?, ?, ?, ?, ?)\",\n" +
+                "    \"dbname\": \"fb\"\n" +
+                "}";
+        String testMsg = "{\n" +
+                "    \"parameters\": [\n" +
+                "        {\n" +
+                "            \"pr\": {\n" +
+                "                \"dd\": \"18\",\n" +
+                "                \"re\": \"2023-06-08 23:30\",\n" +
+                "                \"ud\": \"Mxxxx\",\n" +
+                "                \"rk\": \"客人\",\n" +
+                "                \"rn\": \"Message\",\n" +
+                "                \"re\": 21\n" +
+                "            },\n" +
+                "            \"un\": \"\",\n" +
+                "            \"sd\": 39,\n" +
+                "            \"oe\": 3,\n" +
+                "            \"od\": 1,\n" +
+                "            \"is\": true,\n" +
+                "            \"de\": \"2023-06-08 22:32:17.963\",\n" +
+                "            \"fd\": 27\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"body\": \"INSERT INTO `oy` (`sd`, `oe`, `od`, `pr`, `is`, `De`, `fd`, `un`) VALUES (?, ?, ?, ?, ?, ?, ?, ?)\",\n" +
+                "    \"dbname\": \"fb\"\n" +
+                "}";
+
+        CompareOptions compareOptions = CompareOptions.options();
+        compareOptions.putExclusions(Arrays.asList("body"));
+        compareOptions.putCategoryType(CategoryType.DATABASE);
+        compareOptions.putSelectIgnoreCompare(true);
+        compareOptions.putIgnoredTimePrecision(1000L);
+
+        CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
+        Assert.assertEquals(result.getLogs().size(), 2);
+    }
 }
