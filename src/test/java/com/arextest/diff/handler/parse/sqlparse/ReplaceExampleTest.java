@@ -35,6 +35,14 @@ public class ReplaceExampleTest {
         testSqlParse(statement);
     }
 
+    @Test
+    public void testReplace4() throws JSQLParserException {
+        String sql = "REPLACE INTO orderTable(OrderId, InfoId, DataChange_LastTime, userdata_location) " +
+                "VALUES (?, ?, ?, ?)";
+        Statement statement = CCJSqlParserUtil.parse(sql);
+        testSqlParse(statement);
+    }
+
     private static void testSqlParse(Statement statement) {
         Parse parse = null;
         parse = ActionFactory.selectParse(statement);
