@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public class ArrayCompare {
 
-    public static void arrayCompare(Object obj1, Object obj2, CompareContext compareContext) {
+    public static void arrayCompare(Object obj1, Object obj2, CompareContext compareContext) throws Exception {
 
         ArrayNode obj1Array = (ArrayNode) obj1;
         ArrayNode obj2Array = (ArrayNode) obj2;
@@ -33,7 +33,8 @@ public class ArrayCompare {
 
 
         // decide to use which indexSelector
-        IndexSelector indexSelector = IndexSelectorFactory.getIndexSelector(compareContext.currentNodeLeft, compareContext.currentNodeRight, compareContext);
+        IndexSelector indexSelector = IndexSelectorFactory.getIndexSelector(compareContext.currentNodeLeft,
+                compareContext.currentNodeRight, compareContext);
 
         String currentListPath = ListUti.convertPathToStringForShow(compareContext.currentNodeLeft);
 
@@ -44,7 +45,8 @@ public class ArrayCompare {
             compareContext.currentListKeysLeft.add(currentListPath);
             compareContext.currentListKeysLeft.add(indexSelector.judgeLeftIndexStandard(i));
 
-            int correspondRightIndex = indexSelector.findCorrespondRightIndex(i, rightComparedIndexes, obj1Array, obj2Array);
+            int correspondRightIndex = indexSelector.findCorrespondRightIndex(i, rightComparedIndexes,
+                    obj1Array, obj2Array);
 
             Object element1 = obj1Array.get(i);
             Object element2 = null;
@@ -61,7 +63,8 @@ public class ArrayCompare {
                 compareContext.currentListKeysRight.add(currentListPath);
                 compareContext.currentListKeysRight.add(indexSelector.judgeRightIndexStandard(correspondRightIndex));
 
-                boolean needCompare = !isComparedByRefer(i, correspondRightIndex, compareContext.pkListIndexPair, compareContext.currentNodeLeft);
+                boolean needCompare = !isComparedByRefer(i, correspondRightIndex, compareContext.pkListIndexPair,
+                        compareContext.currentNodeLeft);
                 if (needCompare && element1 != null && element2 != null) {
                     GenericCompare.jsonCompare(element1, element2, compareContext);
                 }
@@ -98,7 +101,8 @@ public class ArrayCompare {
                 compareContext.currentListKeysLeft.add(indexSelector.judgeLeftIndexStandard(correspondLeftIndex));
                 compareContext.currentNodeLeft.add(new NodeEntity(null, correspondLeftIndex));
 
-                boolean needCompare = !isComparedByRefer(correspondLeftIndex, i, compareContext.pkListIndexPair, compareContext.currentNodeRight);
+                boolean needCompare = !isComparedByRefer(correspondLeftIndex, i, compareContext.pkListIndexPair,
+                        compareContext.currentNodeRight);
                 if (needCompare && element1 != null && element2 != null) {
                     GenericCompare.jsonCompare(element1, element2, compareContext);
                 }
@@ -115,7 +119,8 @@ public class ArrayCompare {
         }
     }
 
-    private static boolean isComparedByRefer(int leftIndex, int rightIndex, Map<List<String>, List<IndexPair>> pkListIndexPair, List<NodeEntity> currentListNode) {
+    private static boolean isComparedByRefer(int leftIndex, int rightIndex, Map<List<String>,
+            List<IndexPair>> pkListIndexPair, List<NodeEntity> currentListNode) {
         boolean result = false;
         IndexPair indexPair = new IndexPair(leftIndex, rightIndex);
         List<IndexPair> comparedIndexPairs = pkListIndexPair.get(ListUti.convertToStringList(currentListNode));

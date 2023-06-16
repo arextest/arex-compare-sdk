@@ -15,20 +15,20 @@ import com.arextest.diff.handler.parse.ObjectParse;
 import com.arextest.diff.handler.parse.sqlparse.SqlParse;
 import com.arextest.diff.model.CompareResult;
 import com.arextest.diff.model.RulesConfig;
+import com.arextest.diff.model.enumeration.DiffResultCode;
+import com.arextest.diff.model.exception.FindErrorException;
 import com.arextest.diff.model.exception.SelectIgnoreException;
 import com.arextest.diff.model.key.KeyComputeResponse;
 import com.arextest.diff.model.log.LogEntity;
-import com.arextest.diff.model.log.LogProcessResponse;
 import com.arextest.diff.model.parse.MsgObjCombination;
 import com.arextest.diff.model.parse.MsgStructure;
 import org.apache.commons.lang3.tuple.MutablePair;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Future;
-import java.util.function.Predicate;
 
 /**
  * Created by rchen9 on 2023/1/30.
@@ -49,40 +49,41 @@ public class DataBaseCompareUtil {
 
     private static CompareHandler compareHandler = new CompareHandler();
 
-    private static LogProcess logProcess = new LogProcess();
-
     private static JSONStructureParse jsonStructureParse = new JSONStructureParse();
 
-    public static CompareResult jsonCompare(RulesConfig rulesConfig) {
+    public CompareResult jsonCompare(RulesConfig rulesConfig) {
 
-        CompareResult result = new CompareResult();
+        // CompareResult result = new CompareResult();
+        String baseMsg = rulesConfig.getBaseMsg();
+        String testMsg = rulesConfig.getTestMsg();
 
+
+        // Convert basMsg and testMsg to JSONObject
+        MsgObjCombination msgObjCombination = null;
         try {
-            // Convert basMsg and testMsg to JSONObject
-            MsgObjCombination msgObjCombination = null;
-            try {
-                msgObjCombination = objectParse.doHandler(rulesConfig);
-            } catch (Exception e) {
-                return CompareResultBuilder.addUnMatchedException(rulesConfig.getBaseMsg(), rulesConfig.getTestMsg());
-            }
+            msgObjCombination = objectParse.doHandler(rulesConfig);
+        } catch (Exception e) {
+            return CompareResult.builder().addStringUnMatched(baseMsg, testMsg).build();
+        }
+
+
+        List<LogEntity> logs = null;
+        List<Future<String>> processedMsgList = null;
+        try {
 
             // Parse string and compressed fields in JSONObject
             Map<String, List<String>> parsePaths = jsonParse.doHandler(rulesConfig, msgObjCombination.getBaseObj(),
                     msgObjCombination.getTestObj());
             // If enables sql parsing, fill in the field of "parsedsql"
-            try {
-                sqlParse.doHandler(msgObjCombination, rulesConfig.isOnlyCompareCoincidentColumn(),
-                        rulesConfig.isSelectIgnoreCompare());
-            } catch (SelectIgnoreException exception) {
-                return CompareResultBuilder.noError(rulesConfig.getBaseMsg(), rulesConfig.getTestMsg());
-            }
+            sqlParse.doHandler(msgObjCombination, rulesConfig.isOnlyCompareCoincidentColumn(),
+                    rulesConfig.isSelectIgnoreCompare());
 
             // Parse JSON structure
             CompletableFuture<MutablePair<MsgStructure, MsgStructure>> msgStructureFuture =
                     jsonStructureParse.doHandler(msgObjCombination.getBaseObj(), msgObjCombination.getTestObj());
 
             // Backfill the parsed message to result
-            List<Future<String>> list = fillResultSync.fillResult(msgObjCombination);
+            processedMsgList = fillResultSync.fillResult(msgObjCombination);
 
             // compute listKey
             KeyComputeResponse keyComputeResponse = keyCompute.doHandler(rulesConfig, msgObjCombination.getBaseObj(),
@@ -92,34 +93,43 @@ public class DataBaseCompareUtil {
             MsgObjCombination msgWhiteObj = whitelistHandler.doHandler(msgObjCombination.getBaseObj(),
                     msgObjCombination.getTestObj(), rulesConfig.getInclusions());
 
+
             // compare jsonObject
-            List<LogEntity> logs = compareHandler.doHandler(rulesConfig, keyComputeResponse, msgStructureFuture,
-                    msgWhiteObj.getBaseObj(), msgWhiteObj.getTestObj());
-
-            // process logEntity
-            List<Predicate<LogEntity>> logFilterRules = new ArrayList<Predicate<LogEntity>>() {{
-                add(new TimePrecisionFilter(rulesConfig.getIgnoredTimePrecision()));
-                add(new ArexPrefixFilter());
-                add(new GuidFilter());
-            }};
+            LogProcess logProcess = new LogProcess();
+            logProcess.setRulesConfig(rulesConfig);
+            logProcess.appendFilterRules(Arrays.asList(
+                    new TimePrecisionFilter(rulesConfig.getIgnoredTimePrecision()),
+                    new ArexPrefixFilter(),
+                    new GuidFilter()
+            ));
             if (rulesConfig.isOnlyCompareCoincidentColumn()) {
-                logFilterRules.add(new OnlyCompareSameColumnsFilter());
+                logProcess.appendFilterRules(new OnlyCompareSameColumnsFilter());
             }
-            LogProcessResponse logProcessResponse = logProcess.process(
-                    logs, logFilterRules, rulesConfig);
+            logs = compareHandler.doHandler(rulesConfig, keyComputeResponse, msgStructureFuture,
+                    msgWhiteObj.getBaseObj(), msgWhiteObj.getTestObj(), logProcess);
 
-            result.setCode(logProcessResponse.getExistDiff());
-            result.setMessage("compare successfully");
-            result.setLogs(logProcessResponse.getLogs());
-            result.setProcessedBaseMsg(list.get(0).get());
-            result.setProcessedTestMsg(list.get(1).get());
-            result.setParseNodePaths(parsePaths);
+            // get processed msg
+            String processedBaseMsg = processedMsgList.get(0).get();
+            String processedTestMsg = processedMsgList.get(1).get();
+            return CompareResult.builder()
+                    .code(ListUti.isEmpty(logs) ? DiffResultCode.COMPARED_WITHOUT_DIFFERENCE :
+                            DiffResultCode.COMPARED_WITH_DIFFERENCE)
+                    .message("compare successfully")
+                    .msgInfo(baseMsg, testMsg)
+                    .logs(logs)
+                    .processedBaseMsg(processedBaseMsg)
+                    .processedTestMsg(processedTestMsg)
+                    .parseNodePaths(parsePaths)
+                    .build();
 
+
+        } catch (SelectIgnoreException e) {
+            return CompareResult.builder().noDiff(baseMsg, testMsg).build();
+        } catch (FindErrorException e) {
+            return CompareResult.builder().addFindErrorException(baseMsg, testMsg, processedMsgList, e).build();
         } catch (Exception e) {
-            return CompareResultBuilder.fromException(rulesConfig.getBaseMsg(), rulesConfig.getTestMsg(), CompareResultBuilder.exceptionToString(e));
+            return CompareResult.builder().exception(baseMsg, testMsg, e).build();
         }
-
-        return result;
     }
 
 }

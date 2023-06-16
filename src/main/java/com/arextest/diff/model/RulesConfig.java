@@ -20,6 +20,8 @@ public class RulesConfig {
 
     private String testMsg;
 
+    private boolean quickCompare;
+
     /**
      * to receive the field "pluginJarUrl" in CompareOptions
      */
@@ -74,6 +76,14 @@ public class RulesConfig {
 
     public void setTestMsg(String testMsg) {
         this.testMsg = testMsg;
+    }
+
+    public boolean isQuickCompare() {
+        return quickCompare;
+    }
+
+    public void setQuickCompare(boolean quickCompare) {
+        this.quickCompare = quickCompare;
     }
 
     public String getPluginJarUrl() {

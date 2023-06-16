@@ -6,7 +6,7 @@
 
     <groupId>com.arextest</groupId>
     <artifactId>compare-sdk</artifactId>
-    <version>0.1.17</version>
+    <version>0.1.18-SNAPSHOT</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
@@ -191,8 +191,8 @@
         <profile>
             <id>jar-local</id>
             <properties>
-                <releases.repo></releases.repo>
-                <snapshots.repo></snapshots.repo>
+                <releases.repo>http://maven.release.ctripcorp.com/nexus/content/repositories/flightrelease</releases.repo>
+                <snapshots.repo>http://maven.release.ctripcorp.com/nexus/content/repositories/flightsnapshot</snapshots.repo>
             </properties>
         </profile>
     </profiles>

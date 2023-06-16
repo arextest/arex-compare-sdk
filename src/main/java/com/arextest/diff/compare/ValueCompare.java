@@ -10,7 +10,7 @@ import java.util.List;
 
 public class ValueCompare {
 
-    public static void valueCompare(Object obj1, Object obj2, CompareContext compareContext) {
+    public static void valueCompare(Object obj1, Object obj2, CompareContext compareContext) throws Exception {
 
         List<ReferenceEntity> references = CompareHelper.findReferenceNode(compareContext.currentNodeLeft, compareContext.responseReferences);
         if (!references.isEmpty()) {

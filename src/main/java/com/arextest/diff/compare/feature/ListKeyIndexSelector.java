@@ -24,7 +24,7 @@ public class ListKeyIndexSelector implements IndexSelector {
     }
 
     @Override
-    public int findCorrespondLeftIndex(int curRightIndex, List<Integer> leftComparedIndexes, ArrayNode obj1Array, ArrayNode obj2Array) {
+    public int findCorrespondLeftIndex(int curRightIndex, List<Integer> leftComparedIndexes, ArrayNode obj1Array, ArrayNode obj2Array) throws Exception {
         int correspondLeftIndex = -1;
         if (indexKeysRight != null) {
             String rightKey = indexKeysRight.get(curRightIndex);
@@ -52,7 +52,7 @@ public class ListKeyIndexSelector implements IndexSelector {
     }
 
     @Override
-    public int findCorrespondRightIndex(int curLeftIndex, List<Integer> rightComparedIndexes, ArrayNode obj1Array, ArrayNode obj2Array) {
+    public int findCorrespondRightIndex(int curLeftIndex, List<Integer> rightComparedIndexes, ArrayNode obj1Array, ArrayNode obj2Array) throws Exception {
         // when indexKeyLef is null, obj1Array must be empty. but the indexKeyLeft also judge null;
         int correspondRightIndex = -1;
         if (indexKeysLeft != null) {

@@ -1,9 +1,11 @@
 package com.arextest.diff.handler.log.register;
 
 import com.arextest.diff.handler.log.LogMarker;
+import com.arextest.diff.handler.log.LogProcess;
 import com.arextest.diff.model.compare.CompareContext;
 import com.arextest.diff.model.enumeration.ErrorType;
 import com.arextest.diff.model.enumeration.UnmatchedType;
+import com.arextest.diff.model.exception.FindErrorException;
 import com.arextest.diff.model.key.ReferenceEntity;
 import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.model.log.NodeEntity;
@@ -11,6 +13,7 @@ import com.arextest.diff.model.parse.MsgStructure;
 import com.arextest.diff.utils.ListUti;
 import com.fasterxml.jackson.databind.node.NullNode;
 
+import java.util.Collections;
 import java.util.List;
 
 import static com.arextest.diff.compare.CompareHelper.findReferenceNode;
@@ -19,9 +22,8 @@ import static com.arextest.diff.compare.CompareHelper.getUnmatchedPair;
 
 public class LogRegister {
 
-    public static void register(Object obj1, Object obj2, LogMarker logMarker, CompareContext compareContext) {
-        if (LogRegisterCondition.rejectRegister(
-                obj1, obj2, logMarker, compareContext)) {
+    public static void register(Object obj1, Object obj2, LogMarker logMarker, CompareContext compareContext) throws FindErrorException {
+        if (LogRegisterCondition.rejectRegister(obj1, obj2, logMarker, compareContext)) {
             return;
         }
         LogEntity log = null;
@@ -74,6 +76,14 @@ public class LogRegister {
                 break;
         }
 
+        // filter logEntity
+        LogProcess logProcess = compareContext.getLogProcess();
+        if (logProcess.process(Collections.singletonList(log))) {
+            return;
+        }
+        if (compareContext.isQuickCompare()) {
+            throw new FindErrorException("find value diff");
+        }
         saveLog(log, compareContext);
     }
 
