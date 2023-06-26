@@ -66,6 +66,14 @@ public class CompareResult {
         this.message = message;
     }
 
+    public MsgInfo getMsgInfo() {
+        return msgInfo;
+    }
+
+    public void setMsgInfo(MsgInfo msgInfo) {
+        this.msgInfo = msgInfo;
+    }
+
     public String getProcessedBaseMsg() {
         return processedBaseMsg;
     }
