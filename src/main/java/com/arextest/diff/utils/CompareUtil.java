@@ -8,9 +8,9 @@ import java.util.Objects;
 
 public class CompareUtil {
 
-    private static NormalCompareUtil normalCompareUtil = new NormalCompareUtil();
+    private static final NormalCompareUtil normalCompareUtil = new NormalCompareUtil();
 
-    private static DataBaseCompareUtil dataBaseCompareUtil = new DataBaseCompareUtil();
+    private static final DataBaseCompareUtil dataBaseCompareUtil = new DataBaseCompareUtil();
 
     public static CompareResult jsonCompare(RulesConfig rulesConfig) {
         if (Objects.equals(rulesConfig.getCategoryType(), CategoryType.DATABASE)) {

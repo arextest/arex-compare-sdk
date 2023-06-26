@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ObjectCompare {
-    public static void objectCompare(Object obj1, Object obj2, CompareContext compareContext) {
+    public static void objectCompare(Object obj1, Object obj2, CompareContext compareContext) throws Exception {
 
         ObjectNode jsonObj1 = (ObjectNode) obj1;
         ObjectNode jsonObj2 = (ObjectNode) obj2;

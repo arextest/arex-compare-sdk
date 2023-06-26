@@ -1,6 +1,7 @@
 package com.arextest.diff.handler;
 
 import com.arextest.diff.compare.GenericCompare;
+import com.arextest.diff.handler.log.LogProcess;
 import com.arextest.diff.model.RulesConfig;
 import com.arextest.diff.model.compare.CompareContext;
 import com.arextest.diff.model.key.KeyComputeResponse;
@@ -16,19 +17,25 @@ public class CompareHandler {
 
     public List<LogEntity> doHandler(RulesConfig rulesConfig, KeyComputeResponse keyComputeResponse,
                                      CompletableFuture<MutablePair<MsgStructure, MsgStructure>> msgStructureFuture,
-                                     Object baseObj, Object testObj) {
+                                     Object baseObj, Object testObj, LogProcess logProcess) throws Exception {
         CompareContext compareContext = new CompareContext();
+
         List<LogEntity> logs = new ArrayList<>();
         compareContext.setLogs(logs);
+
         compareContext.setBaseObj(baseObj);
         compareContext.setTestObj(testObj);
-        compareContext.setExclusions(rulesConfig.getExclusions());
-        compareContext.setIgnoreNodeSet(rulesConfig.getIgnoreNodeSet());
         compareContext.setResponseReferences(keyComputeResponse.getAllReferenceEntities());
         compareContext.setListIndexKeysLeft(keyComputeResponse.getListIndexKeysLeft());
         compareContext.setListIndexKeysRight(keyComputeResponse.getListIndexKeysRight());
+
+        compareContext.setExclusions(rulesConfig.getExclusions());
+        compareContext.setIgnoreNodeSet(rulesConfig.getIgnoreNodeSet());
         compareContext.setNotDistinguishNullAndEmpty(rulesConfig.isNullEqualsEmpty());
         compareContext.setNullEqualsNotExist(rulesConfig.isNullEqualsNotExist());
+        compareContext.setLogProcess(logProcess);
+        compareContext.setQuickCompare(rulesConfig.isQuickCompare());
+
         if (msgStructureFuture != null) {
             MutablePair<MsgStructure, MsgStructure> msgStructureMutablePair = msgStructureFuture.join();
             compareContext.setBaseMsgStructure(msgStructureMutablePair.getLeft());

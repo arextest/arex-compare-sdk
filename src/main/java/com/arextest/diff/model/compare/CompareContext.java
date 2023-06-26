@@ -1,5 +1,6 @@
 package com.arextest.diff.model.compare;
 
+import com.arextest.diff.handler.log.LogProcess;
 import com.arextest.diff.model.key.ReferenceEntity;
 import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.model.log.NodeEntity;
@@ -18,8 +19,12 @@ public class CompareContext {
     public Object testObj;
 
     public List<List<String>> exclusions;
-
     public Set<String> ignoreNodeSet;
+    public boolean notDistinguishNullAndEmpty = false;
+    public boolean nullEqualsNotExist = false;
+    public LogProcess logProcess;
+    public boolean quickCompare;
+
 
     public Map<List<String>, Object> refPkListNodeCacheLeft = new HashMap<>();
     public Map<List<String>, Object> refPkListNodeCacheRight = new HashMap<>();
@@ -49,10 +54,6 @@ public class CompareContext {
     public MsgStructure testMsgStructure;
 
     public byte ignoreReferenceNotFound = 0;
-
-    public boolean notDistinguishNullAndEmpty = false;
-
-    public boolean nullEqualsNotExist = false;
 
     public CompareContext() {
         this.currentTraceLeft = new ArrayList<>();
@@ -91,6 +92,38 @@ public class CompareContext {
 
     public void setIgnoreNodeSet(Set<String> ignoreNodeSet) {
         this.ignoreNodeSet = ignoreNodeSet;
+    }
+
+    public boolean isNotDistinguishNullAndEmpty() {
+        return notDistinguishNullAndEmpty;
+    }
+
+    public void setNotDistinguishNullAndEmpty(boolean notDistinguishNullAndEmpty) {
+        this.notDistinguishNullAndEmpty = notDistinguishNullAndEmpty;
+    }
+
+    public boolean isNullEqualsNotExist() {
+        return nullEqualsNotExist;
+    }
+
+    public void setNullEqualsNotExist(boolean nullEqualsNotExist) {
+        this.nullEqualsNotExist = nullEqualsNotExist;
+    }
+
+    public LogProcess getLogProcess() {
+        return logProcess;
+    }
+
+    public void setLogProcess(LogProcess logProcess) {
+        this.logProcess = logProcess;
+    }
+
+    public boolean isQuickCompare() {
+        return quickCompare;
+    }
+
+    public void setQuickCompare(boolean quickCompare) {
+        this.quickCompare = quickCompare;
     }
 
     public Map<List<String>, Object> getRefPkListNodeCacheLeft() {
@@ -252,19 +285,5 @@ public class CompareContext {
         this.ignoreReferenceNotFound = ignoreReferenceNotFound;
     }
 
-    public boolean isNotDistinguishNullAndEmpty() {
-        return notDistinguishNullAndEmpty;
-    }
 
-    public void setNotDistinguishNullAndEmpty(boolean notDistinguishNullAndEmpty) {
-        this.notDistinguishNullAndEmpty = notDistinguishNullAndEmpty;
-    }
-
-    public boolean isNullEqualsNotExist() {
-        return nullEqualsNotExist;
-    }
-
-    public void setNullEqualsNotExist(boolean nullEqualsNotExist) {
-        this.nullEqualsNotExist = nullEqualsNotExist;
-    }
 }

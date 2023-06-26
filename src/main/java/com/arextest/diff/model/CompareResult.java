@@ -5,23 +5,41 @@ import com.arextest.diff.model.log.LogEntity;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class CompareResult {
+
     /**
      * Compare status codes{@link DiffResultCode}
      */
     private int code;
+
     // status information
     private String message;
+
+    private MsgInfo msgInfo;
+
     // inconsistent record
     private List<LogEntity> logs;
+
     private String processedBaseMsg;
+
     private String processedTestMsg;
+
     // parsed node path and original value
     private Map<String, List<String>> parseNodePaths;
 
     public CompareResult() {
+    }
+
+    public CompareResult(int code, String message, MsgInfo msgInfo, List<LogEntity> logs,
+                         String processedBaseMsg, String processedTestMsg, Map<String, List<String>> parseNodePaths) {
+        this.code = code;
+        this.message = message;
+        this.msgInfo = msgInfo;
+        this.logs = logs;
+        this.processedBaseMsg = processedBaseMsg;
+        this.processedTestMsg = processedTestMsg;
+        this.parseNodePaths = parseNodePaths;
     }
 
     public int getCode() {
@@ -32,6 +50,14 @@ public class CompareResult {
         this.code = code;
     }
 
+    public List<LogEntity> getLogs() {
+        return logs;
+    }
+
+    public void setLogs(List<LogEntity> logs) {
+        this.logs = logs;
+    }
+
     public String getMessage() {
         return message;
     }
@@ -40,12 +66,12 @@ public class CompareResult {
         this.message = message;
     }
 
-    public List<LogEntity> getLogs() {
-        return logs;
+    public MsgInfo getMsgInfo() {
+        return msgInfo;
     }
 
-    public void setLogs(List<LogEntity> logs) {
-        this.logs = logs;
+    public void setMsgInfo(MsgInfo msgInfo) {
+        this.msgInfo = msgInfo;
     }
 
     public String getProcessedBaseMsg() {
@@ -70,5 +96,9 @@ public class CompareResult {
 
     public void setParseNodePaths(Map<String, List<String>> parseNodePaths) {
         this.parseNodePaths = parseNodePaths;
+    }
+
+    public static CompareBuilder builder() {
+        return new CompareBuilder();
     }
 }

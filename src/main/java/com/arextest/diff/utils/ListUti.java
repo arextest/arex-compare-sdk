@@ -9,6 +9,13 @@ import java.util.List;
 
 public class ListUti {
 
+    public static <T> boolean isEmpty(List<T> logs) {
+        if (logs == null || logs.isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+
     public static boolean stringListEqual(List<String> listA, List<String> listB) {
         if (listA == listB) {
             return true;

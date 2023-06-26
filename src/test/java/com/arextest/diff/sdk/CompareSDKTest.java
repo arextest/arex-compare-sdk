@@ -194,4 +194,60 @@ public class CompareSDKTest {
         System.out.println();
     }
 
+    @Test
+    public void testCompare1() {
+        CompareSDK sdk = new CompareSDK();
+        sdk.getGlobalOptions()
+                .putNameToLower(true)
+                .putNullEqualsNotExist(true)
+                .putPluginJarUrl("./lib/arex-compare-sdk-plugin-0.1.0-jar-with-dependencies.jar");
+        String str1 = "{\"content\":null}";
+        String str2 = "{}";
+        CompareOptions options = CompareOptions.options();
+        DecompressConfig decompressConfig = new DecompressConfig();
+        decompressConfig.setNodePath(Arrays.asList(Arrays.asList("content")));
+        decompressConfig.setName("Base64");
+        options.putDecompressConfig(decompressConfig);
+
+        CompareResult compare = sdk.compare(str1, str2, options);
+        System.out.println();
+    }
+
+    @Test
+    public void testQuickCompare() {
+        long start = System.currentTimeMillis();
+        CompareSDK sdk = new CompareSDK();
+        sdk.getGlobalOptions()
+                .putNameToLower(true)
+                .putNullEqualsEmpty(true)
+                .putPluginJarUrl("./lib/arex-compare-sdk-plugin-0.1.0-jar-with-dependencies.jar");
+
+        String str1 = "{\"address\":\"add\",\"name\":null,"
+                + "\"family\":[{\"id\":1,\"subject\":{\"mother\":\"B\",\"father\":\"A\",\"brother\":\"F\",\"sister\":\"D\"},\"bug\":{\"helper\":\"1\"},\"list\":[\"1\",\"2\"]},"
+                + "{\"id\":2,\"subject\":{\"mother\":\"A\",\"father\":\"F\",\"brother\":\"C\",\"sister\":\"E\"},\"bug\":{\"helper\":\"2\"},\"list\":[\"1\",\"2\"]}],"
+                + "\"subObj\":\"H4sIAAAAAAAAAKtWys3PK8lQslIyVdJRqkxNLAIyjQyMDIG8lMRKIMfQXKkWAMavr8AmAAAA\","
+                + "\"alist\":[{\"aid\":{\"id\":1},\"test\":[{\"subject\":\"1\"}]},{\"aid\":{\"id\":2},\"test\":[{\"subject\":\"2\"}],\"addtion\":\"ad\"}],\"nullList\":[null],\"age\":18}";
+
+        String str2 = "{\"address\":\"add\",\"name\":null,"
+                + "\"family\":[{\"id\":3,\"subject\":{\"mother\":\"A\",\"father\":\"F\",\"brother\":\"C\",\"sister\":\"E\"},\"bug\":{\"helper\":\"2\"},\"list\":[\"1\",\"2\"]},"
+                + "{\"id\":1,\"subject\":{\"mother\":\"B\",\"father\":\"A\",\"brother\":\"C\",\"sister\":\"E\"},\"bug\":{\"helper\":\"1\"},\"list\":[\"1\",\"2\"]}],"
+                + "\"subObj\":\"H4sIAAAAAAAAAKtWys3PK8lQslIyVdJRqkxNLAIyjQyMDIG8lMRKIMfQXKkWAMavr8AmAAAA\","
+                + "\"alist\":[{\"aid\":{\"id\":3},\"test\":[{\"subject\":\"1\"}]},{\"aid\":{\"id\":1},\"test\":[{\"subject\":\"2\"}],\"addtion\":\"ad\"}],\"nullList\":[1],\"age\":17}";
+
+        CompareOptions compareOptions = CompareOptions.options().putReferenceConfig(Arrays.asList("alist", "aid", "id"), Arrays.asList("family", "id"))
+                .putListSortConfig(new HashMap<List<String>, List<List<String>>>() {
+                    {
+                        put(Arrays.asList("family"), Arrays.asList(Arrays.asList("subject", "mother"), Arrays.asList("subject", "father")));
+                        put(Arrays.asList("alist"), Arrays.asList(Arrays.asList("aid", "id")));
+                    }
+                })
+                .putDecompressConfig(new DecompressConfig("Gzip", Arrays.asList(Arrays.asList("subObj"))))
+                .putExclusions(Arrays.asList(Arrays.asList("family", "mother"), Arrays.asList("age")));
+
+        CompareResult result = sdk.quickCompare(str1, str2, compareOptions);
+        long end = System.currentTimeMillis();
+        System.out.println(end - start);
+    }
+
+
 }

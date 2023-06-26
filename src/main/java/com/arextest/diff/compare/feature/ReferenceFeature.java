@@ -6,6 +6,7 @@ import com.arextest.diff.handler.log.LogMarker;
 import com.arextest.diff.handler.log.register.LogRegister;
 import com.arextest.diff.model.compare.CompareContext;
 import com.arextest.diff.model.compare.IndexPair;
+import com.arextest.diff.model.exception.FindErrorException;
 import com.arextest.diff.model.key.ReferenceEntity;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.utils.ListUti;
@@ -17,7 +18,7 @@ import java.util.Objects;
 
 public class ReferenceFeature {
 
-    public static void referenceHandler(List<ReferenceEntity> references, Object obj1, Object obj2, CompareContext compareContext) {
+    public static void referenceHandler(List<ReferenceEntity> references, Object obj1, Object obj2, CompareContext compareContext) throws Exception {
 
         String refValue1 = String.valueOf(obj1);
         String refValue2 = String.valueOf(obj2);

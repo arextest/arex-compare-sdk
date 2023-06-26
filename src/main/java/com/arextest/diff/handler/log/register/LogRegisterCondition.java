@@ -19,9 +19,11 @@ public class LogRegisterCondition {
 
     public static boolean accordingNullEqualsEmpty(Object obj1, Object obj2, LogMarker logMarker,
                                                    CompareContext compareContext) {
+
         if (!compareContext.notDistinguishNullAndEmpty) {
             return false;
         }
+
         switch (logMarker) {
             case NULL_CHECK:
             case RIGHT_OBJECT_MISSING:
@@ -32,14 +34,15 @@ public class LogRegisterCondition {
             default:
                 return false;
         }
-
     }
 
     public static boolean accordingNullEqualsNotExist(Object obj1, Object obj2, LogMarker logMarker,
                                                       CompareContext compareContext) {
+
         if (!compareContext.nullEqualsNotExist) {
             return false;
         }
+
         switch (logMarker) {
             case RIGHT_OBJECT_MISSING:
             case LEFT_OBJECT_MISSING:
@@ -57,16 +60,13 @@ public class LogRegisterCondition {
             return true;
         }
         if (o instanceof ArrayNode) {
-            if (((ArrayNode) o).size() == 0) {
-                return true;
-            }
+            return ((ArrayNode) o).size() == 0;
         } else if (o instanceof ObjectNode) {
             return false;
         } else {
             String s = String.valueOf(o);
             return s.equals("");
         }
-        return false;
     }
 
     private static boolean judgeNullAndNotExist(Object o) {
