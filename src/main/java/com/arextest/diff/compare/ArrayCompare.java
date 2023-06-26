@@ -119,8 +119,9 @@ public class ArrayCompare {
         }
     }
 
-    private static boolean isComparedByRefer(int leftIndex, int rightIndex, Map<List<String>,
-            List<IndexPair>> pkListIndexPair, List<NodeEntity> currentListNode) {
+    private static boolean isComparedByRefer(int leftIndex, int rightIndex,
+                                             Map<List<String>, List<IndexPair>> pkListIndexPair,
+                                             List<NodeEntity> currentListNode) {
         boolean result = false;
         IndexPair indexPair = new IndexPair(leftIndex, rightIndex);
         List<IndexPair> comparedIndexPairs = pkListIndexPair.get(ListUti.convertToStringList(currentListNode));
