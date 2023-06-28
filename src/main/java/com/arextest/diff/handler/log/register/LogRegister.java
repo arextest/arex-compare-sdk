@@ -152,7 +152,7 @@ public class LogRegister {
     }
 
     private static LogEntity produceLog(Object obj1, Object obj2, int unmatchedType, int errorType, List<String> currentListKeys, CompareContext compareContext) {
-        LogEntity log = new LogEntity(obj1, obj2, getUnmatchedPair(unmatchedType, compareContext).setListKeys(currentListKeys));
+        LogEntity log = new LogEntity(obj1, obj2, getUnmatchedPair(unmatchedType, compareContext).buildListKeys(currentListKeys));
         log.getLogTag().setErrorType(errorType);
         return log;
     }

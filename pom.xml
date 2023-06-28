@@ -6,7 +6,7 @@
 
     <groupId>com.arextest</groupId>
     <artifactId>compare-sdk</artifactId>
-    <version>0.1.18</version>
+    <version>0.1.19</version>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>

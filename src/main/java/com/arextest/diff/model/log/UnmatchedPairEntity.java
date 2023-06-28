@@ -54,9 +54,13 @@ public class UnmatchedPairEntity implements Serializable {
         this.rightUnmatchedPath = rightUnmatchedPath;
     }
 
-    public UnmatchedPairEntity setListKeys(List<String> listKeys) {
+    public UnmatchedPairEntity buildListKeys(List<String> listKeys) {
         this.listKeys = new ArrayList<>(listKeys);
         return this;
+    }
+
+    public void setListKeys(List<String> listKeys) {
+        this.listKeys = listKeys;
     }
 
     public List<String> getListKeys() {
