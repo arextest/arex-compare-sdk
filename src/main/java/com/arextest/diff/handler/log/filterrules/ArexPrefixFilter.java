@@ -3,6 +3,8 @@ package com.arextest.diff.handler.log.filterrules;
 import com.arextest.diff.model.enumeration.UnmatchedType;
 import com.arextest.diff.model.log.LogEntity;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Predicate;
 
 /**
@@ -10,8 +12,13 @@ import java.util.function.Predicate;
  */
 public class ArexPrefixFilter implements Predicate<LogEntity> {
 
-    private static final String PREFIX_FIRST = "arex_";
-    private static final String PREFIX_SECOND = "_arex";
+    private static final Set<String> PREFIX_SET = new HashSet<String>() {
+        {
+            add("arex.");
+            add("arex_");
+            add("_arex");
+        }
+    };
 
     @Override
     public boolean test(LogEntity logEntity) {
@@ -72,9 +79,6 @@ public class ArexPrefixFilter implements Predicate<LogEntity> {
         }
 
         String substring = testValue.substring(testIndex, testIndex + 5);
-        if (PREFIX_FIRST.equals(substring) || PREFIX_SECOND.equals(substring)) {
-            return true;
-        }
-        return false;
+        return PREFIX_SET.contains(substring);
     }
 }
