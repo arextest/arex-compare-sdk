@@ -5,12 +5,18 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.arextest</groupId>
-    <artifactId>compare-sdk</artifactId>
-    <version>0.1.19</version>
+    <artifactId>arex-compare-parent</artifactId>
+    <packaging>pom</packaging>
+    <version>0.1.21</version>
+    <modules>
+        <module>arex-compare-extension</module>
+        <module>arex-compare-core</module>
+    </modules>
 
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -53,6 +59,11 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>com.arextest</groupId>
+                <artifactId>arex-compare-extension</artifactId>
+                <version>0.0.1</version>
+            </dependency>
+            <dependency>
                 <groupId>com.fasterxml.jackson</groupId>
                 <artifactId>jackson-bom</artifactId>
                 <version>2.10.3</version>
@@ -83,29 +94,6 @@
         </dependencies>
     </dependencyManagement>
 
-    <dependencies>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.jsqlparser</groupId>
-            <artifactId>jsqlparser</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.github.ben-manes.caffeine</groupId>
-            <artifactId>caffeine</artifactId>
-        </dependency>
-    </dependencies>
 
     <profiles>
         <profile>
@@ -191,8 +179,8 @@
         <profile>
             <id>jar-local</id>
             <properties>
-                <releases.repo></releases.repo>
-                <snapshots.repo></snapshots.repo>
+                <releases.repo>http://maven.release.ctripcorp.com/nexus/content/repositories/flightrelease</releases.repo>
+                <snapshots.repo>http://maven.release.ctripcorp.com/nexus/content/repositories/flightsnapshot</snapshots.repo>
             </properties>
         </profile>
     </profiles>

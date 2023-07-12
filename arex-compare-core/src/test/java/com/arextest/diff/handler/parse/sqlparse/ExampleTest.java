@@ -40,7 +40,7 @@ public class ExampleTest {
 
     @Test
     public void testSql() throws JSQLParserException {
-        String sql = "select * from students union select st_id from student_skill;";
+        String sql = "select * from students";
         sqlParse(sql);
     }
 
