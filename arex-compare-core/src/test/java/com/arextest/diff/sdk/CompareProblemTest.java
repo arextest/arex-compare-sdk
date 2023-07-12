@@ -102,4 +102,15 @@ public class CompareProblemTest {
         CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
         Assert.assertEquals(result.getLogs().size(), 2);
     }
+
+    @Test
+    public void testPrefixFilter() {
+        CompareSDK sdk = new CompareSDK();
+        sdk.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true);
+        String baseMsg = "{\"url\":\"http://pic.baidu.png\"}";
+        String testMsg = "{\"url\":\"http://arex.pic.baidu.png\"}";
+
+        CompareResult result = sdk.compare(baseMsg, testMsg);
+        Assert.assertEquals(result.getLogs().size(), 0);
+    }
 }
