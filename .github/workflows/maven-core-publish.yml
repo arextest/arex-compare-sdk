@@ -1,7 +1,7 @@
 # This workflow will build a package using Maven and then publish it to Apache Maven Central
 # For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#Publishing-using-Apache-Maven
  
-name: Maven Package
+name: Maven Core Package
  
 on:
   workflow_dispatch:
@@ -29,13 +29,6 @@ jobs:
  
       - name: Build with Maven
         run: mvn -B -ntp clean package -DskipTests=true -Pjar
-
-      - name: Publish parent to Apache Maven Central
-        run: mvn deploy -N -DskipTests=true
-        env:
-          MAVEN_USERNAME: ${{ secrets.MAVEN_OSSRH_USERNAME }}
-          MAVEN_CENTRAL_TOKEN: ${{ secrets.MAVEN_OSSRH_TOKEN }}
-          MAVEN_GPG_PASSPHRASE: ${{ secrets.MAVEN_GPG_PASSPHRASE }}
 
       - name: Publish Core to Apache Maven Central
         run: mvn deploy -DskipTests=true -pl arex-compare-core -Pjar

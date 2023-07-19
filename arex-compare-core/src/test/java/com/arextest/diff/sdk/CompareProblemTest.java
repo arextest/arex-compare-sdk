@@ -113,4 +113,32 @@ public class CompareProblemTest {
         CompareResult result = sdk.compare(baseMsg, testMsg);
         Assert.assertEquals(result.getLogs().size(), 0);
     }
+
+    @Test
+    public void testYearAndNsTimeIgnore() {
+        CompareSDK sdk = new CompareSDK();
+        sdk.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true);
+        String baseMsg = "{\"time\":\"2023-06-08 23:30:00.000\"}";
+        String testMsg = "{\"time\":\"2023-06-08 23:30:00.999999\"}";
+
+        CompareOptions compareOptions = CompareOptions.options();
+        compareOptions.putIgnoredTimePrecision(1000L);
+
+        CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
+        Assert.assertEquals(result.getLogs().size(), 0);
+    }
+
+    @Test
+    public void testNoYearAndNsTimeIgnore() {
+        CompareSDK sdk = new CompareSDK();
+        sdk.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true);
+        String baseMsg = "{\"time\":\"2023-06-08 23:30:00.000+08:00\"}";
+        String testMsg = "{\"time\":\"2023-06-08T23:30:00.100Z\"}";
+
+        CompareOptions compareOptions = CompareOptions.options();
+        compareOptions.putIgnoredTimePrecision(1000L);
+
+        CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
+        Assert.assertEquals(result.getLogs().size(), 1);
+    }
 }

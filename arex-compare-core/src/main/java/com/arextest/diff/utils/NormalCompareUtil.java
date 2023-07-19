@@ -102,8 +102,8 @@ public class NormalCompareUtil {
                     .message("compare successfully")
                     .msgInfo(baseMsg, testMsg)
                     .logs(logs)
-                    .processedBaseMsg(processedBaseMsg)
-                    .processedTestMsg(processedTestMsg)
+                    .processedBaseMsg(rulesConfig.isQuickCompare() ? baseMsg : processedBaseMsg)
+                    .processedTestMsg(rulesConfig.isQuickCompare() ? testMsg : processedTestMsg)
                     .parseNodePaths(parsePaths)
                     .build();
 
