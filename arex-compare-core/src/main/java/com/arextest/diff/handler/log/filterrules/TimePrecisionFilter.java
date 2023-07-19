@@ -2,10 +2,9 @@ package com.arextest.diff.handler.log.filterrules;
 
 import com.arextest.diff.model.log.LogEntity;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.TimeZone;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
 import java.util.function.Predicate;
 
 /**
@@ -14,24 +13,29 @@ import java.util.function.Predicate;
 public class TimePrecisionFilter implements Predicate<LogEntity> {
 
     private static AbstractDataProcessor dataProcessor;
-
-    private static SimpleDateFormat parseFormat1
-            = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSX");
-    private static SimpleDateFormat parseFormat2
-            = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-    private static SimpleDateFormat parseFormat3
-            = new SimpleDateFormat("HH:mm:ss.SSS");
+    private static DateTimeFormatter parseFormat1 = new DateTimeFormatterBuilder()
+            .appendPattern("yyyy-MM-dd")
+            .optionalStart().appendLiteral(' ').optionalEnd()
+            .appendOptional(DateTimeFormatter.ofPattern("HH:mm:ss.SSSSSS"))
+            .appendOptional(DateTimeFormatter.ofPattern("HH:mm:ss.SSS"))
+            .toFormatter();
+    private static DateTimeFormatter parseFormat2 = new DateTimeFormatterBuilder()
+            .appendOptional(DateTimeFormatter.ofPattern("HH:mm:ss.SSSSSS"))
+            .appendOptional(DateTimeFormatter.ofPattern("HH:mm:ss.SSS"))
+            .toFormatter();
+    private static DateTimeFormatter parseFormat3 = new DateTimeFormatterBuilder()
+            .appendPattern("yyyy-MM-dd")
+            .optionalStart().appendLiteral('T').optionalEnd()
+            .optionalStart().appendLiteral(' ').optionalEnd()
+            .appendOptional(DateTimeFormatter.ofPattern("HH:mm:ss.SSSXXX"))
+            .appendOptional(DateTimeFormatter.ofPattern("HH:mm:ss.SSSZ"))
+            .toFormatter();
 
     private long ignoredTimePrecision;
 
 
     static {
-        parseFormat1.setTimeZone(TimeZone.getTimeZone("GMT+8"));
-        parseFormat2.setTimeZone(TimeZone.getTimeZone("GMT+8"));
-        parseFormat3.setTimeZone(TimeZone.getTimeZone("GMT+8"));
-        parseFormat1.setLenient(false);
-        parseFormat2.setLenient(false);
-        parseFormat3.setLenient(false);
+        parseFormat1 = parseFormat1.withZone(ZoneId.of("UTC"));
 
         dataProcessor = new ProcessorChainBuilder()
                 .addProcessor(new FirstDataProcessor())
@@ -68,13 +72,13 @@ public class TimePrecisionFilter implements Predicate<LogEntity> {
 
         if ((baseStr.startsWith("0") || baseStr.startsWith("1") || baseStr.startsWith("2")) &&
                 (testStr.startsWith("0") || testStr.startsWith("1") || testStr.startsWith("2"))) {
-            Date baseTime = dataProcessor.process(baseStr);
-            Date testTime = dataProcessor.process(testStr);
+            Instant baseTime = dataProcessor.process(baseStr);
+            Instant testTime = dataProcessor.process(testStr);
             if (baseTime == null || testTime == null) {
                 return true;
             }
 
-            long durationMillis = baseTime.getTime() - testTime.getTime();
+            long durationMillis = baseTime.toEpochMilli() - testTime.toEpochMilli();
             if (Math.abs(durationMillis) <= ignoredTimePrecision) {
                 return false;
             }
@@ -90,8 +94,8 @@ public class TimePrecisionFilter implements Predicate<LogEntity> {
             this.nextProcessor = nextProcessor;
         }
 
-        public Date process(String data) {
-            Date date = processData(data);
+        public Instant process(String data) {
+            Instant date = processData(data);
             if (date != null) {
                 return date;
             }
@@ -101,47 +105,52 @@ public class TimePrecisionFilter implements Predicate<LogEntity> {
             return this.nextProcessor.process(data);
         }
 
-        protected abstract Date processData(String data);
+        protected abstract Instant processData(String data);
     }
 
     public static class FirstDataProcessor extends AbstractDataProcessor {
 
         @Override
-        protected Date processData(String data) {
+        protected Instant processData(String data) {
 
-            Date time = null;
+            Instant instant = null;
             try {
-                time = parseFormat1.parse(data);
-            } catch (ParseException e) {
+                ZonedDateTime zdt = ZonedDateTime.parse(data, parseFormat1);
+                instant = zdt.toInstant();
+            } catch (Exception e) {
             }
-            return time;
+            return instant;
         }
     }
 
     public static class SecondDataProcessor extends AbstractDataProcessor {
 
         @Override
-        protected Date processData(String data) {
-            Date time = null;
+        protected Instant processData(String data) {
+            Instant instant = null;
             try {
-                time = parseFormat2.parse(data);
-            } catch (ParseException e) {
+                LocalTime time = LocalTime.parse(data, parseFormat2);
+                LocalDate date = LocalDate.ofEpochDay(0);
+                LocalDateTime dateTime = LocalDateTime.of(date, time);
+                instant = dateTime.toInstant(ZoneOffset.UTC);
+            } catch (Exception e) {
             }
-            return time;
+            return instant;
+
         }
     }
 
     public static class ThirdDataProcessor extends AbstractDataProcessor {
 
         @Override
-        protected Date processData(String data) {
-            Date time = null;
+        protected Instant processData(String data) {
+            Instant instant = null;
             try {
-                time = parseFormat3.parse(data);
-            } catch (ParseException e) {
+                ZonedDateTime zdt = ZonedDateTime.parse(data, parseFormat3);
+                instant = zdt.toInstant();
+            } catch (Exception e) {
             }
-            return time;
-
+            return instant;
         }
     }
 
