@@ -23,6 +23,8 @@ import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.model.parse.MsgObjCombination;
 import com.arextest.diff.model.parse.MsgStructure;
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
 import java.util.List;
@@ -34,6 +36,8 @@ import java.util.concurrent.Future;
  * Created by rchen9 on 2023/1/30.
  */
 public class DataBaseCompareUtil {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DataBaseCompareUtil.class);
 
     private static ObjectParse objectParse = new ObjectParse();
 
@@ -128,6 +132,7 @@ public class DataBaseCompareUtil {
         } catch (FindErrorException e) {
             return CompareResult.builder().addFindErrorException(baseMsg, testMsg, processedMsgList, e).build();
         } catch (Exception e) {
+            LOGGER.error("compare error, exception:", e);
             return CompareResult.builder().exception(baseMsg, testMsg, e).build();
         }
     }

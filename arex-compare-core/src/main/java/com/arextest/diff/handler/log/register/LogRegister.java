@@ -12,15 +12,17 @@ import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.model.parse.MsgStructure;
 import com.arextest.diff.utils.ListUti;
 import com.fasterxml.jackson.databind.node.NullNode;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collections;
 import java.util.List;
 
-import static com.arextest.diff.compare.CompareHelper.findReferenceNode;
-import static com.arextest.diff.compare.CompareHelper.getPkNodePath;
-import static com.arextest.diff.compare.CompareHelper.getUnmatchedPair;
+import static com.arextest.diff.compare.CompareHelper.*;
 
 public class LogRegister {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(LogRegister.class);
 
     public static void register(Object obj1, Object obj2, LogMarker logMarker, CompareContext compareContext) throws FindErrorException {
         if (LogRegisterCondition.rejectRegister(obj1, obj2, logMarker, compareContext)) {
@@ -82,6 +84,7 @@ public class LogRegister {
             return;
         }
         if (compareContext.isQuickCompare()) {
+            LOGGER.info("quick compare find value diff, log: {}", log);
             throw new FindErrorException("find value diff");
         }
         saveLog(log, compareContext);
