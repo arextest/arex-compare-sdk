@@ -150,7 +150,7 @@ public class CompareProblemTest {
         String testMsg = "{\"data\":[[{\"name\":\"test2\"},{\"name\":\"testb\"}], [{\"name\":\"testa\"},{\"name\":\"test1\"}]]}";
         CompareOptions compareOptions = new CompareOptions();
         compareOptions.putListSortConfig(Arrays.asList("data"), Arrays.asList(Arrays.asList("name")));
-        CompareResult result = sdk.compare(baseMsg, testMsg);
+        CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
         Assert.assertEquals(result.getLogs().size(), 0);
     }
 }
