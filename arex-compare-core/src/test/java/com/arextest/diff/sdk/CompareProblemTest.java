@@ -141,4 +141,16 @@ public class CompareProblemTest {
         CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
         Assert.assertEquals(result.getLogs().size(), 1);
     }
+
+    @Test
+    public void testMultiLevelArray() {
+        CompareSDK sdk = new CompareSDK();
+        sdk.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true);
+        String baseMsg = "{\"data\":[[{\"name\":\"test1\"},{\"name\":\"testa\"}], [{\"name\":\"testb\"},{\"name\":\"test2\"}]]}";
+        String testMsg = "{\"data\":[[{\"name\":\"test2\"},{\"name\":\"testb\"}], [{\"name\":\"testa\"},{\"name\":\"test1\"}]]}";
+        CompareOptions compareOptions = new CompareOptions();
+        compareOptions.putListSortConfig(Arrays.asList("data"), Arrays.asList(Arrays.asList("name")));
+        CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
+        Assert.assertEquals(result.getLogs().size(), 0);
+    }
 }

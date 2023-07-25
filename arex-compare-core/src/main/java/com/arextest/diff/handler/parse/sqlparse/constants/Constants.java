@@ -10,12 +10,14 @@ public class Constants {
     public static final String UPDATE = "update";
     public static final String DELETE = "delete";
     public static final String REPLACE = "replace";
+    public static final String EXECUTE = "execute";
 
     public static final String ACTION = "action";
     public static final String COLUMNS = "columns";
     public static final String VALUES = "values";
     public static final String FROM = "from";
     public static final String TABLE = "table";
+    public static final String EXECUTE_NAME = "executeName";
     public static final String ALIAS = "alias";
     public static final String JOIN = "join";
     public static final String TYPE = "type";
@@ -33,6 +35,10 @@ public class Constants {
     public static final String OFFSET = "offset";
     public static final String START_JOINS = "startJoins";
     public static final String SET = "set";
+
+    // expression
+    public static final String OPERATOR = "operator";
+    public static final String RIGHT = "right";
 
     // select
     public static final String DISTINCT = "distinct";

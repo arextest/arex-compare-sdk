@@ -7,7 +7,7 @@
     <groupId>com.arextest</groupId>
     <artifactId>arex-compare-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.22</version>
+    <version>0.1.23</version>
     <modules>
         <module>arex-compare-extension</module>
         <module>arex-compare-core</module>
@@ -84,6 +84,11 @@
                 <groupId>com.github.ben-manes.caffeine</groupId>
                 <artifactId>caffeine</artifactId>
                 <version>2.9.2</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.21</version>
             </dependency>
             <dependency>
                 <groupId>junit</groupId>

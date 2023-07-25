@@ -1,6 +1,7 @@
 package com.arextest.diff.handler.parse.sqlparse.select;
 
 import com.arextest.diff.handler.parse.sqlparse.constants.Constants;
+import com.arextest.diff.utils.JacksonHelperUtil;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.sf.jsqlparser.expression.AllValue;
@@ -106,11 +107,13 @@ public class ArexExpressionVisitorAdapter implements ExpressionVisitor {
         columnsObj = (ObjectNode) object.get(Constants.COLUMNS);
     }
 
+    // scores >> 4
     @Override
     public void visit(BitwiseRightShift aThis) {
         columnsObj.put(aThis.toString(), Constants.EMPTY);
     }
 
+    // scores << 4
     @Override
     public void visit(BitwiseLeftShift aThis) {
         columnsObj.put(aThis.toString(), Constants.EMPTY);
@@ -243,17 +246,32 @@ public class ArexExpressionVisitorAdapter implements ExpressionVisitor {
 
     @Override
     public void visit(EqualsTo equalsTo) {
-        columnsObj.put(equalsTo.toString(), Constants.EMPTY);
+        String leftExpression = equalsTo.getLeftExpression().toString();
+        String rightExpression = equalsTo.getRightExpression().toString();
+        ObjectNode fieldObj = JacksonHelperUtil.getObjectNode();
+        fieldObj.put(Constants.OPERATOR, equalsTo.getStringExpression());
+        fieldObj.put(Constants.RIGHT, rightExpression);
+        columnsObj.set(leftExpression, fieldObj);
     }
 
     @Override
     public void visit(GreaterThan greaterThan) {
-        columnsObj.put(greaterThan.toString(), Constants.EMPTY);
+        String leftExpression = greaterThan.getLeftExpression().toString();
+        String rightExpression = greaterThan.getRightExpression().toString();
+        ObjectNode fieldObj = JacksonHelperUtil.getObjectNode();
+        fieldObj.put(Constants.OPERATOR, greaterThan.getStringExpression());
+        fieldObj.put(Constants.RIGHT, rightExpression);
+        columnsObj.set(leftExpression, fieldObj);
     }
 
     @Override
     public void visit(GreaterThanEquals greaterThanEquals) {
-        columnsObj.put(greaterThanEquals.toString(), Constants.EMPTY);
+        String leftExpression = greaterThanEquals.getLeftExpression().toString();
+        String rightExpression = greaterThanEquals.getRightExpression().toString();
+        ObjectNode fieldObj = JacksonHelperUtil.getObjectNode();
+        fieldObj.put(Constants.OPERATOR, greaterThanEquals.getStringExpression());
+        fieldObj.put(Constants.RIGHT, rightExpression);
+        columnsObj.set(leftExpression, fieldObj);
     }
 
     @Override
@@ -283,17 +301,32 @@ public class ArexExpressionVisitorAdapter implements ExpressionVisitor {
 
     @Override
     public void visit(MinorThan minorThan) {
-        columnsObj.put(minorThan.toString(), Constants.EMPTY);
+        String leftExpression = minorThan.getLeftExpression().toString();
+        String rightExpression = minorThan.getRightExpression().toString();
+        ObjectNode fieldObj = JacksonHelperUtil.getObjectNode();
+        fieldObj.put(Constants.OPERATOR, minorThan.getStringExpression());
+        fieldObj.put(Constants.RIGHT, rightExpression);
+        columnsObj.set(leftExpression, fieldObj);
     }
 
     @Override
     public void visit(MinorThanEquals minorThanEquals) {
-        columnsObj.put(minorThanEquals.toString(), Constants.EMPTY);
+        String leftExpression = minorThanEquals.getLeftExpression().toString();
+        String rightExpression = minorThanEquals.getRightExpression().toString();
+        ObjectNode fieldObj = JacksonHelperUtil.getObjectNode();
+        fieldObj.put(Constants.OPERATOR, minorThanEquals.getStringExpression());
+        fieldObj.put(Constants.RIGHT, rightExpression);
+        columnsObj.set(leftExpression, fieldObj);
     }
 
     @Override
     public void visit(NotEqualsTo notEqualsTo) {
-        columnsObj.put(notEqualsTo.toString(), Constants.EMPTY);
+        String leftExpression = notEqualsTo.getLeftExpression().toString();
+        String rightExpression = notEqualsTo.getRightExpression().toString();
+        ObjectNode fieldObj = JacksonHelperUtil.getObjectNode();
+        fieldObj.put(Constants.OPERATOR, notEqualsTo.getStringExpression());
+        fieldObj.put(Constants.RIGHT, rightExpression);
+        columnsObj.set(leftExpression, fieldObj);
     }
 
     @Override

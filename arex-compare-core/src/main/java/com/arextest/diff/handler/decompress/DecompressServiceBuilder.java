@@ -5,6 +5,8 @@ import com.arextest.diff.utils.StringUtil;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.RemovalCause;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -15,14 +17,12 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.ServiceLoader;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 /**
  * Created by rchen9 on 2023/4/26.
  */
 public class DecompressServiceBuilder {
-
-    private static Logger logger = Logger.getLogger(DecompressServiceBuilder.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger(DecompressServiceBuilder.class);
 
     private static Map<String, DecompressService> systemDecompressServiceMap = new HashMap<>();
 
@@ -31,8 +31,7 @@ public class DecompressServiceBuilder {
             .maximumSize(10_000)
             .removalListener(((key, value, cause) -> {
                 if (cause.equals(RemovalCause.SIZE)) {
-                    logger.warning(String.format("DecompressServiceCache is too large, key : %s, cause : %s",
-                            key, cause));
+                    LOGGER.warn("DecompressServiceCache is too large, key : {}, cause : {}", key, cause);
                 }
             }))
             .expireAfterWrite(2, TimeUnit.HOURS)

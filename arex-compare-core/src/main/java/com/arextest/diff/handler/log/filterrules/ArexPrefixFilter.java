@@ -17,6 +17,9 @@ public class ArexPrefixFilter implements Predicate<LogEntity> {
             add("arex.");
             add("arex_");
             add("_arex");
+            add("AREX.");
+            add("AREX_");
+            add("_AREX");
         }
     };
 

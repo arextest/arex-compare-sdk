@@ -24,6 +24,21 @@ import java.util.List;
 
 /**
  * Created by rchen9 on 2023/1/6.
+ * the example of parsed update sql:
+ * {
+ *   "set": {
+ *     "`url`": "?",
+ *   },
+ *   "action": "update",
+ *   "where": {
+ *     "andOr": [],
+ *     "columns": {
+ *       "`id` = ?": 0
+ *     }
+ *   },
+ *   "table": "`picture`"
+ * }
+ *
  */
 public class UpdateParse implements Parse<Update> {
     @Override
@@ -63,7 +78,7 @@ public class UpdateParse implements Parse<Update> {
             joins.forEach(item -> {
                 joinArr.add(JoinParseUtil.parse(item));
             });
-            sqlObject.put(Constants.JOIN, joinArr);
+            sqlObject.set(Constants.JOIN, joinArr);
         }
 
         // updateSet parse
@@ -75,7 +90,7 @@ public class UpdateParse implements Parse<Update> {
                 ArrayList<Expression> expressions = updateSet.getExpressions();
                 setObj.put(columns.get(0).toString(), expressions.get(0).toString());
             }
-            sqlObject.put(Constants.COLUMNS, setObj);
+            sqlObject.set(Constants.COLUMNS, setObj);
         }
 
         // where parse
@@ -85,7 +100,7 @@ public class UpdateParse implements Parse<Update> {
             whereObj.set(Constants.AND_OR, JacksonHelperUtil.getArrayNode());
             whereObj.set(Constants.COLUMNS, JacksonHelperUtil.getObjectNode());
             where.accept(new ArexExpressionVisitorAdapter(whereObj));
-            sqlObject.put(Constants.WHERE, whereObj);
+            sqlObject.set(Constants.WHERE, whereObj);
         }
 
         // order parse
@@ -96,7 +111,7 @@ public class UpdateParse implements Parse<Update> {
             orderByElements.forEach(item -> {
                 item.accept(arexOrderByVisitorAdapter);
             });
-            sqlObject.put(Constants.ORDER_BY, orderByObj);
+            sqlObject.set(Constants.ORDER_BY, orderByObj);
         }
 
         // limit parse

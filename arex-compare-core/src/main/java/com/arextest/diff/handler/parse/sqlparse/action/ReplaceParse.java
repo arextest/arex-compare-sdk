@@ -62,8 +62,7 @@ public class ReplaceParse implements Parse<Replace> {
             ArrayNode sqlColumnArr = JacksonHelperUtil.getArrayNode();
             ObjectNode setColumnObj = JacksonHelperUtil.getObjectNode();
             ArrayNode values = JacksonHelperUtil.getArrayNode();
-            List<Expression> setExpressionList = parseObj.getExpressions();
-            for (Expression expression : setExpressionList) {
+            for (Expression expression : expressions) {
                 values.add(expression.toString());
             }
             for (int i = 0; i < columns.size(); i++) {
