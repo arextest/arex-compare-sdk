@@ -237,7 +237,7 @@ public class SqlParse {
         objectNode.set(PARSED_SQL, parsedSql);
     }
 
-    private class ParsedResult {
+    private static class ParsedResult {
         public ParsedResult() {
 
         }

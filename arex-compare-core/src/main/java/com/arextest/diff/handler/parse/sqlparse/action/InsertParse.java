@@ -18,6 +18,17 @@ import java.util.List;
 
 /**
  * Created by rchen9 on 2023/1/6.
+ * the example of parsed insert sql:
+ * {
+ *   "action" : "insert",
+ *   "table" : "users",
+ *   "columns" : [ {
+ *     "id" : "123",
+ *     "name" : "'姚明'",
+ *     "age" : "25"
+ *   } ]
+ * }
+ *
  */
 public class InsertParse implements Parse<Insert> {
     @Override

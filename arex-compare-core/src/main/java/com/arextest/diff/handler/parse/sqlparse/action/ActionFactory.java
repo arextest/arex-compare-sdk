@@ -3,6 +3,7 @@ package com.arextest.diff.handler.parse.sqlparse.action;
 import com.arextest.diff.handler.parse.sqlparse.Parse;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.delete.Delete;
+import net.sf.jsqlparser.statement.execute.Execute;
 import net.sf.jsqlparser.statement.insert.Insert;
 import net.sf.jsqlparser.statement.replace.Replace;
 import net.sf.jsqlparser.statement.select.Select;
@@ -23,6 +24,8 @@ public class ActionFactory {
             return new SelectParse();
         } else if (statement instanceof Replace) {
             return new ReplaceParse();
+        } else if (statement instanceof Execute) {
+            return new ExecuteParse();
         } else {
             throw new UnsupportedOperationException("not support");
         }

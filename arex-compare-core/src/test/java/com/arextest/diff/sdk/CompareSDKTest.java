@@ -249,5 +249,20 @@ public class CompareSDKTest {
         System.out.println(end - start);
     }
 
+    @Test
+    public void testProcedureExec() {
+        CompareSDK compareSDK = new CompareSDK();
+        compareSDK.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true);
+        String str1 = "{\"body\":\"EXEC cp_petowner @CreateTime='2017-09-07 20:46:24.877'\"}";
+        String str2 = "{\"body\":\"EXEC cp_petowner @CreateTime='2017-09-07 20:46:24.977'\"}";
 
+        CompareOptions compareOptions = CompareOptions.options();
+        compareOptions.putExclusions(Arrays.asList("body"));
+        compareOptions.putExclusions(Arrays.asList("parsedSql", "columns", "columns", "@CreateTime"));
+        compareOptions.putCategoryType(CategoryType.DATABASE);
+
+        CompareResult result = compareSDK.compare(str1, str2, compareOptions);
+        Assert.assertEquals(result.getLogs().size(), 1);
+        System.out.println();
+    }
 }

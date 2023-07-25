@@ -19,6 +19,21 @@ import java.util.List;
 
 /**
  * Created by rchen9 on 2023/1/6.
+ * the example of parsed delete sql:
+ * {
+ *   "action": "DELETE",
+ *   "table": "Exam",
+ *   "where": {
+ *     "andor": [
+ *       "and",
+ *       "and"
+ *     ],
+ *     "columns": {
+ *       "a.rnk <= 3": "",
+ *       "a.per_id in (select per_id from colle_subject)": ""
+ *     }
+ *   }
+ * }
  */
 public class DeleteParse implements Parse<Delete> {
     @Override
@@ -33,7 +48,7 @@ public class DeleteParse implements Parse<Delete> {
             tables.forEach(item -> {
                 delTableObj.put(item.getFullyQualifiedName(), Constants.EMPTY);
             });
-            sqlObject.put(Constants.DEL_TABLES, delTableObj);
+            sqlObject.set(Constants.DEL_TABLES, delTableObj);
         }
 
         // table parse
@@ -49,18 +64,18 @@ public class DeleteParse implements Parse<Delete> {
             joins.forEach(item -> {
                 joinArr.add(JoinParseUtil.parse(item));
             });
-            sqlObject.put(Constants.JOIN, joinArr);
+            sqlObject.set(Constants.JOIN, joinArr);
         }
 
         // where parse
         Expression where = parseObj.getWhere();
         if (where != null) {
             ObjectNode whereObj = JacksonHelperUtil.getObjectNode();
-            whereObj.put(Constants.AND_OR, JacksonHelperUtil.getArrayNode());
-            whereObj.put(Constants.COLUMNS, JacksonHelperUtil.getObjectNode());
+            whereObj.set(Constants.AND_OR, JacksonHelperUtil.getArrayNode());
+            whereObj.set(Constants.COLUMNS, JacksonHelperUtil.getObjectNode());
 
             where.accept(new ArexExpressionVisitorAdapter(whereObj));
-            sqlObject.put(Constants.WHERE, whereObj);
+            sqlObject.set(Constants.WHERE, whereObj);
         }
 
         // orderby parse
@@ -71,7 +86,7 @@ public class DeleteParse implements Parse<Delete> {
             orderByElements.forEach(item -> {
                 item.accept(arexOrderByVisitorAdapter);
             });
-            sqlObject.put(Constants.ORDER_BY, orderByObj);
+            sqlObject.set(Constants.ORDER_BY, orderByObj);
         }
 
         // limit parse
