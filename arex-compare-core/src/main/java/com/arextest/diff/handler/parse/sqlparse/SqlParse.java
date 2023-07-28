@@ -1,9 +1,11 @@
 package com.arextest.diff.handler.parse.sqlparse;
 
 import com.arextest.diff.handler.parse.sqlparse.action.ActionFactory;
+import com.arextest.diff.handler.parse.sqlparse.constants.Constants;
 import com.arextest.diff.model.exception.SelectIgnoreException;
 import com.arextest.diff.model.parse.MsgObjCombination;
 import com.arextest.diff.utils.JacksonHelperUtil;
+import com.arextest.diff.utils.NameConvertUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -13,6 +15,8 @@ import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
 import net.sf.jsqlparser.statement.select.Select;
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,11 +28,11 @@ import java.util.regex.Pattern;
  * Created by rchen9 on 2023/1/12.
  */
 public class SqlParse {
-    private static final String ORIGINAL_SQL = "originalSql";
-    private static final String PARSED_SQL = "parsedSql";
+
+    private static final Logger logger = LoggerFactory.getLogger(SqlParse.class);
 
     public void doHandler(MsgObjCombination msgObjCombination, boolean onlyCompareSameColumns,
-                          boolean selectIgnoreCompare) throws SelectIgnoreException {
+                          boolean selectIgnoreCompare, boolean nameToLower) throws SelectIgnoreException {
         Object baseObj = msgObjCombination.getBaseObj();
         Object testObj = msgObjCombination.getTestObj();
         if (baseObj == null || testObj == null) {
@@ -50,8 +54,8 @@ public class SqlParse {
             }
 
             // parse the body field, compatible with the case where the body is an array
-            JsonNode baseDatabaseBody = baseJSONObj.get("body");
-            JsonNode testDatabaseBody = testJSONObj.get("body");
+            JsonNode baseDatabaseBody = baseJSONObj.get(Constants.BODY);
+            JsonNode testDatabaseBody = testJSONObj.get(Constants.BODY);
 
             if (baseDatabaseBody == null || testDatabaseBody == null) {
                 if (testDatabaseBody != null) {
@@ -65,8 +69,14 @@ public class SqlParse {
             ParsedResult baseParsedResult = sqlParse(baseDatabaseBody);
             ParsedResult testParsedResult = sqlParse(testDatabaseBody);
             if (baseParsedResult != null && testParsedResult != null) {
-                baseJSONObj.set(PARSED_SQL, baseParsedResult.getParsedSql());
-                testJSONObj.set(PARSED_SQL, testParsedResult.getParsedSql());
+                ArrayNode baseParsedSql = baseParsedResult.getParsedSql();
+                ArrayNode testParsedSql = testParsedResult.getParsedSql();
+                if (nameToLower) {
+                    NameConvertUtil.nameConvert(baseParsedSql);
+                    NameConvertUtil.nameConvert(testParsedSql);
+                }
+                baseJSONObj.set(Constants.PARSED_SQL, baseParsedSql);
+                testJSONObj.set(Constants.PARSED_SQL, testParsedSql);
                 List<Boolean> isSelectInBase = baseParsedResult.getIsSelect();
                 List<Boolean> isSelectInTest = testParsedResult.getIsSelect();
                 if (selectIgnoreCompare) {
@@ -116,7 +126,7 @@ public class SqlParse {
 
     private boolean judgeParam(ObjectNode object) {
         try {
-            Object parameters = object.get("parameters");
+            Object parameters = object.get(Constants.PARAMETERS);
             if (parameters != null) {
                 if (parameters instanceof ObjectNode) {
                     ObjectNode paramObj = (ObjectNode) parameters;
@@ -129,6 +139,7 @@ public class SqlParse {
                 }
             }
         } catch (Throwable throwable) {
+            logger.warn("judgeParam error: {}", throwable.getMessage());
         }
         return false;
     }
@@ -152,10 +163,10 @@ public class SqlParse {
     // generate a new database comparison message
     private void produceNewBody(ObjectNode baseJSONObj, ObjectNode testJSONObj) {
 
-        JsonNode originalBaseParams = baseJSONObj.get("parameters");
-        JsonNode originalTestParams = testJSONObj.get("parameters");
-        String originalBaseBody = baseJSONObj.get("body").asText();
-        String originalTestBody = testJSONObj.get("body").asText();
+        JsonNode originalBaseParams = baseJSONObj.get(Constants.PARAMETERS);
+        JsonNode originalTestParams = testJSONObj.get(Constants.PARAMETERS);
+        String originalBaseBody = baseJSONObj.get(Constants.BODY).asText();
+        String originalTestBody = testJSONObj.get(Constants.BODY).asText();
         if (!Objects.equals(originalBaseParams.getClass(), originalTestParams.getClass())) {
             return;
         }
@@ -166,8 +177,8 @@ public class SqlParse {
                 ObjectNode originalTestParamsObj = (ObjectNode) originalTestParams;
                 String newBaseBody = processParams(originalBaseParamsObj, originalBaseBody);
                 String newTestBody = processParams(originalTestParamsObj, originalTestBody);
-                baseJSONObj.put("body", newBaseBody);
-                testJSONObj.put("body", newTestBody);
+                baseJSONObj.put(Constants.BODY, newBaseBody);
+                testJSONObj.put(Constants.BODY, newTestBody);
             } else if (originalBaseParams instanceof ArrayNode) {
                 ArrayNode originalBaseParamsArr = (ArrayNode) originalBaseParams;
                 ArrayNode originalTestParamsArr = (ArrayNode) originalTestParams;
@@ -178,7 +189,7 @@ public class SqlParse {
                     String newBaseBody = processParams(itemBaseParamObj, originalBaseBody);
                     newBaseBodyList.add(newBaseBody);
                 }
-                baseJSONObj.put("body", newBaseBodyList);
+                baseJSONObj.set(Constants.BODY, newBaseBodyList);
 
                 ArrayNode newTestBodyList = JacksonHelperUtil.getArrayNode();
                 for (int i = 0; i < originalTestParamsArr.size(); i++) {
@@ -186,18 +197,17 @@ public class SqlParse {
                     String newTestBody = processParams(itemTestParamObj, originalTestBody);
                     newTestBodyList.add(newTestBody);
                 }
-                testJSONObj.put("body", newTestBodyList);
+                testJSONObj.set(Constants.BODY, newTestBodyList);
             }
-            baseJSONObj.remove("parameters");
-            testJSONObj.remove("parameters");
+            baseJSONObj.remove(Constants.PARAMETERS);
+            testJSONObj.remove(Constants.PARAMETERS);
         } catch (Throwable throwable) {
-            baseJSONObj.set("parameters", originalBaseParams);
-            testJSONObj.set("parameters", originalTestParams);
-            baseJSONObj.put("body", originalBaseBody);
-            testJSONObj.put("body", originalTestBody);
+            logger.warn("produceNewBody error: {}", throwable.getMessage());
+            baseJSONObj.set(Constants.PARAMETERS, originalBaseParams);
+            testJSONObj.set(Constants.PARAMETERS, originalTestParams);
+            baseJSONObj.put(Constants.BODY, originalBaseBody);
+            testJSONObj.put(Constants.BODY, originalTestBody);
         }
-
-
     }
 
 
@@ -231,10 +241,10 @@ public class SqlParse {
 
     private void fillOriginalSql(ObjectNode objectNode, JsonNode databaseBody) {
         ObjectNode backUpObj = JacksonHelperUtil.getObjectNode();
-        backUpObj.set(ORIGINAL_SQL, databaseBody);
+        backUpObj.set(Constants.ORIGINAL_SQL, databaseBody);
         ArrayNode parsedSql = JacksonHelperUtil.getArrayNode();
         parsedSql.add(backUpObj);
-        objectNode.set(PARSED_SQL, parsedSql);
+        objectNode.set(Constants.PARSED_SQL, parsedSql);
     }
 
     private static class ParsedResult {

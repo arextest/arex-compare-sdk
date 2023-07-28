@@ -80,7 +80,7 @@ public class DataBaseCompareUtil {
                     msgObjCombination.getTestObj());
             // If enables sql parsing, fill in the field of "parsedsql"
             sqlParse.doHandler(msgObjCombination, rulesConfig.isOnlyCompareCoincidentColumn(),
-                    rulesConfig.isSelectIgnoreCompare());
+                    rulesConfig.isSelectIgnoreCompare(), rulesConfig.isNameToLower());
 
             // Parse JSON structure
             CompletableFuture<MutablePair<MsgStructure, MsgStructure>> msgStructureFuture =

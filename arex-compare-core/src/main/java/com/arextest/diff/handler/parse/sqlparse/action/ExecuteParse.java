@@ -39,7 +39,7 @@ public class ExecuteParse implements Parse<Execute> {
                 for (Expression expression : expressions) {
                     expression.accept(new ArexExpressionVisitorAdapter(setColumnObj));
                 }
-                sqlColumnArr.add(setColumnObj);
+                sqlColumnArr.add(setColumnObj.get(Constants.COLUMNS));
                 sqlObject.set(Constants.COLUMNS, sqlColumnArr);
             }
         }

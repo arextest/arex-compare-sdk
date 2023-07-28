@@ -258,11 +258,9 @@ public class CompareSDKTest {
 
         CompareOptions compareOptions = CompareOptions.options();
         compareOptions.putExclusions(Arrays.asList("body"));
-        compareOptions.putExclusions(Arrays.asList("parsedSql", "columns", "columns", "@CreateTime"));
         compareOptions.putCategoryType(CategoryType.DATABASE);
 
         CompareResult result = compareSDK.compare(str1, str2, compareOptions);
         Assert.assertEquals(result.getLogs().size(), 1);
-        System.out.println();
     }
 }
