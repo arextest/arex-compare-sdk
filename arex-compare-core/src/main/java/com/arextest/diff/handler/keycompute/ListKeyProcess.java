@@ -1,5 +1,8 @@
 package com.arextest.diff.handler.keycompute;
 
+import com.arextest.diff.model.CompareOptions;
+import com.arextest.diff.model.GlobalOptions;
+import com.arextest.diff.model.RulesConfig;
 import com.arextest.diff.model.enumeration.Constant;
 import com.arextest.diff.model.key.ListSortEntity;
 import com.arextest.diff.model.key.ReferenceEntity;
@@ -7,19 +10,13 @@ import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.utils.JacksonHelperUtil;
 import com.arextest.diff.utils.ListUti;
+import com.arextest.diff.utils.OptionsToRulesAdapter;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
-import java.util.Set;
+import java.util.*;
 
 public class ListKeyProcess {
 
@@ -39,8 +36,6 @@ public class ListKeyProcess {
     // <list path, <index,keyValue>>
     private HashMap<List<NodeEntity>, HashMap<Integer, String>> listIndexKeys = new HashMap<>();
 
-    private HashMap<String, List<String>> listKeysMap;
-
     private List<String> currentParentPath;
 
     boolean useFirstElementKey = false;
@@ -48,8 +43,7 @@ public class ListKeyProcess {
     public ListKeyProcess(List<ReferenceEntity> responseReferences, List<ListSortEntity> allListKeys) {
         this.responseReferences = responseReferences;
         this.allListKeys = allListKeys;
-        this.listKeysMap = getListKeysMap();
-        this.prioritylistSortEntities = computeReferencedListPriority();
+        this.prioritylistSortEntities = this.computeReferencedListPriority(responseReferences, allListKeys);
     }
 
     public List<LogEntity> getLogs() {
@@ -61,54 +55,92 @@ public class ListKeyProcess {
     }
 
     // probably dead loop
-    private LinkedList<ListSortEntity> computeReferencedListPriority() {
-        List<String> fkPaths = new ArrayList<>();
-        Set<String> pkPaths = new LinkedHashSet<>();
+    private LinkedList<ListSortEntity> computeReferencedListPriority(List<ReferenceEntity> responseReferences, List<ListSortEntity> allListKeys) {
+        if (responseReferences == null || responseReferences.isEmpty()) {
+            return new LinkedList<>();
+        }
 
-        HashMap<String, List<String>> relations = new HashMap<>();
-        Queue<String> queue = new LinkedList<>();
+        Map<String, List<String>> listKeysMap = this.getListKeysMap(allListKeys);
+
+        // the collection of fkPaths
+        Set<String> fkPaths = new HashSet<>();
+        // the collection of pkNodeListPaths
+        Set<String> pkListPaths = new HashSet<>();
+
+        // fkPath -> the collection of pkNodeListPaths
+        Map<String, Set<String>> relations = new HashMap<>();
+//        Queue<String> queue = new LinkedList<>();
         for (ReferenceEntity re : responseReferences) {
             String fkPath = ListUti.convertToString2(re.getFkNodePath());
-            String pkPath = ListUti.convertToString2(re.getPkNodeListPath());
+            String pkListPath = ListUti.convertToString2(re.getPkNodeListPath());
             fkPaths.add(fkPath);
-            pkPaths.add(pkPath);
-            if (relations.containsKey(fkPath)) {
-                relations.get(fkPath).add(pkPath);
-            } else {
-                List<String> list = new ArrayList<>();
-                list.add(pkPath);
-                relations.put(fkPath, list);
-            }
+            pkListPaths.add(pkListPath);
+            relations.getOrDefault(fkPath, new HashSet<>()).add(pkListPath);
         }
 
-        while (pkPaths.size() > queue.size()) {
-            for (String s : pkPaths) {
-                if (queue.contains(s)) continue;
-                List<String> list = findMatchPath(fkPaths, s);
-                if (list.size() == 0) {
-                    queue.add(s);
-                } else {
-                    boolean flag = true;
-                    for (int i = 0; i < list.size(); i++) {
-                        String refNode = list.get(i);
-                        List<String> refPkNodes = relations.get(refNode);
+//        while (pkPaths.size() > queue.size()) {
+//            for (String s : pkPaths) {
+//                if (queue.contains(s)) continue;
+//                List<String> list = findMatchPath(fkPaths, s);
+//                if (list.size() == 0) {
+//                    queue.add(s);
+//                } else {
+//                    boolean flag = true;
+//                    for (int i = 0; i < list.size(); i++) {
+//                        String refNode = list.get(i);
+//
+//                        // get the collection of pkNodeList correspond to fkPath
+//                        List<String> refPkNodes = relations.get(refNode);
+//
+//                        for (String refPkNode : refPkNodes) {
+//                            if (!queue.contains(refPkNode)) {
+//                                flag = false;
+//                                break;
+//                            }
+//                        }
+//                        if (!flag) {
+//                            break;
+//                        }
+//                    }
+//                    if (flag) {
+//                        queue.add(s);
+//                    }
+//                }
+//            }
+//        }
 
-                        for (String refPkNode : refPkNodes) {
-                            if (!queue.contains(refPkNode)) {
-                                flag = false;
-                                break;
-                            }
-                        }
-                        if (!flag) {
-                            break;
-                        }
-                    }
-                    if (flag) {
-                        queue.add(s);
-                    }
-                }
-            }
-        }
+        // 所有已遍历节点集合
+        Set<String> traversedSet = new HashSet<>();
+        LinkedList<String> queue = new LinkedList<>();
+
+        this.doPriorityReferences(queue, pkListPaths, new HashSet<>(), traversedSet, relations, fkPaths, listKeysMap);
+
+
+//        while (!refLinkNodes.isEmpty()) {
+//
+//            refLinkNode = nextRefLinkNodes.get(0);
+//            nextRefLinkNodes.remove(0);
+//            refLinkNodeSet.add(refLinkNode);
+//            List<String> list = findMatchPath(fkPaths, refLinkNode);
+//            for (String s : list) {
+//                if (!refLinkNodeSet.contains(s)) {
+//                    nextRefLinkNodes.add(s);
+//                }
+//            }
+//            refLinkNodes = findMatchPath(fkPaths, refLinkNode);
+//
+//
+//            if (traversedSet.contains(refLinkNode)) {
+//                queue.addLast(pkPath);
+//                break;
+//            } else {
+//                traversedSet.add(pkPath);
+//                queue.addFirst(pkPath);
+//            }
+//            refLinkNodes = findMatchPath(fkPaths, refLinkNode);
+//        }
+
+
         LinkedList<ListSortEntity> listSortEntityQueue = new LinkedList<>();
         String path;
         while ((path = queue.poll()) != null) {
@@ -124,36 +156,78 @@ public class ListKeyProcess {
         return listSortEntityQueue;
     }
 
-    private List<String> findMatchPath(List<String> fkPaths, String s) {
-        List<String> keyPaths = listKeysMap.get(s);
-        //pkList keys match in fkNode path
-        List<String> matchPath = new ArrayList<>();
-        if (keyPaths == null) {
-            return matchPath;
-        }
-        for (int i = 0; i < keyPaths.size(); i++) {
-            for (int j = 0; j < fkPaths.size(); j++) {
-                String str = fkPaths.get(j);
-                if (str.equals(keyPaths.get(i))) matchPath.add(str);
-            }
+    /**
+     * find all fkPaths in pkNodeListPath
+     *
+     * @param fkPaths        the collection of fkPaths
+     * @param pkNodeListPath pkNodeListPath
+     * @return
+     */
+    private Set<String> findFkPathInListKey(Set<String> fkPaths, String pkNodeListPath, Map<String, List<String>> listKeysMap) {
+        List<String> keyPaths = listKeysMap.get(pkNodeListPath);
+        if (keyPaths == null || keyPaths.isEmpty()) {
+            return Collections.emptySet();
         }
 
+        Set<String> matchPath = new HashSet<>(keyPaths.size());
+        for (String keyPath : keyPaths) {
+            if (fkPaths.contains(keyPath)) {
+                matchPath.add(keyPath);
+            }
+        }
         return matchPath;
     }
 
-    private HashMap<String, List<String>> getListKeysMap() {
-        HashMap<String, List<String>> map = new HashMap<>();
+    private Map<String, List<String>> getListKeysMap(List<ListSortEntity> allListKeys) {
+        if (allListKeys == null || allListKeys.isEmpty()) {
+            return Collections.emptyMap();
+        }
+
+        Map<String, List<String>> listKeysMap = new HashMap<>();
         for (ListSortEntity listSortEntity : allListKeys) {
             String listPath = ListUti.convertToString2(listSortEntity.getListNodepath());
             List<String> keyPaths = new ArrayList<>();
             for (int i = 0; i < listSortEntity.getKeys().size(); i++) {
-                String listKeyPath = ListUti.convertToString2(mergePath(listSortEntity.getListNodepath(), listSortEntity.getKeys().get(i)));
+                String listKeyPath = ListUti.convertToString2(
+                        mergePath(listSortEntity.getListNodepath(), listSortEntity.getKeys().get(i)));
                 keyPaths.add(listKeyPath);
             }
-            map.put(listPath, keyPaths);
+            listKeysMap.put(listPath, keyPaths);
+        }
+        return listKeysMap;
+    }
+
+    private void doPriorityReferences(LinkedList<String> queue, Set<String> refLinkNodes, Set<String> singleLinkAllNodeSet,
+                                      Set<String> traversedSet, Map<String, Set<String>> relations, Set<String> fkPaths,
+                                      Map<String, List<String>> listKeysMap) {
+        if (refLinkNodes == null || refLinkNodes.isEmpty()) {
+            return;
         }
 
-        return map;
+        for (String refLinkNode : refLinkNodes) {
+            if (singleLinkAllNodeSet.contains(refLinkNode)) {
+                System.out.println("出现死循环");
+                return;
+            }
+
+            if (traversedSet.contains(refLinkNode)) {
+                continue;
+            }
+
+            queue.addLast(refLinkNode);
+            singleLinkAllNodeSet.add(refLinkNode);
+
+            Set<String> refFkNodePaths = findFkPathInListKey(fkPaths, refLinkNode, listKeysMap);
+            if (refFkNodePaths.isEmpty()) {
+                continue;
+            }
+
+            for (String refFkNode : refFkNodePaths) {
+                Set<String> refPkListPaths = relations.get(refFkNode);
+                this.doPriorityReferences(queue, refPkListPaths, new HashSet<>(singleLinkAllNodeSet), traversedSet,
+                        relations, fkPaths, listKeysMap);
+            }
+        }
     }
 
     // add node name
@@ -460,6 +534,63 @@ public class ListKeyProcess {
             }
         }
         return null;
+    }
+
+//    private void doPriorityReferences(Set<String> refLinkNodes, Set<String> singleLinkAllNodeSet, Set<String> traversedSet, LinkedList<String> queue, Map<String, Set<String>> relations, Set<String> fkPaths, Map<String, List<String>> listKeysMap) {
+//        if (refLinkNodes == null || refLinkNodes.isEmpty()) {
+//            return;
+//        }
+//
+//        for (String refLinkNode : refLinkNodes) {
+//            if (singleLinkAllNodeSet.contains(refLinkNode)) {
+//                System.out.println("出现死循环");
+//            }
+//
+//            if (traversedSet.contains(refLinkNode)) {
+//                continue;
+//            }
+//
+//            queue.addLast(refLinkNode);
+//            singleLinkAllNodeSet.add(refLinkNode);
+//
+//            Set<String> refFkNodePaths = findFkPathInListKey(fkPaths, refLinkNode, listKeysMap);
+//            if (refFkNodePaths.isEmpty()) {
+//                continue;
+//            }
+//
+//            for (String refFkNode : refFkNodePaths) {
+//                Set<String> refPkListPaths = relations.get(refFkNode);
+//                doPriorityReferences(refPkListPaths, new HashSet<>(singleLinkAllNodeSet), traversedSet, queue, relations, fkPaths, listKeysMap);
+//            }
+//        }
+//    }
+
+    public static void main(String[] args) {
+
+        // circle reference
+        CompareOptions compareOptions = new CompareOptions();
+        compareOptions.putReferenceConfig(Arrays.asList("f1","c"), Arrays.asList("f2","a"));
+        compareOptions.putReferenceConfig(Arrays.asList("f2","a"), Arrays.asList("f3","b"));
+        compareOptions.putReferenceConfig(Arrays.asList("f3","b"), Arrays.asList("f1","c"));
+        RulesConfig rulesConfig = OptionsToRulesAdapter.optionsToConfig(null, null, compareOptions, new GlobalOptions());
+        ListKeyProcess listKeyProcess = new ListKeyProcess(rulesConfig.getReferenceEntities(), rulesConfig.getListSortEntities());
+
+
+        // 正常情况
+//        CompareOptions compareOptions = new CompareOptions();
+//        compareOptions.putListSortConfig(Arrays.asList("studentList"), Arrays.asList(Arrays.asList("alias")));
+//        compareOptions.putListSortConfig(Arrays.asList("nameList"), Arrays.asList(Arrays.asList("name")));
+//        compareOptions.putListSortConfig(Arrays.asList("addressList"), Arrays.asList(Arrays.asList("id")));
+//
+//        compareOptions.putReferenceConfig(Arrays.asList("studentInfoList", "id"), Arrays.asList("studentList", "id"));
+//        compareOptions.putReferenceConfig(Arrays.asList("studentList", "alias"), Arrays.asList("nameList", "alias"));
+//
+//
+//        RulesConfig rulesConfig = OptionsToRulesAdapter.optionsToConfig(null, null, compareOptions, new GlobalOptions());
+//
+//        ListKeyProcess listKeyProcess = new ListKeyProcess(rulesConfig.getReferenceEntities(), rulesConfig.getListSortEntities());
+
+        System.out.println();
     }
 
 }
