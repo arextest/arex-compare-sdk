@@ -51,7 +51,13 @@ public class ListKeyProcess {
         return listIndexKeys;
     }
 
-    // probably dead loop
+    /**
+     * Get the listKey that needs to be calculated first
+     * @param responseReferences
+     * @param allListKeys
+     * @return
+     * @throws ListKeyCycleException
+     */
     private LinkedList<ListSortEntity> computeReferencedListPriority(List<ReferenceEntity> responseReferences,
                                                                      List<ListSortEntity> allListKeys) throws ListKeyCycleException {
         if (responseReferences == null || responseReferences.isEmpty()) {
