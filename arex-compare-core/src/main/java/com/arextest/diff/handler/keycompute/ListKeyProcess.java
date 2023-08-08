@@ -53,6 +53,7 @@ public class ListKeyProcess {
 
     /**
      * Get the listKey that needs to be calculated first
+     *
      * @param responseReferences
      * @param allListKeys
      * @return
@@ -85,7 +86,7 @@ public class ListKeyProcess {
         Set<String> traversedSet = new HashSet<>();
         LinkedList<String> queue = new LinkedList<>();
 
-        this.doPriorityReferences(queue, pkListPaths, new HashSet<>(), traversedSet, relations, fkPaths, listKeysMap);
+        this.doPriorityReferences(queue, pkListPaths, new LinkedList<>(), traversedSet, relations, fkPaths, listKeysMap);
 
         LinkedList<ListSortEntity> listSortEntityQueue = new LinkedList<>();
         String path;
@@ -143,7 +144,7 @@ public class ListKeyProcess {
         return listKeysMap;
     }
 
-    private void doPriorityReferences(LinkedList<String> queue, Set<String> refLinkNodes, Set<String> singleLinkAllNodeSet,
+    private void doPriorityReferences(LinkedList<String> queue, Set<String> refLinkNodes, LinkedList<String> singleLinkAllNodeSet,
                                       Set<String> traversedSet, Map<String, Set<String>> relations, Set<String> fkPaths,
                                       Map<String, List<String>> listKeysMap) throws ListKeyCycleException {
         if (refLinkNodes == null || refLinkNodes.isEmpty()) {
@@ -160,18 +161,16 @@ public class ListKeyProcess {
             }
 
             queue.addLast(refLinkNode);
-            singleLinkAllNodeSet.add(refLinkNode);
             traversedSet.add(refLinkNode);
 
             Set<String> refFkNodePaths = findFkPathInListKey(fkPaths, refLinkNode, listKeysMap);
-            if (refFkNodePaths.isEmpty()) {
-                continue;
-            }
 
             for (String refFkNode : refFkNodePaths) {
+                singleLinkAllNodeSet.addLast(refLinkNode);
                 Set<String> refPkListPaths = relations.get(refFkNode);
-                this.doPriorityReferences(queue, refPkListPaths, new HashSet<>(singleLinkAllNodeSet), traversedSet,
-                        relations, fkPaths, listKeysMap);
+                this.doPriorityReferences(queue, refPkListPaths, singleLinkAllNodeSet, traversedSet, relations,
+                        fkPaths, listKeysMap);
+                singleLinkAllNodeSet.removeLast();
             }
         }
     }
