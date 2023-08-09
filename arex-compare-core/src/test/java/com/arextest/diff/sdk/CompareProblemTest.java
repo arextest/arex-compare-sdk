@@ -3,6 +3,7 @@ package com.arextest.diff.sdk;
 import com.arextest.diff.model.CompareOptions;
 import com.arextest.diff.model.CompareResult;
 import com.arextest.diff.model.enumeration.CategoryType;
+import com.arextest.diff.model.enumeration.DiffResultCode;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -170,4 +171,218 @@ public class CompareProblemTest {
         CompareResult result = compareSDK.compare(str1, str2, compareOptions);
         Assert.assertEquals(result.getLogs().size(), 1);
     }
+
+    @Test
+    public void testKeyComputeCircleLoop() {
+        CompareSDK compareSDK = new CompareSDK();
+        compareSDK.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true);
+        String str1 = "{\n" +
+                "    \"studentList\": [\n" +
+                "        {\n" +
+                "            \"id\": 1,\n" +
+                "            \"alias\": \"alias1\",\n" +
+                "            \"sex\": \"man\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"id\": 2,\n" +
+                "            \"alias\": \"alias2\",\n" +
+                "            \"sex\": \"woman\"\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"nameList\": [\n" +
+                "        {\n" +
+                "            \"alias\": \"alias2\",\n" +
+                "            \"name\": \"name2\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"alias\": \"alias1\",\n" +
+                "            \"name\": \"name1\"\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"studentInfoList\": [\n" +
+                "        {\n" +
+                "            \"id\": 1,\n" +
+                "            \"studentName\": \"name1\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"id\": 2,\n" +
+                "            \"studentName\": \"name2\"\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"addressList\": [\n" +
+                "        {\n" +
+                "            \"id\": 1,\n" +
+                "            \"address\": \"address1\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"id\": 2,\n" +
+                "            \"address\": \"address2\"\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}";
+        String str2 = "{\n" +
+                "    \"studentList\": [\n" +
+                "        {\n" +
+                "            \"id\": 2,\n" +
+                "            \"alias\": \"alias2\",\n" +
+                "            \"sex\": \"woman\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"id\": 1,\n" +
+                "            \"alias\": \"alias1\",\n" +
+                "            \"sex\": \"man\"\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"nameList\": [\n" +
+                "        {\n" +
+                "            \"alias\": \"alias2\",\n" +
+                "            \"name\": \"name2\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"alias\": \"alias1\",\n" +
+                "            \"name\": \"name1\"\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"studentInfoList\": [\n" +
+                "        {\n" +
+                "            \"id\": 1,\n" +
+                "            \"studentName\": \"name1\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"id\": 2,\n" +
+                "            \"studentName\": \"name2\"\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"addressList\": [\n" +
+                "        {\n" +
+                "            \"id\": 1,\n" +
+                "            \"address\": \"address1\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"id\": 2,\n" +
+                "            \"address\": \"address2\"\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}";
+
+        CompareOptions compareOptions = new CompareOptions();
+        compareOptions.putListSortConfig(Arrays.asList("studentList"), Arrays.asList(Arrays.asList("alias")));
+        compareOptions.putListSortConfig(Arrays.asList("nameList"), Arrays.asList(Arrays.asList("name")));
+        compareOptions.putListSortConfig(Arrays.asList("studentInfoList"), Arrays.asList(Arrays.asList("id")));
+        compareOptions.putListSortConfig(Arrays.asList("addressList"), Arrays.asList(Arrays.asList("id")));
+
+        compareOptions.putReferenceConfig(Arrays.asList("studentInfoList", "id"), Arrays.asList("studentList", "id"));
+        compareOptions.putReferenceConfig(Arrays.asList("studentList", "alias"), Arrays.asList("nameList", "alias"));
+        compareOptions.putReferenceConfig(Arrays.asList("nameList", "name"), Arrays.asList("studentInfoList", "studentName"));
+
+        CompareResult result = compareSDK.compare(str1, str2, compareOptions);
+        Assert.assertEquals(result.getCode(), DiffResultCode.COMPARED_INTERNAL_EXCEPTION);
+    }
+
+
+    @Test
+    public void testReferenceCircleLoop() {
+        CompareSDK compareSDK = new CompareSDK();
+        compareSDK.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true);
+        String str1 = "{\n" +
+                "    \"studentList\": [\n" +
+                "        {\n" +
+                "            \"id\": 1,\n" +
+                "            \"alias\": \"alias1\",\n" +
+                "            \"name\": \"name1\",\n" +
+                "            \"sex\": \"man\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"id\": 2,\n" +
+                "            \"alias\": \"alias2\",\n" +
+                "            \"name\": \"name2\",\n" +
+                "            \"sex\": \"woman\"\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"nameList\": [\n" +
+                "        {\n" +
+                "            \"alias\": \"alias2\",\n" +
+                "            \"name\": \"name2\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"alias\": \"alias1\",\n" +
+                "            \"name\": \"name1\"\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"studentInfoList\": [\n" +
+                "        {\n" +
+                "            \"id\": 1,\n" +
+                "            \"studentName\": \"name1\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"id\": 2,\n" +
+                "            \"studentName\": \"name2\"\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"addressList\": [\n" +
+                "        {\n" +
+                "            \"id\": 1,\n" +
+                "            \"address\": \"address1\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"id\": 2,\n" +
+                "            \"address\": \"address2\"\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}";
+        String str2 = "{\n" +
+                "    \"studentList\": [\n" +
+                "        {\n" +
+                "            \"id\": 2,\n" +
+                "            \"alias\": \"alias2\",\n" +
+                "            \"name\": \"name2\",\n" +
+                "            \"sex\": \"woman\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"id\": 1,\n" +
+                "            \"alias\": \"alias1\",\n" +
+                "            \"name\": \"name1\",\n" +
+                "            \"sex\": \"man\"\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"nameList\": [\n" +
+                "        {\n" +
+                "            \"alias\": \"alias2\",\n" +
+                "            \"name\": \"name2\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"alias\": \"alias1\",\n" +
+                "            \"name\": \"name1\"\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"studentInfoList\": [\n" +
+                "        {\n" +
+                "            \"id\": 1,\n" +
+                "            \"studentName\": \"name1\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"id\": 2,\n" +
+                "            \"studentName\": \"name2\"\n" +
+                "        }\n" +
+                "    ],\n" +
+                "    \"addressList\": [\n" +
+                "        {\n" +
+                "            \"id\": 1,\n" +
+                "            \"address\": \"address1\"\n" +
+                "        },\n" +
+                "        {\n" +
+                "            \"id\": 2,\n" +
+                "            \"address\": \"address2\"\n" +
+                "        }\n" +
+                "    ]\n" +
+                "}";
+
+        CompareOptions compareOptions = new CompareOptions();
+
+        compareOptions.putReferenceConfig(Arrays.asList("studentInfoList", "id"), Arrays.asList("studentList", "id"));
+        compareOptions.putReferenceConfig(Arrays.asList("studentList", "name"), Arrays.asList("studentInfoList", "studentName"));
+        CompareResult result = compareSDK.compare(str1, str2, compareOptions);
+        Assert.assertEquals(result.getLogs().size(), 4);
+    }
+
 }
