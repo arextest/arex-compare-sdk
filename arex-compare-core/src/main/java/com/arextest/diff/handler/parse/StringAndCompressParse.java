@@ -1,5 +1,6 @@
 package com.arextest.diff.handler.parse;
 
+import com.arextest.diff.handler.decompress.DecompressServiceBuilder;
 import com.arextest.diff.model.DecompressConfig;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.utils.DecompressUtil;
@@ -13,6 +14,8 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import org.apache.commons.lang3.tuple.MutablePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +25,8 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class StringAndCompressParse {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(StringAndCompressParse.class);
 
     private List<NodeEntity> currentNode = new ArrayList<>();
 
@@ -130,6 +135,7 @@ public class StringAndCompressParse {
         try {
             unCompressStr = DecompressUtil.decompressPlugin(pluginJarUrl, decompressConfig, value);
         } catch (Throwable e) {
+            LOGGER.warn("decompress fail, value:{}", value, e);
             return new MutablePair<>(null, Boolean.FALSE);
         }
 

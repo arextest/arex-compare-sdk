@@ -96,13 +96,16 @@ public class DecompressServiceBuilder {
             }
 
         } catch (Throwable e) {
+            LOGGER.warn("load decompress service error, jar url : {}", decompressJarUrl, e);
             return Collections.emptyMap();
         }
 
         try {
             serviceClassLoader.close();
         } catch (IOException e) {
+            LOGGER.warn("close serviceClassLoader error, jar url : {}", decompressJarUrl, e);
         }
+        LOGGER.info("load decompress service success, serviceSet:{}", result.keySet());
         return result;
     }
 
