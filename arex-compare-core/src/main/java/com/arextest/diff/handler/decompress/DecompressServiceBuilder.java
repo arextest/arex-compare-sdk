@@ -1,6 +1,7 @@
 package com.arextest.diff.handler.decompress;
 
 import com.arextest.diff.service.DecompressService;
+import com.arextest.diff.utils.ClassLoaderUtils;
 import com.arextest.diff.utils.StringUtil;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
@@ -8,14 +9,10 @@ import com.github.benmanes.caffeine.cache.RemovalCause;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLClassLoader;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.ServiceLoader;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -72,22 +69,10 @@ public class DecompressServiceBuilder {
     private static Map<String, DecompressService> buildDecompressServicesFromURL(String decompressJarUrl) {
 
         Map<String, DecompressService> result = new HashMap<>();
-        URL resource = null;
-        URLClassLoader serviceClassLoader = null;
         try {
-            if (decompressJarUrl.startsWith("http")) {
-                resource = new URL(decompressJarUrl);
-            } else {
-                resource = DecompressServiceBuilder.class.getClassLoader().getResource(decompressJarUrl);
-            }
-            if (resource == null) {
-                resource = new File(decompressJarUrl).toURI().toURL();
-            }
-
-            serviceClassLoader = new URLClassLoader(new URL[]{resource});
-
-            ServiceLoader<DecompressService> load = ServiceLoader.load(DecompressService.class, serviceClassLoader);
-            for (DecompressService decompressService : load) {
+            ClassLoaderUtils.loadJar(decompressJarUrl);
+            List<DecompressService> decompressServices = ClassLoaderUtils.loadService(DecompressService.class);
+            for (DecompressService decompressService : decompressServices) {
                 if (decompressService.getAliasName() != null) {
                     result.put(decompressService.getAliasName(), decompressService);
                 } else {
@@ -98,12 +83,6 @@ public class DecompressServiceBuilder {
         } catch (Throwable e) {
             LOGGER.warn("load decompress service error, jar url : {}", decompressJarUrl, e);
             return Collections.emptyMap();
-        }
-
-        try {
-            serviceClassLoader.close();
-        } catch (IOException e) {
-            LOGGER.warn("close serviceClassLoader error, jar url : {}", decompressJarUrl, e);
         }
         LOGGER.info("load decompress service success, serviceSet:{}", result.keySet());
         return result;
