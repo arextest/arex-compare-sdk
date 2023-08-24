@@ -15,7 +15,15 @@ public class ValueCompare {
         List<ReferenceEntity> references = CompareHelper.findReferenceNode(compareContext.currentNodeLeft, compareContext.responseReferences);
         if (!references.isEmpty()) {
             ReferenceFeature.referenceHandler(references, obj1, obj2, compareContext);
-        } else if (!obj1.equals(obj2)) {
+            return;
+        }
+
+        if (!obj1.getClass().equals(obj2.getClass())) {
+            LogRegister.register(obj1, obj2, LogMarker.TYPE_DIFF, compareContext);
+            return;
+        }
+
+        if (!obj1.equals(obj2)) {
             LogRegister.register(obj1, obj2, LogMarker.VALUE_DIFF, compareContext);
         }
     }

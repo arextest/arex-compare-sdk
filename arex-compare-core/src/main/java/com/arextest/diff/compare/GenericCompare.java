@@ -54,7 +54,7 @@ public class GenericCompare {
         }
 
         // obj1 and obj2 are different types
-        if (!obj1.getClass().equals(obj2.getClass())) {
+        if (!isNonLeafNodesTypeEqual(obj1, obj2)) {
             LogRegister.register(obj1, obj2, LogMarker.TYPE_DIFF, compareContext);
             return;
         }
@@ -66,5 +66,21 @@ public class GenericCompare {
         } else {
             ValueCompare.valueCompare(obj1, obj2, compareContext);
         }
+    }
+
+    private static boolean isNonLeafNodesTypeEqual(Object obj1, Object obj2) {
+        Class<?> obj1Class = obj1.getClass();
+        Class<?> obj2Class = obj2.getClass();
+
+        if ((obj1Class == ObjectNode.class && obj2Class != ObjectNode.class) ||
+                (obj1Class != ObjectNode.class && obj2Class == ObjectNode.class)) {
+            return false;
+        }
+
+        if ((obj1Class == ArrayNode.class && obj2Class != ArrayNode.class) ||
+                (obj1Class != ArrayNode.class && obj2Class == ArrayNode.class)) {
+            return false;
+        }
+        return true;
     }
 }
