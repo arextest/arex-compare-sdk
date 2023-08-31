@@ -263,4 +263,23 @@ public class CompareSDKTest {
         CompareResult result = compareSDK.compare(str1, str2, compareOptions);
         Assert.assertEquals(result.getLogs().size(), 1);
     }
+
+    @Test
+    public void addRootCompress() {
+        CompareSDK sdk = new CompareSDK();
+        sdk.getGlobalOptions()
+                .putNameToLower(true)
+                .putNullEqualsEmpty(true)
+                .putPluginJarUrl("./lib/arex-compare-sdk-plugin-0.1.0-jar-with-dependencies.jar");
+
+        String str1 = "H4sIAAAAAAAAAKtWykvMTVWyUkrPz0/PSVWqBQBU4FMBEQAAAA==";
+        String str2 = "H4sIAAAAAAAAAKtWykvMTVWyUkpKzEwpVaoFANs7JyUQAAAA";
+
+        CompareOptions compareOptions = CompareOptions.options()
+                .putDecompressConfig(new DecompressConfig("Gzip", Arrays.asList(Arrays.asList("arex_root"))));
+
+        CompareResult result = sdk.compare(str1, str2, compareOptions);
+
+        Assert.assertEquals(result.getProcessedBaseMsg(), "{\"name\":\"google\"}");
+    }
 }

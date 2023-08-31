@@ -1,26 +1,36 @@
 package com.arextest.diff.handler.parse;
 
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.Callable;
+
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.arextest.diff.factory.TaskThreadFactory;
+import com.arextest.diff.model.DecompressConfig;
 import com.arextest.diff.model.RulesConfig;
+import com.arextest.diff.model.enumeration.Constant;
 import com.arextest.diff.model.parse.MsgObjCombination;
+import com.arextest.diff.utils.DecompressUtil;
 import com.arextest.diff.utils.JacksonHelperUtil;
 import com.arextest.diff.utils.StringUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.apache.commons.lang3.tuple.MutablePair;
-
-import java.util.concurrent.Callable;
 
 public class ObjectParse {
+
+    private static Logger LOGGER = LoggerFactory.getLogger(ObjectParse.class);
 
     public MsgObjCombination doHandler(RulesConfig rulesConfig) throws Exception {
 
         MsgObjCombination response = new MsgObjCombination();
 
         Object obj1 = null, obj2 = null;
-        Callable<Object> callable1 = () -> msgToObj(rulesConfig.getBaseMsg());
-        Callable<Object> callable2 = () -> msgToObj(rulesConfig.getTestMsg());
+        Callable<Object> callable1 = () -> msgToObj(rulesConfig.getBaseMsg(), rulesConfig);
+        Callable<Object> callable2 = () -> msgToObj(rulesConfig.getTestMsg(), rulesConfig);
 
         obj1 = TaskThreadFactory.jsonObjectThreadPool.submit(callable1).get();
         obj2 = TaskThreadFactory.jsonObjectThreadPool.submit(callable2).get();
@@ -32,11 +42,23 @@ public class ObjectParse {
 
     }
 
-    private Object msgToObj(String msg) throws JsonProcessingException {
+    private Object msgToObj(String msg, RulesConfig rulesConfig) throws JsonProcessingException {
         Object obj = null;
         if (StringUtil.isEmpty(msg)) {
             return obj;
         }
+
+        // process the msg
+        String pluginJarUrl = rulesConfig.getPluginJarUrl();
+        Map<List<String>, DecompressConfig> decompressConfigMap = rulesConfig.getDecompressConfigMap();
+        if (decompressConfigMap != null && decompressConfigMap.containsKey(Constant.ROOT_PATH)) {
+            try {
+                msg = DecompressUtil.decompressPlugin(pluginJarUrl, decompressConfigMap.get(Constant.ROOT_PATH), msg);
+            } catch (Throwable throwable) {
+                LOGGER.error("decompress root error, msg:{}", msg, throwable);
+            }
+        }
+
         if (msg.startsWith("[")) {
             obj = JacksonHelperUtil.objectMapper.readValue(msg, ArrayNode.class);
         } else {

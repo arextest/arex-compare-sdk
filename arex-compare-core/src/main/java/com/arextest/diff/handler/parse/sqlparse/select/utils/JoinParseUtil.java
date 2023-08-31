@@ -1,6 +1,6 @@
 package com.arextest.diff.handler.parse.sqlparse.select.utils;
 
-import com.arextest.diff.handler.parse.sqlparse.constants.Constants;
+import com.arextest.diff.handler.parse.sqlparse.constants.DbParseConstants;
 import com.arextest.diff.utils.JacksonHelperUtil;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.sf.jsqlparser.expression.Expression;
@@ -19,12 +19,12 @@ public class JoinParseUtil {
 
         ObjectNode res = JacksonHelperUtil.getObjectNode();
         // join type parse
-        res.put(Constants.TYPE, getJOINType(parseObj));
+        res.put(DbParseConstants.TYPE, getJOINType(parseObj));
 
         // rightItem parse
         FromItem rightItem = parseObj.getRightItem();
         if (rightItem != null) {
-            res.put(Constants.TABLE, rightItem.toString());
+            res.put(DbParseConstants.TABLE, rightItem.toString());
         }
 
         // onExpressions parse
@@ -32,9 +32,9 @@ public class JoinParseUtil {
         if (onExpressions != null && !onExpressions.isEmpty()) {
             ObjectNode onObj = JacksonHelperUtil.getObjectNode();
             onExpressions.forEach(item -> {
-                onObj.put(item.toString(), Constants.EMPTY);
+                onObj.put(item.toString(), DbParseConstants.EMPTY);
             });
-            res.put(Constants.ON, onObj);
+            res.put(DbParseConstants.ON, onObj);
         }
 
         // usingColumns parse
@@ -42,9 +42,9 @@ public class JoinParseUtil {
         if (usingColumns != null && !usingColumns.isEmpty()) {
             ObjectNode usingObj = JacksonHelperUtil.getObjectNode();
             usingColumns.forEach(item -> {
-                usingObj.put(item.toString(), Constants.EMPTY);
+                usingObj.put(item.toString(), DbParseConstants.EMPTY);
             });
-            res.put(Constants.USING, usingObj);
+            res.put(DbParseConstants.USING, usingObj);
         }
 
 

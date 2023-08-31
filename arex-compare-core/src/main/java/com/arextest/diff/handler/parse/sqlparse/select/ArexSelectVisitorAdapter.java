@@ -1,6 +1,6 @@
 package com.arextest.diff.handler.parse.sqlparse.select;
 
-import com.arextest.diff.handler.parse.sqlparse.constants.Constants;
+import com.arextest.diff.handler.parse.sqlparse.constants.DbParseConstants;
 import com.arextest.diff.handler.parse.sqlparse.select.utils.JoinParseUtil;
 import com.arextest.diff.utils.JacksonHelperUtil;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -45,25 +45,25 @@ public class ArexSelectVisitorAdapter implements SelectVisitor {
         // distinct parse
         Distinct distinct = plainSelect.getDistinct();
         if (distinct != null) {
-            sqlObj.put(Constants.DISTINCT, distinct.toString());
+            sqlObj.put(DbParseConstants.DISTINCT, distinct.toString());
         }
 
         // skip parse
         Skip skip = plainSelect.getSkip();
         if (skip != null) {
-            sqlObj.put(Constants.SKIP, skip.toString());
+            sqlObj.put(DbParseConstants.SKIP, skip.toString());
         }
 
         // top parse
         Top top = plainSelect.getTop();
         if (top != null) {
-            sqlObj.put(Constants.TOP, top.toString());
+            sqlObj.put(DbParseConstants.TOP, top.toString());
         }
 
         // first parse
         First first = plainSelect.getFirst();
         if (first != null) {
-            sqlObj.put(Constants.FIRST, first.toString());
+            sqlObj.put(DbParseConstants.FIRST, first.toString());
         }
 
         // selectItems parse
@@ -74,13 +74,13 @@ public class ArexSelectVisitorAdapter implements SelectVisitor {
             selectItems.forEach(selectItem -> {
                 selectItem.accept(arexSelectItemVisitorAdapter);
             });
-            sqlObj.set(Constants.COLUMNS, columnsObj);
+            sqlObj.set(DbParseConstants.COLUMNS, columnsObj);
         }
 
         // into parse
         List<Table> intoTables = plainSelect.getIntoTables();
         if (intoTables != null && !intoTables.isEmpty()) {
-            sqlObj.put(Constants.INTO, intoTables.toString());
+            sqlObj.put(DbParseConstants.INTO, intoTables.toString());
         }
 
         // fromItem parse
@@ -89,7 +89,7 @@ public class ArexSelectVisitorAdapter implements SelectVisitor {
             ObjectNode fromObj = JacksonHelperUtil.getObjectNode();
             ArexFromItemVisitorAdapter arexFromItemVisitorAdapter = new ArexFromItemVisitorAdapter(fromObj);
             fromItem.accept(arexFromItemVisitorAdapter);
-            sqlObj.set(Constants.FROM, fromObj);
+            sqlObj.set(DbParseConstants.FROM, fromObj);
         }
 
         // jonis parse
@@ -99,7 +99,7 @@ public class ArexSelectVisitorAdapter implements SelectVisitor {
             joins.forEach(item -> {
                 joinArr.add(JoinParseUtil.parse(item));
             });
-            sqlObj.put(Constants.JOIN, joinArr);
+            sqlObj.put(DbParseConstants.JOIN, joinArr);
         }
 
         // where parse
@@ -107,28 +107,28 @@ public class ArexSelectVisitorAdapter implements SelectVisitor {
         if (where != null) {
             // JSONObject whereObj = new JSONObject();
             ObjectNode whereObj = JacksonHelperUtil.getObjectNode();
-            whereObj.set(Constants.AND_OR, JacksonHelperUtil.getArrayNode());
-            whereObj.set(Constants.COLUMNS, JacksonHelperUtil.getObjectNode());
+            whereObj.set(DbParseConstants.AND_OR, JacksonHelperUtil.getArrayNode());
+            whereObj.set(DbParseConstants.COLUMNS, JacksonHelperUtil.getObjectNode());
             ArexExpressionVisitorAdapter arexExpressionVisitorAdapter = new ArexExpressionVisitorAdapter(whereObj);
             where.accept(arexExpressionVisitorAdapter);
-            sqlObj.set(Constants.WHERE, whereObj);
+            sqlObj.set(DbParseConstants.WHERE, whereObj);
         }
 
         // group by parse
         GroupByElement groupBy = plainSelect.getGroupBy();
         if (groupBy != null) {
-            sqlObj.put(Constants.GROUP_BY, groupBy.toString());
+            sqlObj.put(DbParseConstants.GROUP_BY, groupBy.toString());
         }
 
         // having parse
         Expression having = plainSelect.getHaving();
         if (having != null) {
             ObjectNode havingObj = JacksonHelperUtil.getObjectNode();
-            havingObj.put(Constants.AND_OR, JacksonHelperUtil.getArrayNode());
-            havingObj.put(Constants.COLUMNS, JacksonHelperUtil.getObjectNode());
+            havingObj.put(DbParseConstants.AND_OR, JacksonHelperUtil.getArrayNode());
+            havingObj.put(DbParseConstants.COLUMNS, JacksonHelperUtil.getObjectNode());
             ArexExpressionVisitorAdapter arexExpressionVisitorAdapter = new ArexExpressionVisitorAdapter(havingObj);
             having.accept(arexExpressionVisitorAdapter);
-            sqlObj.put(Constants.HAVING, havingObj);
+            sqlObj.put(DbParseConstants.HAVING, havingObj);
         }
 
         // order by parse
@@ -139,54 +139,54 @@ public class ArexSelectVisitorAdapter implements SelectVisitor {
             orderByElements.forEach(item -> {
                 item.accept(arexOrderByVisitorAdapter);
             });
-            sqlObj.put(Constants.ORDER_BY, orderByObj);
+            sqlObj.put(DbParseConstants.ORDER_BY, orderByObj);
         }
 
         // fetch parse
         Fetch fetch = plainSelect.getFetch();
         if (fetch != null) {
-            sqlObj.put(Constants.FETCH, fetch.toString());
+            sqlObj.put(DbParseConstants.FETCH, fetch.toString());
         }
         // optimizeFor parse
         OptimizeFor optimizeFor = plainSelect.getOptimizeFor();
         if (optimizeFor != null) {
-            sqlObj.put(Constants.OPTIMIZE_FOR, optimizeFor.toString());
+            sqlObj.put(DbParseConstants.OPTIMIZE_FOR, optimizeFor.toString());
         }
 
         // limit parse
         Limit limit = plainSelect.getLimit();
         if (limit != null) {
-            sqlObj.put(Constants.LIMIT, limit.toString());
+            sqlObj.put(DbParseConstants.LIMIT, limit.toString());
         }
 
         // offset parse
         Offset offset = plainSelect.getOffset();
         if (offset != null) {
-            sqlObj.put(Constants.OFFSET, offset.toString());
+            sqlObj.put(DbParseConstants.OFFSET, offset.toString());
         }
 
         // forUpdate parse
         boolean forUpdate = plainSelect.isForUpdate();
         if (forUpdate) {
-            sqlObj.put(Constants.FOR_UPDATE, true);
+            sqlObj.put(DbParseConstants.FOR_UPDATE, true);
         }
 
         // forUpdateTable parse
         Table forUpdateTable = plainSelect.getForUpdateTable();
         if (forUpdateTable != null) {
-            sqlObj.put(Constants.FOR_UPDATE_TABLE, forUpdateTable.toString());
+            sqlObj.put(DbParseConstants.FOR_UPDATE_TABLE, forUpdateTable.toString());
         }
 
         // noWait parse
         boolean noWait = plainSelect.isNoWait();
         if (noWait) {
-            sqlObj.put(Constants.NO_WAIT, true);
+            sqlObj.put(DbParseConstants.NO_WAIT, true);
         }
 
         // wait parse
         Wait wait = plainSelect.getWait();
         if (wait != null) {
-            sqlObj.put(Constants.WAIT, wait.toString());
+            sqlObj.put(DbParseConstants.WAIT, wait.toString());
         }
 
     }

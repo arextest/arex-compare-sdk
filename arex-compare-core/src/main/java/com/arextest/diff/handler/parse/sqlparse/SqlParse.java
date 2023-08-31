@@ -1,7 +1,7 @@
 package com.arextest.diff.handler.parse.sqlparse;
 
 import com.arextest.diff.handler.parse.sqlparse.action.ActionFactory;
-import com.arextest.diff.handler.parse.sqlparse.constants.Constants;
+import com.arextest.diff.handler.parse.sqlparse.constants.DbParseConstants;
 import com.arextest.diff.model.exception.SelectIgnoreException;
 import com.arextest.diff.model.parse.MsgObjCombination;
 import com.arextest.diff.utils.JacksonHelperUtil;
@@ -54,8 +54,8 @@ public class SqlParse {
             }
 
             // parse the body field, compatible with the case where the body is an array
-            JsonNode baseDatabaseBody = baseJSONObj.get(Constants.BODY);
-            JsonNode testDatabaseBody = testJSONObj.get(Constants.BODY);
+            JsonNode baseDatabaseBody = baseJSONObj.get(DbParseConstants.BODY);
+            JsonNode testDatabaseBody = testJSONObj.get(DbParseConstants.BODY);
 
             if (baseDatabaseBody == null || testDatabaseBody == null) {
                 if (testDatabaseBody != null) {
@@ -75,8 +75,8 @@ public class SqlParse {
                     NameConvertUtil.nameConvert(baseParsedSql);
                     NameConvertUtil.nameConvert(testParsedSql);
                 }
-                baseJSONObj.set(Constants.PARSED_SQL, baseParsedSql);
-                testJSONObj.set(Constants.PARSED_SQL, testParsedSql);
+                baseJSONObj.set(DbParseConstants.PARSED_SQL, baseParsedSql);
+                testJSONObj.set(DbParseConstants.PARSED_SQL, testParsedSql);
                 List<Boolean> isSelectInBase = baseParsedResult.getIsSelect();
                 List<Boolean> isSelectInTest = testParsedResult.getIsSelect();
                 if (selectIgnoreCompare) {
@@ -126,7 +126,7 @@ public class SqlParse {
 
     private boolean judgeParam(ObjectNode object) {
         try {
-            Object parameters = object.get(Constants.PARAMETERS);
+            Object parameters = object.get(DbParseConstants.PARAMETERS);
             if (parameters != null) {
                 if (parameters instanceof ObjectNode) {
                     ObjectNode paramObj = (ObjectNode) parameters;
@@ -163,10 +163,10 @@ public class SqlParse {
     // generate a new database comparison message
     private void produceNewBody(ObjectNode baseJSONObj, ObjectNode testJSONObj) {
 
-        JsonNode originalBaseParams = baseJSONObj.get(Constants.PARAMETERS);
-        JsonNode originalTestParams = testJSONObj.get(Constants.PARAMETERS);
-        String originalBaseBody = baseJSONObj.get(Constants.BODY).asText();
-        String originalTestBody = testJSONObj.get(Constants.BODY).asText();
+        JsonNode originalBaseParams = baseJSONObj.get(DbParseConstants.PARAMETERS);
+        JsonNode originalTestParams = testJSONObj.get(DbParseConstants.PARAMETERS);
+        String originalBaseBody = baseJSONObj.get(DbParseConstants.BODY).asText();
+        String originalTestBody = testJSONObj.get(DbParseConstants.BODY).asText();
         if (!Objects.equals(originalBaseParams.getClass(), originalTestParams.getClass())) {
             return;
         }
@@ -177,8 +177,8 @@ public class SqlParse {
                 ObjectNode originalTestParamsObj = (ObjectNode) originalTestParams;
                 String newBaseBody = processParams(originalBaseParamsObj, originalBaseBody);
                 String newTestBody = processParams(originalTestParamsObj, originalTestBody);
-                baseJSONObj.put(Constants.BODY, newBaseBody);
-                testJSONObj.put(Constants.BODY, newTestBody);
+                baseJSONObj.put(DbParseConstants.BODY, newBaseBody);
+                testJSONObj.put(DbParseConstants.BODY, newTestBody);
             } else if (originalBaseParams instanceof ArrayNode) {
                 ArrayNode originalBaseParamsArr = (ArrayNode) originalBaseParams;
                 ArrayNode originalTestParamsArr = (ArrayNode) originalTestParams;
@@ -189,7 +189,7 @@ public class SqlParse {
                     String newBaseBody = processParams(itemBaseParamObj, originalBaseBody);
                     newBaseBodyList.add(newBaseBody);
                 }
-                baseJSONObj.set(Constants.BODY, newBaseBodyList);
+                baseJSONObj.set(DbParseConstants.BODY, newBaseBodyList);
 
                 ArrayNode newTestBodyList = JacksonHelperUtil.getArrayNode();
                 for (int i = 0; i < originalTestParamsArr.size(); i++) {
@@ -197,16 +197,16 @@ public class SqlParse {
                     String newTestBody = processParams(itemTestParamObj, originalTestBody);
                     newTestBodyList.add(newTestBody);
                 }
-                testJSONObj.set(Constants.BODY, newTestBodyList);
+                testJSONObj.set(DbParseConstants.BODY, newTestBodyList);
             }
-            baseJSONObj.remove(Constants.PARAMETERS);
-            testJSONObj.remove(Constants.PARAMETERS);
+            baseJSONObj.remove(DbParseConstants.PARAMETERS);
+            testJSONObj.remove(DbParseConstants.PARAMETERS);
         } catch (Throwable throwable) {
             logger.warn("produceNewBody error: {}", throwable.getMessage());
-            baseJSONObj.set(Constants.PARAMETERS, originalBaseParams);
-            testJSONObj.set(Constants.PARAMETERS, originalTestParams);
-            baseJSONObj.put(Constants.BODY, originalBaseBody);
-            testJSONObj.put(Constants.BODY, originalTestBody);
+            baseJSONObj.set(DbParseConstants.PARAMETERS, originalBaseParams);
+            testJSONObj.set(DbParseConstants.PARAMETERS, originalTestParams);
+            baseJSONObj.put(DbParseConstants.BODY, originalBaseBody);
+            testJSONObj.put(DbParseConstants.BODY, originalTestBody);
         }
     }
 
@@ -241,10 +241,10 @@ public class SqlParse {
 
     private void fillOriginalSql(ObjectNode objectNode, JsonNode databaseBody) {
         ObjectNode backUpObj = JacksonHelperUtil.getObjectNode();
-        backUpObj.set(Constants.ORIGINAL_SQL, databaseBody);
+        backUpObj.set(DbParseConstants.ORIGINAL_SQL, databaseBody);
         ArrayNode parsedSql = JacksonHelperUtil.getArrayNode();
         parsedSql.add(backUpObj);
-        objectNode.set(Constants.PARSED_SQL, parsedSql);
+        objectNode.set(DbParseConstants.PARSED_SQL, parsedSql);
     }
 
     private static class ParsedResult {

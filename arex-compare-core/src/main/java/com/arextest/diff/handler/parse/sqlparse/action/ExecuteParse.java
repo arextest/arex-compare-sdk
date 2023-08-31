@@ -1,7 +1,7 @@
 package com.arextest.diff.handler.parse.sqlparse.action;
 
 import com.arextest.diff.handler.parse.sqlparse.Parse;
-import com.arextest.diff.handler.parse.sqlparse.constants.Constants;
+import com.arextest.diff.handler.parse.sqlparse.constants.DbParseConstants;
 import com.arextest.diff.handler.parse.sqlparse.select.ArexExpressionVisitorAdapter;
 import com.arextest.diff.utils.JacksonHelperUtil;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -16,12 +16,12 @@ public class ExecuteParse implements Parse<Execute> {
     @Override
     public ObjectNode parse(Execute parseObj) {
         ObjectNode sqlObject = JacksonHelperUtil.getObjectNode();
-        sqlObject.put(Constants.ACTION, Constants.EXECUTE);
+        sqlObject.put(DbParseConstants.ACTION, DbParseConstants.EXECUTE);
 
         // execute name parse
         String executeName = parseObj.getName();
         if (executeName != null) {
-            sqlObject.put(Constants.EXECUTE_NAME, executeName);
+            sqlObject.put(DbParseConstants.EXECUTE_NAME, executeName);
         }
 
         // expressions parse
@@ -34,13 +34,13 @@ public class ExecuteParse implements Parse<Execute> {
                 ArrayNode sqlColumnArr = JacksonHelperUtil.getArrayNode();
 
                 ObjectNode setColumnObj = JacksonHelperUtil.getObjectNode();
-                setColumnObj.set(Constants.AND_OR, JacksonHelperUtil.getArrayNode());
-                setColumnObj.set(Constants.COLUMNS, JacksonHelperUtil.getObjectNode());
+                setColumnObj.set(DbParseConstants.AND_OR, JacksonHelperUtil.getArrayNode());
+                setColumnObj.set(DbParseConstants.COLUMNS, JacksonHelperUtil.getObjectNode());
                 for (Expression expression : expressions) {
                     expression.accept(new ArexExpressionVisitorAdapter(setColumnObj));
                 }
-                sqlColumnArr.add(setColumnObj.get(Constants.COLUMNS));
-                sqlObject.set(Constants.COLUMNS, sqlColumnArr);
+                sqlColumnArr.add(setColumnObj.get(DbParseConstants.COLUMNS));
+                sqlObject.set(DbParseConstants.COLUMNS, sqlColumnArr);
             }
         }
 

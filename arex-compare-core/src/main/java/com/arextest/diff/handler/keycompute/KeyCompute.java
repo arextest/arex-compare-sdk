@@ -1,14 +1,5 @@
 package com.arextest.diff.handler.keycompute;
 
-import com.arextest.diff.factory.TaskThreadFactory;
-import com.arextest.diff.model.RulesConfig;
-import com.arextest.diff.model.key.KeyComputeResponse;
-import com.arextest.diff.model.key.ListSortEntity;
-import com.arextest.diff.model.key.ReferenceEntity;
-import com.arextest.diff.model.log.NodeEntity;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -16,32 +7,44 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.arextest.diff.factory.TaskThreadFactory;
+import com.arextest.diff.model.RulesConfig;
+import com.arextest.diff.model.key.KeyComputeResponse;
+import com.arextest.diff.model.key.ListSortEntity;
+import com.arextest.diff.model.key.ReferenceEntity;
+import com.arextest.diff.model.log.NodeEntity;
 
 public class KeyCompute {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KeyCompute.class);
-    private static final int KEY_COMPUTE_WAIT_TIME = 2;
+    private static final int KEY_COMPUTE_WAIT_MINUTES_TIME = 2;
 
-    public KeyComputeResponse doHandler(RulesConfig rulesConfig, Object baseObj, Object testObj) throws ExecutionException, InterruptedException, TimeoutException {
+    public KeyComputeResponse doHandler(RulesConfig rulesConfig, Object baseObj, Object testObj)
+        throws ExecutionException, InterruptedException, TimeoutException {
 
         List<ReferenceEntity> allReferenceEntities = rulesConfig.getReferenceEntities();
         List<ListSortEntity> listSortConfig = rulesConfig.getListSortEntities();
 
-        CompletableFuture<HashMap<List<NodeEntity>, HashMap<Integer, String>>> future1 = CompletableFuture.supplyAsync(() -> {
-            ListKeyProcess keyProcessLeft = new ListKeyProcess(allReferenceEntities, listSortConfig);
-            keyProcessLeft.computeAllListKey(baseObj);
-            return keyProcessLeft.getListIndexKeys();
-        }, TaskThreadFactory.jsonObjectThreadPool);
+        CompletableFuture<HashMap<List<NodeEntity>, HashMap<Integer, String>>> future1 =
+            CompletableFuture.supplyAsync(() -> {
+                ListKeyProcess keyProcessLeft = new ListKeyProcess(allReferenceEntities, listSortConfig);
+                keyProcessLeft.computeAllListKey(baseObj);
+                return keyProcessLeft.getListIndexKeys();
+            }, TaskThreadFactory.jsonObjectThreadPool);
 
-        CompletableFuture<HashMap<List<NodeEntity>, HashMap<Integer, String>>> future2 = CompletableFuture.supplyAsync(() -> {
-            ListKeyProcess keyProcessLeft = new ListKeyProcess(allReferenceEntities, listSortConfig);
-            keyProcessLeft.computeAllListKey(testObj);
-            return keyProcessLeft.getListIndexKeys();
-        }, TaskThreadFactory.jsonObjectThreadPool);
+        CompletableFuture<HashMap<List<NodeEntity>, HashMap<Integer, String>>> future2 =
+            CompletableFuture.supplyAsync(() -> {
+                ListKeyProcess keyProcessLeft = new ListKeyProcess(allReferenceEntities, listSortConfig);
+                keyProcessLeft.computeAllListKey(testObj);
+                return keyProcessLeft.getListIndexKeys();
+            }, TaskThreadFactory.jsonObjectThreadPool);
 
         CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(future1, future2);
         try {
-            combinedFuture.get(KEY_COMPUTE_WAIT_TIME, TimeUnit.MINUTES);
+            combinedFuture.get(KEY_COMPUTE_WAIT_MINUTES_TIME, TimeUnit.MINUTES);
         } catch (TimeoutException e) {
             LOGGER.error("KeyCompute doHandler TimeoutException", e);
             throw e;
@@ -57,6 +60,5 @@ public class KeyCompute {
         response.setListIndexKeysRight(listIndexKeysRight);
         return response;
     }
-
 
 }

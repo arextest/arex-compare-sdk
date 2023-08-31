@@ -1,7 +1,7 @@
 package com.arextest.diff.handler.parse.sqlparse.action;
 
 import com.arextest.diff.handler.parse.sqlparse.Parse;
-import com.arextest.diff.handler.parse.sqlparse.constants.Constants;
+import com.arextest.diff.handler.parse.sqlparse.constants.DbParseConstants;
 import com.arextest.diff.handler.parse.sqlparse.select.ArexExpressionVisitorAdapter;
 import com.arextest.diff.handler.parse.sqlparse.select.ArexOrderByVisitorAdapter;
 import com.arextest.diff.handler.parse.sqlparse.select.utils.JoinParseUtil;
@@ -39,22 +39,22 @@ public class DeleteParse implements Parse<Delete> {
     @Override
     public ObjectNode parse(Delete parseObj) {
         ObjectNode sqlObject = JacksonHelperUtil.getObjectNode();
-        sqlObject.put(Constants.ACTION, Constants.DELETE);
+        sqlObject.put(DbParseConstants.ACTION, DbParseConstants.DELETE);
 
         // tables parse
         List<Table> tables = parseObj.getTables();
         if (tables != null && !tables.isEmpty()) {
             ObjectNode delTableObj = JacksonHelperUtil.getObjectNode();
             tables.forEach(item -> {
-                delTableObj.put(item.getFullyQualifiedName(), Constants.EMPTY);
+                delTableObj.put(item.getFullyQualifiedName(), DbParseConstants.EMPTY);
             });
-            sqlObject.set(Constants.DEL_TABLES, delTableObj);
+            sqlObject.set(DbParseConstants.DEL_TABLES, delTableObj);
         }
 
         // table parse
         Table table = parseObj.getTable();
         if (table != null) {
-            sqlObject.put(Constants.TABLE, table.getFullyQualifiedName());
+            sqlObject.put(DbParseConstants.TABLE, table.getFullyQualifiedName());
         }
 
         // join parse
@@ -64,18 +64,18 @@ public class DeleteParse implements Parse<Delete> {
             joins.forEach(item -> {
                 joinArr.add(JoinParseUtil.parse(item));
             });
-            sqlObject.set(Constants.JOIN, joinArr);
+            sqlObject.set(DbParseConstants.JOIN, joinArr);
         }
 
         // where parse
         Expression where = parseObj.getWhere();
         if (where != null) {
             ObjectNode whereObj = JacksonHelperUtil.getObjectNode();
-            whereObj.set(Constants.AND_OR, JacksonHelperUtil.getArrayNode());
-            whereObj.set(Constants.COLUMNS, JacksonHelperUtil.getObjectNode());
+            whereObj.set(DbParseConstants.AND_OR, JacksonHelperUtil.getArrayNode());
+            whereObj.set(DbParseConstants.COLUMNS, JacksonHelperUtil.getObjectNode());
 
             where.accept(new ArexExpressionVisitorAdapter(whereObj));
-            sqlObject.set(Constants.WHERE, whereObj);
+            sqlObject.set(DbParseConstants.WHERE, whereObj);
         }
 
         // orderby parse
@@ -86,13 +86,13 @@ public class DeleteParse implements Parse<Delete> {
             orderByElements.forEach(item -> {
                 item.accept(arexOrderByVisitorAdapter);
             });
-            sqlObject.set(Constants.ORDER_BY, orderByObj);
+            sqlObject.set(DbParseConstants.ORDER_BY, orderByObj);
         }
 
         // limit parse
         Limit limit = parseObj.getLimit();
         if (limit != null) {
-            sqlObject.put(Constants.LIMIT, limit.toString());
+            sqlObject.put(DbParseConstants.LIMIT, limit.toString());
         }
         return sqlObject;
     }

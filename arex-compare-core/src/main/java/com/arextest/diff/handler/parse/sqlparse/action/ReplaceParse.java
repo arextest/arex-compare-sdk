@@ -1,7 +1,7 @@
 package com.arextest.diff.handler.parse.sqlparse.action;
 
 import com.arextest.diff.handler.parse.sqlparse.Parse;
-import com.arextest.diff.handler.parse.sqlparse.constants.Constants;
+import com.arextest.diff.handler.parse.sqlparse.constants.DbParseConstants;
 import com.arextest.diff.handler.parse.sqlparse.select.ArexItemsListVisitorAdapter;
 import com.arextest.diff.utils.JacksonHelperUtil;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -23,12 +23,12 @@ public class ReplaceParse implements Parse<Replace> {
     @Override
     public ObjectNode parse(Replace parseObj) {
         ObjectNode sqlObject = JacksonHelperUtil.getObjectNode();
-        sqlObject.put(Constants.ACTION, Constants.REPLACE);
+        sqlObject.put(DbParseConstants.ACTION, DbParseConstants.REPLACE);
 
         // table parse
         Table table = parseObj.getTable();
         if (table != null) {
-            sqlObject.put(Constants.TABLE, table.getFullyQualifiedName());
+            sqlObject.put(DbParseConstants.TABLE, table.getFullyQualifiedName());
         }
 
         // columns parse
@@ -52,7 +52,7 @@ public class ReplaceParse implements Parse<Replace> {
                     }
                     sqlColumnArr.add(sqlColumnItem);
                 }
-                sqlObject.set(Constants.COLUMNS, sqlColumnArr);
+                sqlObject.set(DbParseConstants.COLUMNS, sqlColumnArr);
             }
         }
 
@@ -73,7 +73,7 @@ public class ReplaceParse implements Parse<Replace> {
                 setColumnObj.putPOJO(columns.get(i).toString(), value);
             }
             sqlColumnArr.add(setColumnObj);
-            sqlObject.set(Constants.COLUMNS, sqlColumnArr);
+            sqlObject.set(DbParseConstants.COLUMNS, sqlColumnArr);
         }
 
         return sqlObject;

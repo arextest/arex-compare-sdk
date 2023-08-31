@@ -1,6 +1,6 @@
 package com.arextest.diff.handler.parse.sqlparse.select;
 
-import com.arextest.diff.handler.parse.sqlparse.constants.Constants;
+import com.arextest.diff.handler.parse.sqlparse.constants.DbParseConstants;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.sf.jsqlparser.statement.select.OrderByElement;
 import net.sf.jsqlparser.statement.select.OrderByVisitor;
@@ -18,6 +18,6 @@ public class ArexOrderByVisitorAdapter implements OrderByVisitor {
 
     @Override
     public void visit(OrderByElement orderBy) {
-        sqlObject.put(orderBy.toString(), Constants.EMPTY);
+        sqlObject.put(orderBy.toString(), DbParseConstants.EMPTY);
     }
 }

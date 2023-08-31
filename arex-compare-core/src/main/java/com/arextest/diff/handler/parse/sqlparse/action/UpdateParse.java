@@ -1,7 +1,7 @@
 package com.arextest.diff.handler.parse.sqlparse.action;
 
 import com.arextest.diff.handler.parse.sqlparse.Parse;
-import com.arextest.diff.handler.parse.sqlparse.constants.Constants;
+import com.arextest.diff.handler.parse.sqlparse.constants.DbParseConstants;
 import com.arextest.diff.handler.parse.sqlparse.select.ArexExpressionVisitorAdapter;
 import com.arextest.diff.handler.parse.sqlparse.select.ArexFromItemVisitorAdapter;
 import com.arextest.diff.handler.parse.sqlparse.select.ArexOrderByVisitorAdapter;
@@ -44,12 +44,12 @@ public class UpdateParse implements Parse<Update> {
     @Override
     public ObjectNode parse(Update parseObj) {
         ObjectNode sqlObject = JacksonHelperUtil.getObjectNode();
-        sqlObject.put(Constants.ACTION, Constants.UPDATE);
+        sqlObject.put(DbParseConstants.ACTION, DbParseConstants.UPDATE);
 
         // table parse
         Table table = parseObj.getTable();
         if (table != null) {
-            sqlObject.put(Constants.TABLE, table.getFullyQualifiedName());
+            sqlObject.put(DbParseConstants.TABLE, table.getFullyQualifiedName());
         }
 
         // startJoins parse
@@ -59,7 +59,7 @@ public class UpdateParse implements Parse<Update> {
             startJoins.forEach(item -> {
                 joinArr.add(JoinParseUtil.parse(item));
             });
-            sqlObject.set(Constants.START_JOINS, joinArr);
+            sqlObject.set(DbParseConstants.START_JOINS, joinArr);
         }
 
         // from parse
@@ -68,7 +68,7 @@ public class UpdateParse implements Parse<Update> {
             ObjectNode fromObj = JacksonHelperUtil.getObjectNode();
             ArexFromItemVisitorAdapter arexFromItemVisitorAdapter = new ArexFromItemVisitorAdapter(fromObj);
             fromItem.accept(arexFromItemVisitorAdapter);
-            sqlObject.set(Constants.FROM, fromObj);
+            sqlObject.set(DbParseConstants.FROM, fromObj);
         }
 
         // joins parse
@@ -78,7 +78,7 @@ public class UpdateParse implements Parse<Update> {
             joins.forEach(item -> {
                 joinArr.add(JoinParseUtil.parse(item));
             });
-            sqlObject.set(Constants.JOIN, joinArr);
+            sqlObject.set(DbParseConstants.JOIN, joinArr);
         }
 
         // updateSet parse
@@ -90,17 +90,17 @@ public class UpdateParse implements Parse<Update> {
                 ArrayList<Expression> expressions = updateSet.getExpressions();
                 setObj.put(columns.get(0).toString(), expressions.get(0).toString());
             }
-            sqlObject.set(Constants.COLUMNS, setObj);
+            sqlObject.set(DbParseConstants.COLUMNS, setObj);
         }
 
         // where parse
         Expression where = parseObj.getWhere();
         if (where != null) {
             ObjectNode whereObj = JacksonHelperUtil.getObjectNode();
-            whereObj.set(Constants.AND_OR, JacksonHelperUtil.getArrayNode());
-            whereObj.set(Constants.COLUMNS, JacksonHelperUtil.getObjectNode());
+            whereObj.set(DbParseConstants.AND_OR, JacksonHelperUtil.getArrayNode());
+            whereObj.set(DbParseConstants.COLUMNS, JacksonHelperUtil.getObjectNode());
             where.accept(new ArexExpressionVisitorAdapter(whereObj));
-            sqlObject.set(Constants.WHERE, whereObj);
+            sqlObject.set(DbParseConstants.WHERE, whereObj);
         }
 
         // order parse
@@ -111,13 +111,13 @@ public class UpdateParse implements Parse<Update> {
             orderByElements.forEach(item -> {
                 item.accept(arexOrderByVisitorAdapter);
             });
-            sqlObject.set(Constants.ORDER_BY, orderByObj);
+            sqlObject.set(DbParseConstants.ORDER_BY, orderByObj);
         }
 
         // limit parse
         Limit limit = parseObj.getLimit();
         if (limit != null) {
-            sqlObject.put(Constants.LIMIT, limit.toString());
+            sqlObject.put(DbParseConstants.LIMIT, limit.toString());
         }
         return sqlObject;
     }

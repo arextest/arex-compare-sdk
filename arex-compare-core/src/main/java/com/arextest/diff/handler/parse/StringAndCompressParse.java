@@ -1,6 +1,12 @@
 package com.arextest.diff.handler.parse;
 
-import com.arextest.diff.handler.decompress.DecompressServiceBuilder;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.apache.commons.lang3.tuple.MutablePair;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.arextest.diff.model.DecompressConfig;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.utils.DecompressUtil;
@@ -13,16 +19,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
-import org.apache.commons.lang3.tuple.MutablePair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class StringAndCompressParse {
 
@@ -60,7 +56,7 @@ public class StringAndCompressParse {
         }
 
         if (obj instanceof ObjectNode) {
-            ObjectNode jsonObject = (ObjectNode) obj;
+            ObjectNode jsonObject = (ObjectNode)obj;
             List<String> names = JacksonHelperUtil.getNames(jsonObject);
             for (String fieldName : names) {
                 currentNode.add(new NodeEntity(fieldName, 0));
@@ -69,7 +65,7 @@ public class StringAndCompressParse {
                 ListUti.removeLast(currentNode);
             }
         } else if (obj instanceof ArrayNode) {
-            ArrayNode objArray = (ArrayNode) obj;
+            ArrayNode objArray = (ArrayNode)obj;
             for (int i = 0; i < objArray.size(); i++) {
                 currentNode.add(new NodeEntity(null, i));
                 Object element = objArray.get(i);
@@ -79,11 +75,10 @@ public class StringAndCompressParse {
 
         } else {
 
-            String value = ((JsonNode) obj).asText();
+            String value = ((JsonNode)obj).asText();
             // TODO: 2022/9/20 improve the method to speed up
-            List<String> nodePath = nameToLower
-                    ? ListUti.convertToStringList(currentNode).stream().map(String::toLowerCase).collect(Collectors.toList())
-                    : ListUti.convertToStringList(currentNode);
+            List<String> nodePath = nameToLower ? ListUti.convertToStringList(currentNode).stream()
+                .map(String::toLowerCase).collect(Collectors.toList()) : ListUti.convertToStringList(currentNode);
             MutablePair<JsonNode, Boolean> objectBooleanPair = null;
             if (decompressConfig != null && decompressConfig.containsKey(nodePath)) {
                 DecompressConfig decompressConfig = this.decompressConfig.get(nodePath);
@@ -101,10 +96,10 @@ public class StringAndCompressParse {
 
             String currentName = getCurrentName(currentNode);
             if (preObj instanceof ObjectNode) {
-                ((ObjectNode) preObj).set(currentName, objectBooleanPair.getKey());
+                ((ObjectNode)preObj).set(currentName, objectBooleanPair.getKey());
                 original.put(new ArrayList<>(currentNode), value);
             } else if (preObj instanceof ArrayNode) {
-                ((ArrayNode) preObj).set(Integer.parseInt(currentName), objectBooleanPair.getKey());
+                ((ArrayNode)preObj).set(Integer.parseInt(currentName), objectBooleanPair.getKey());
                 original.put(new ArrayList<>(currentNode), value);
             }
         }
@@ -125,12 +120,12 @@ public class StringAndCompressParse {
      * @param pluginJarUrl
      * @param decompressConfig
      * @param preObj
-     * @return Pair<Object, Boolean>, the same define processStringParse()
-     * k: show weather successfully process，if return null:fail,if return not null:success
-     * v: show Object instanceof JSONObject or JSONArray which need to further performance getJSONParse
+     * @return Pair<Object, Boolean>, the same define processStringParse() k: show weather successfully process，if
+     *         return null:fail,if return not null:success v: show Object instanceof JSONObject or JSONArray which need
+     *         to further performance getJSONParse
      */
     private MutablePair<JsonNode, Boolean> processCompress(String value, String pluginJarUrl,
-                                                           DecompressConfig decompressConfig, Object preObj) {
+        DecompressConfig decompressConfig, Object preObj) {
         String unCompressStr;
         try {
             unCompressStr = DecompressUtil.decompressPlugin(pluginJarUrl, decompressConfig, value);
@@ -151,7 +146,6 @@ public class StringAndCompressParse {
         }
     }
 
-
     private MutablePair<JsonNode, Boolean> processStringParse(String value, Object preObj) {
 
         JsonNode objTemp = null;
@@ -171,9 +165,7 @@ public class StringAndCompressParse {
             } catch (JsonProcessingException e) {
             }
         }
-        return objTemp == null
-                ? new MutablePair<>(null, Boolean.FALSE)
-                : new MutablePair<>(objTemp, Boolean.TRUE);
+        return objTemp == null ? new MutablePair<>(null, Boolean.FALSE) : new MutablePair<>(objTemp, Boolean.TRUE);
     }
 
 }
