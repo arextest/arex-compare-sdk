@@ -1,6 +1,6 @@
 package com.arextest.diff.handler.log.filterrules;
 
-import com.arextest.diff.handler.parse.sqlparse.constants.Constants;
+import com.arextest.diff.handler.parse.sqlparse.constants.DbParseConstants;
 import com.arextest.diff.model.enumeration.UnmatchedType;
 import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.model.log.NodeEntity;
@@ -18,8 +18,8 @@ import java.util.function.Predicate;
 public class OnlyCompareSameColumnsFilter implements Predicate<LogEntity> {
 
     private static List<List<String>> IgnoreNodePathList = Arrays.asList(
-            Collections.singletonList(Constants.PARAMETERS),
-            Arrays.asList(Constants.PARSED_SQL, Constants.COLUMNS)
+            Collections.singletonList(DbParseConstants.PARAMETERS),
+            Arrays.asList(DbParseConstants.PARSED_SQL, DbParseConstants.COLUMNS)
     );
 
 

@@ -1,7 +1,7 @@
 package com.arextest.diff.handler.parse.sqlparse.action;
 
 import com.arextest.diff.handler.parse.sqlparse.Parse;
-import com.arextest.diff.handler.parse.sqlparse.constants.Constants;
+import com.arextest.diff.handler.parse.sqlparse.constants.DbParseConstants;
 import com.arextest.diff.handler.parse.sqlparse.select.ArexItemsListVisitorAdapter;
 import com.arextest.diff.utils.JacksonHelperUtil;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -34,12 +34,12 @@ public class InsertParse implements Parse<Insert> {
     @Override
     public ObjectNode parse(Insert parseObj) {
         ObjectNode sqlObject = JacksonHelperUtil.getObjectNode();
-        sqlObject.put(Constants.ACTION, Constants.INSERT);
+        sqlObject.put(DbParseConstants.ACTION, DbParseConstants.INSERT);
 
         // table parse
         Table table = parseObj.getTable();
         if (table != null) {
-            sqlObject.put(Constants.TABLE, table.getFullyQualifiedName());
+            sqlObject.put(DbParseConstants.TABLE, table.getFullyQualifiedName());
         }
 
         // columns parse
@@ -62,7 +62,7 @@ public class InsertParse implements Parse<Insert> {
                 }
                 sqlColumnArr.add(sqlColumnItem);
             }
-            sqlObject.set(Constants.COLUMNS, sqlColumnArr);
+            sqlObject.set(DbParseConstants.COLUMNS, sqlColumnArr);
         }
 
         // setColumns parse
@@ -83,7 +83,7 @@ public class InsertParse implements Parse<Insert> {
                 setColumnObj.putPOJO(setColumns.get(i).toString(), value);
             }
             sqlColumnArr.add(setColumnObj);
-            sqlObject.set(Constants.COLUMNS, sqlColumnArr);
+            sqlObject.set(DbParseConstants.COLUMNS, sqlColumnArr);
         }
 
         return sqlObject;

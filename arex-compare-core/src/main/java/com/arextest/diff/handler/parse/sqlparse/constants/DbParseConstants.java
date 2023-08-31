@@ -3,7 +3,7 @@ package com.arextest.diff.handler.parse.sqlparse.constants;
 /**
  * Created by rchen9 on 2023/1/10.
  */
-public class Constants {
+public class DbParseConstants {
 
     public static final String PARAMETERS = "parameters";
     public static final String BODY = "body";
