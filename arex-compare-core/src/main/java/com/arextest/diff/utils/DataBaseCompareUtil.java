@@ -19,6 +19,8 @@ import com.arextest.diff.handler.log.filterrules.ArexPrefixFilter;
 import com.arextest.diff.handler.log.filterrules.GuidFilter;
 import com.arextest.diff.handler.log.filterrules.OnlyCompareSameColumnsFilter;
 import com.arextest.diff.handler.log.filterrules.TimePrecisionFilter;
+import com.arextest.diff.handler.metric.TimeConsumerWatch;
+import com.arextest.diff.handler.metric.TimeMetricLabel;
 import com.arextest.diff.handler.parse.JSONParse;
 import com.arextest.diff.handler.parse.JSONStructureParse;
 import com.arextest.diff.handler.parse.ObjectParse;
@@ -62,11 +64,18 @@ public class DataBaseCompareUtil {
         String baseMsg = rulesConfig.getBaseMsg();
         String testMsg = rulesConfig.getTestMsg();
 
+        TimeConsumerWatch timeConsumerWatch = new TimeConsumerWatch();
+        timeConsumerWatch.start(TimeMetricLabel.TOTAL);
+
         // Convert basMsg and testMsg to JSONObject
         MsgObjCombination msgObjCombination = null;
         try {
+            timeConsumerWatch.start(TimeMetricLabel.OBJECT_PARSE);
             msgObjCombination = objectParse.doHandler(rulesConfig);
+            timeConsumerWatch.end(TimeMetricLabel.OBJECT_PARSE);
         } catch (Exception e) {
+            timeConsumerWatch.end(TimeMetricLabel.TOTAL);
+            timeConsumerWatch.record();
             return CompareResult.builder().addStringUnMatched(baseMsg, testMsg).build();
         }
 
@@ -75,11 +84,13 @@ public class DataBaseCompareUtil {
         try {
 
             // Parse string and compressed fields in JSONObject
+            timeConsumerWatch.start(TimeMetricLabel.JSON_PARSE);
             Map<String, List<String>> parsePaths =
                 jsonParse.doHandler(rulesConfig, msgObjCombination.getBaseObj(), msgObjCombination.getTestObj());
             // If enables sql parsing, fill in the field of "parsedsql"
             sqlParse.doHandler(msgObjCombination, rulesConfig.isOnlyCompareCoincidentColumn(),
                 rulesConfig.isSelectIgnoreCompare(), rulesConfig.isNameToLower());
+            timeConsumerWatch.end(TimeMetricLabel.JSON_PARSE);
 
             // Parse JSON structure
             CompletableFuture<MutablePair<MsgStructure, MsgStructure>> msgStructureFuture =
@@ -89,14 +100,19 @@ public class DataBaseCompareUtil {
             processedMsgList = fillResultSync.fillResult(msgObjCombination);
 
             // compute listKey
+            timeConsumerWatch.start(TimeMetricLabel.KEY_COMPUTE);
             KeyComputeResponse keyComputeResponse =
                 keyCompute.doHandler(rulesConfig, msgObjCombination.getBaseObj(), msgObjCombination.getTestObj());
+            timeConsumerWatch.end(TimeMetricLabel.KEY_COMPUTE);
 
             // process whiteList
+            timeConsumerWatch.start(TimeMetricLabel.WHITE_LIST);
             MsgObjCombination msgWhiteObj = whitelistHandler.doHandler(msgObjCombination.getBaseObj(),
                 msgObjCombination.getTestObj(), rulesConfig.getInclusions());
+            timeConsumerWatch.end(TimeMetricLabel.WHITE_LIST);
 
             // compare jsonObject
+            timeConsumerWatch.start(TimeMetricLabel.COMPARE_HANDLER);
             LogProcess logProcess = new LogProcess();
             logProcess.setRulesConfig(rulesConfig);
             logProcess.appendFilterRules(Arrays.asList(new TimePrecisionFilter(rulesConfig.getIgnoredTimePrecision()),
@@ -106,6 +122,7 @@ public class DataBaseCompareUtil {
             }
             logs = compareHandler.doHandler(rulesConfig, keyComputeResponse, msgStructureFuture,
                 msgWhiteObj.getBaseObj(), msgWhiteObj.getTestObj(), logProcess);
+            timeConsumerWatch.end(TimeMetricLabel.COMPARE_HANDLER);
 
             // get processed msg
             String processedBaseMsg = processedMsgList.get(0).get();
@@ -125,6 +142,9 @@ public class DataBaseCompareUtil {
         } catch (Exception e) {
             LOGGER.error("compare error, exception:", e);
             return CompareResult.builder().exception(baseMsg, testMsg, e).build();
+        } finally {
+            timeConsumerWatch.end(TimeMetricLabel.TOTAL);
+            timeConsumerWatch.record();
         }
     }
 

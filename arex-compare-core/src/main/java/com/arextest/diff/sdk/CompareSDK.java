@@ -1,24 +1,19 @@
 package com.arextest.diff.sdk;
 
+import java.util.List;
+import java.util.Objects;
+
 import com.arextest.diff.model.CompareOptions;
 import com.arextest.diff.model.CompareResult;
 import com.arextest.diff.model.GlobalOptions;
 import com.arextest.diff.model.RulesConfig;
-import com.arextest.diff.utils.CompareUtil;
-import com.arextest.diff.utils.JSONArraySort;
-import com.arextest.diff.utils.JacksonHelperUtil;
-import com.arextest.diff.utils.OptionsToRulesAdapter;
-
-import java.util.List;
-import java.util.Objects;
+import com.arextest.diff.utils.*;
 
 public class CompareSDK {
 
     private GlobalOptions globalOptions = new GlobalOptions();
 
-    public CompareSDK() {
-    }
-
+    public CompareSDK() {}
 
     public GlobalOptions getGlobalOptions() {
         return this.globalOptions;
@@ -30,7 +25,8 @@ public class CompareSDK {
     }
 
     public CompareResult compare(String baseMsg, String testMsg, CompareOptions compareOptions) {
-        RulesConfig rulesConfig = OptionsToRulesAdapter.optionsToConfig(baseMsg, testMsg, compareOptions, globalOptions);
+        RulesConfig rulesConfig =
+            OptionsToRulesAdapter.optionsToConfig(baseMsg, testMsg, compareOptions, globalOptions);
         return compare(rulesConfig);
     }
 
@@ -41,16 +37,24 @@ public class CompareSDK {
     }
 
     public CompareResult quickCompare(String baseMsg, String testMsg, CompareOptions compareOptions) {
-        RulesConfig rulesConfig = OptionsToRulesAdapter.optionsToConfig(baseMsg, testMsg, compareOptions, globalOptions);
+        RulesConfig rulesConfig =
+            OptionsToRulesAdapter.optionsToConfig(baseMsg, testMsg, compareOptions, globalOptions);
         rulesConfig.setQuickCompare(true);
         return compare(rulesConfig);
     }
 
     private CompareResult compare(RulesConfig rulesConfig) {
+        MDCCompareUtil.addServiceName("compareSDK");
+        MDCCompareUtil.addFastCompare(rulesConfig.isQuickCompare());
+        MDCCompareUtil.addCompareType(rulesConfig.getCategoryType());
         if (Objects.equals(rulesConfig.getBaseMsg(), rulesConfig.getTestMsg())) {
             return CompareResult.builder().noDiff(rulesConfig.getBaseMsg(), rulesConfig.getTestMsg()).build();
         }
-        return CompareUtil.jsonCompare(rulesConfig);
+        CompareResult compareResult = CompareUtil.jsonCompare(rulesConfig);
+        MDCCompareUtil.removeServiceName();
+        MDCCompareUtil.removeFastCompare();
+        MDCCompareUtil.removeCompareType();
+        return compareResult;
     }
 
     /**
@@ -58,13 +62,12 @@ public class CompareSDK {
      *
      * @param baseMsg the based msg
      * @param testMsg the tested msg
-     * @param remark  the info of exception
+     * @param remark the info of exception
      * @return the compare result
      */
     public static CompareResult fromException(String baseMsg, String testMsg, String remark) {
         return CompareResult.builder().exception(baseMsg, testMsg, remark).build();
     }
-
 
     /**
      * Expose to the caller, sort a set of packets, and use split sorting

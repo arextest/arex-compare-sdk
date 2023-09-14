@@ -7,7 +7,7 @@
     <groupId>com.arextest</groupId>
     <artifactId>arex-compare-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.1.28</version>
+    <version>0.1.29</version>
     <modules>
         <module>arex-compare-extension</module>
         <module>arex-compare-core</module>
@@ -184,9 +184,36 @@
         <profile>
             <id>jar-local</id>
             <properties>
-                <releases.repo></releases.repo>
-                <snapshots.repo></snapshots.repo>
+                <releases.repo>http://maven.release.ctripcorp.com/nexus/content/repositories/flightrelease</releases.repo>
+                <snapshots.repo>http://maven.release.ctripcorp.com/nexus/content/repositories/flightsnapshot</snapshots.repo>
             </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-compiler-plugin</artifactId>
+                        <version>3.6.0</version>
+                        <configuration>
+                            <source>1.8</source>
+                            <target>1.8</target>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <version>3.2.1</version>
+                        <executions>
+                            <execution>
+                                <id>generate-source-jar</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar-no-fork</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 
