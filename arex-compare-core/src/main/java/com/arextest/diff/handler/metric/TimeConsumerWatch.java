@@ -3,81 +3,45 @@ package com.arextest.diff.handler.metric;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import com.arextest.diff.model.CompareResult;
 import com.arextest.diff.model.SystemConfig;
+import com.arextest.diff.model.metric.MetricIndicator;
 
 public class TimeConsumerWatch {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(TimeConsumerWatch.class);
-
-    private Map<String, TaskInfo> taskMap = new LinkedHashMap<>();
+    private Map<String, MetricIndicator.TaskInfo> taskMap = new LinkedHashMap<>();
 
     public void start(String taskName) {
-        taskMap.computeIfAbsent(taskName, k -> new TaskInfo(taskName, System.currentTimeMillis(), null))
+        taskMap.computeIfAbsent(taskName, k -> new MetricIndicator.TaskInfo(taskName, System.currentTimeMillis(), null))
             .setStartTime(System.currentTimeMillis());
 
     }
 
     public void end(String taskName) {
-        TaskInfo taskInfo = taskMap.get(taskName);
+        MetricIndicator.TaskInfo taskInfo = taskMap.get(taskName);
         if (taskInfo != null) {
             taskInfo.setData(System.currentTimeMillis() - taskInfo.getStartTime());
         }
     }
 
-    public void record() {
-        if (SystemConfig.isMetricsEnable()) {
-            LOGGER.info("TimeConsumerWatch: {}", taskMap);
+    public void record(CompareResult compareResult) {
+
+        if (compareResult == null) {
+            return;
         }
+
+        if (!SystemConfig.isMetricsEnable()) {
+            return;
+        }
+
+        MetricIndicator metricIndicator = compareResult.getMetricIndicator();
+        if (metricIndicator == null) {
+            metricIndicator = new MetricIndicator();
+            metricIndicator.setTimeMetric(taskMap);
+            compareResult.setMetricIndicator(metricIndicator);
+        } else {
+            metricIndicator.setTimeMetric(taskMap);
+        }
+
     }
-
-    private static class TaskInfo {
-        private String taskName;
-
-        private transient Long startTime;
-
-        private Object data;
-
-        public TaskInfo() {
-
-        }
-
-        public TaskInfo(String taskName, Long startTime, Object data) {
-            this.taskName = taskName;
-            this.startTime = startTime;
-            this.data = data;
-        }
-
-        public String getTaskName() {
-            return taskName;
-        }
-
-        public void setTaskName(String taskName) {
-            this.taskName = taskName;
-        }
-
-        public Long getStartTime() {
-            return startTime;
-        }
-
-        public void setStartTime(Long startTime) {
-            this.startTime = startTime;
-        }
-
-        public Object getData() {
-            return data;
-        }
-
-        public void setData(Object data) {
-            this.data = data;
-        }
-
-        @Override
-        public String toString() {
-            return "TaskInfo{" + "taskName='" + taskName + '\'' + ", startTime=" + startTime + ", data=" + data + '}';
-        }
-    }
-
 }

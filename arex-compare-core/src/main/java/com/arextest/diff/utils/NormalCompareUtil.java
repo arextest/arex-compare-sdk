@@ -54,7 +54,7 @@ public class NormalCompareUtil {
     private static JSONStructureParse jsonStructureParse = new JSONStructureParse();
 
     public CompareResult jsonCompare(RulesConfig rulesConfig) {
-
+        CompareResult result = null;
         String baseMsg = rulesConfig.getBaseMsg();
         String testMsg = rulesConfig.getTestMsg();
 
@@ -68,9 +68,10 @@ public class NormalCompareUtil {
             msgObjCombination = objectParse.doHandler(rulesConfig);
             timeConsumerWatch.end(TimeMetricLabel.OBJECT_PARSE);
         } catch (Exception e) {
+            result = CompareResult.builder().addStringUnMatched(baseMsg, testMsg).build();
             timeConsumerWatch.end(TimeMetricLabel.TOTAL);
-            timeConsumerWatch.record();
-            return CompareResult.builder().addStringUnMatched(baseMsg, testMsg).build();
+            timeConsumerWatch.record(result);
+            return result;
         }
 
         List<LogEntity> logs = null;
@@ -115,7 +116,7 @@ public class NormalCompareUtil {
             // get processed msg
             String processedBaseMsg = processedMsgList.get(0).get();
             String processedTestMsg = processedMsgList.get(1).get();
-            return CompareResult.builder()
+            result = CompareResult.builder()
                 .code(ListUti.isEmpty(logs) ? DiffResultCode.COMPARED_WITHOUT_DIFFERENCE
                     : DiffResultCode.COMPARED_WITH_DIFFERENCE)
                 .message("compare successfully").msgInfo(baseMsg, testMsg).logs(logs)
@@ -124,13 +125,14 @@ public class NormalCompareUtil {
                 .build();
 
         } catch (FindErrorException e) {
-            return CompareResult.builder().addFindErrorException(baseMsg, testMsg, processedMsgList, e).build();
+            result = CompareResult.builder().addFindErrorException(baseMsg, testMsg, processedMsgList, e).build();
         } catch (Exception e) {
             LOGGER.error("compare error, exception:", e);
-            return CompareResult.builder().exception(baseMsg, testMsg, e).build();
+            result = CompareResult.builder().exception(baseMsg, testMsg, e).build();
         } finally {
             timeConsumerWatch.end(TimeMetricLabel.TOTAL);
-            timeConsumerWatch.record();
+            timeConsumerWatch.record(result);
         }
+        return result;
     }
 }
