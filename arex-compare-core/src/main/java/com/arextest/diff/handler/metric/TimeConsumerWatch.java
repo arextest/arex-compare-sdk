@@ -12,10 +12,6 @@ public class TimeConsumerWatch {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TimeConsumerWatch.class);
 
-    private Long startTime;
-
-    private Long endTime;
-
     private Map<String, TaskInfo> taskMap = new LinkedHashMap<>();
 
     public void start(String taskName) {
