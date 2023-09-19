@@ -19,6 +19,12 @@ public class SystemConfig {
         return ignoreNodeSet;
     }
 
+    private static boolean metricsEnable = true;
+
+    public static boolean isMetricsEnable() {
+        return metricsEnable;
+    }
+
     static {
         try {
             InputStream in = SystemConfig.class.getResourceAsStream("/sdkConfig.properties");
@@ -28,6 +34,11 @@ public class SystemConfig {
             if (StringUtils.isNotBlank(ignoreNodes)) {
                 String[] split = ignoreNodes.split(",");
                 ignoreNodeSet.addAll(Arrays.asList(split));
+            }
+
+            String metricsEnableStr = properties.getProperty("metrics.enable");
+            if (StringUtils.isNotBlank(metricsEnableStr) && "false".equals(metricsEnableStr)) {
+                metricsEnable = false;
             }
         } catch (Exception e) {
         }

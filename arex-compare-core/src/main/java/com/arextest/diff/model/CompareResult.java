@@ -2,6 +2,7 @@ package com.arextest.diff.model;
 
 import com.arextest.diff.model.enumeration.DiffResultCode;
 import com.arextest.diff.model.log.LogEntity;
+import com.arextest.diff.model.metric.MetricIndicator;
 
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,8 @@ public class CompareResult {
 
     // parsed node path and original value
     private Map<String, List<String>> parseNodePaths;
+
+    private MetricIndicator metricIndicator;
 
     public CompareResult() {
     }
@@ -96,6 +99,14 @@ public class CompareResult {
 
     public void setParseNodePaths(Map<String, List<String>> parseNodePaths) {
         this.parseNodePaths = parseNodePaths;
+    }
+
+    public MetricIndicator getMetricIndicator() {
+        return metricIndicator;
+    }
+
+    public void setMetricIndicator(MetricIndicator metricIndicator) {
+        this.metricIndicator = metricIndicator;
     }
 
     public static CompareBuilder builder() {

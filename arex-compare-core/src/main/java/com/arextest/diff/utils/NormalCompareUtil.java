@@ -18,6 +18,8 @@ import com.arextest.diff.handler.log.LogProcess;
 import com.arextest.diff.handler.log.filterrules.ArexPrefixFilter;
 import com.arextest.diff.handler.log.filterrules.GuidFilter;
 import com.arextest.diff.handler.log.filterrules.TimePrecisionFilter;
+import com.arextest.diff.handler.metric.TimeConsumerWatch;
+import com.arextest.diff.handler.metric.TimeMetricLabel;
 import com.arextest.diff.handler.parse.JSONParse;
 import com.arextest.diff.handler.parse.JSONStructureParse;
 import com.arextest.diff.handler.parse.ObjectParse;
@@ -52,16 +54,24 @@ public class NormalCompareUtil {
     private static JSONStructureParse jsonStructureParse = new JSONStructureParse();
 
     public CompareResult jsonCompare(RulesConfig rulesConfig) {
-
+        CompareResult result = null;
         String baseMsg = rulesConfig.getBaseMsg();
         String testMsg = rulesConfig.getTestMsg();
+
+        TimeConsumerWatch timeConsumerWatch = new TimeConsumerWatch();
+        timeConsumerWatch.start(TimeMetricLabel.TOTAL);
 
         // Convert basMsg and testMsg to JSONObject
         MsgObjCombination msgObjCombination = null;
         try {
+            timeConsumerWatch.start(TimeMetricLabel.OBJECT_PARSE);
             msgObjCombination = objectParse.doHandler(rulesConfig);
+            timeConsumerWatch.end(TimeMetricLabel.OBJECT_PARSE);
         } catch (Exception e) {
-            return CompareResult.builder().addStringUnMatched(baseMsg, testMsg).build();
+            result = CompareResult.builder().addStringUnMatched(baseMsg, testMsg).build();
+            timeConsumerWatch.end(TimeMetricLabel.TOTAL);
+            timeConsumerWatch.record(result);
+            return result;
         }
 
         List<LogEntity> logs = null;
@@ -69,8 +79,10 @@ public class NormalCompareUtil {
         try {
 
             // Parse string and compressed fields in JSONObject
+            timeConsumerWatch.start(TimeMetricLabel.JSON_PARSE);
             Map<String, List<String>> parsePaths =
                 jsonParse.doHandler(rulesConfig, msgObjCombination.getBaseObj(), msgObjCombination.getTestObj());
+            timeConsumerWatch.end(TimeMetricLabel.JSON_PARSE);
 
             // Parse JSON structure
             CompletableFuture<MutablePair<MsgStructure, MsgStructure>> msgStructureFuture =
@@ -80,25 +92,31 @@ public class NormalCompareUtil {
             processedMsgList = fillResultSync.fillResult(msgObjCombination);
 
             // compute listKey
+            timeConsumerWatch.start(TimeMetricLabel.KEY_COMPUTE);
             KeyComputeResponse keyComputeResponse =
                 keyCompute.doHandler(rulesConfig, msgObjCombination.getBaseObj(), msgObjCombination.getTestObj());
+            timeConsumerWatch.end(TimeMetricLabel.KEY_COMPUTE);
 
             // process whiteList
+            timeConsumerWatch.start(TimeMetricLabel.WHITE_LIST);
             MsgObjCombination msgWhiteObj = whitelistHandler.doHandler(msgObjCombination.getBaseObj(),
                 msgObjCombination.getTestObj(), rulesConfig.getInclusions());
+            timeConsumerWatch.end(TimeMetricLabel.WHITE_LIST);
 
             // compare jsonObject
+            timeConsumerWatch.start(TimeMetricLabel.COMPARE_HANDLER);
             LogProcess logProcess = new LogProcess();
             logProcess.setRulesConfig(rulesConfig);
             logProcess.appendFilterRules(Arrays.asList(new TimePrecisionFilter(rulesConfig.getIgnoredTimePrecision()),
                 new ArexPrefixFilter(), new GuidFilter()));
             logs = compareHandler.doHandler(rulesConfig, keyComputeResponse, msgStructureFuture,
                 msgWhiteObj.getBaseObj(), msgWhiteObj.getTestObj(), logProcess);
+            timeConsumerWatch.end(TimeMetricLabel.COMPARE_HANDLER);
 
             // get processed msg
             String processedBaseMsg = processedMsgList.get(0).get();
             String processedTestMsg = processedMsgList.get(1).get();
-            return CompareResult.builder()
+            result = CompareResult.builder()
                 .code(ListUti.isEmpty(logs) ? DiffResultCode.COMPARED_WITHOUT_DIFFERENCE
                     : DiffResultCode.COMPARED_WITH_DIFFERENCE)
                 .message("compare successfully").msgInfo(baseMsg, testMsg).logs(logs)
@@ -107,10 +125,14 @@ public class NormalCompareUtil {
                 .build();
 
         } catch (FindErrorException e) {
-            return CompareResult.builder().addFindErrorException(baseMsg, testMsg, processedMsgList, e).build();
+            result = CompareResult.builder().addFindErrorException(baseMsg, testMsg, processedMsgList, e).build();
         } catch (Exception e) {
             LOGGER.error("compare error, exception:", e);
-            return CompareResult.builder().exception(baseMsg, testMsg, e).build();
+            result = CompareResult.builder().exception(baseMsg, testMsg, e).build();
+        } finally {
+            timeConsumerWatch.end(TimeMetricLabel.TOTAL);
+            timeConsumerWatch.record(result);
         }
+        return result;
     }
 }
