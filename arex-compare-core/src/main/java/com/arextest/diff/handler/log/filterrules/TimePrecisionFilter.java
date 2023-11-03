@@ -86,8 +86,23 @@ public class TimePrecisionFilter implements Predicate<LogEntity> {
         return true;
     }
 
+    public Instant identifyTime(String data) {
+        if (data == null || data.length() < 12 || data.length() > 29) {
+            return null;
+        }
 
-    public static abstract class AbstractDataProcessor {
+        if ((data.startsWith("0") || data.startsWith("1") || data.startsWith("2"))) {
+            Instant baseTime = dataProcessor.process(data);
+            if (baseTime == null) {
+                return null;
+            }
+            return baseTime;
+        }
+        return null;
+    }
+
+
+    private static abstract class AbstractDataProcessor {
         private AbstractDataProcessor nextProcessor;
 
         public void setNextProcessor(AbstractDataProcessor nextProcessor) {
@@ -108,7 +123,7 @@ public class TimePrecisionFilter implements Predicate<LogEntity> {
         protected abstract Instant processData(String data);
     }
 
-    public static class FirstDataProcessor extends AbstractDataProcessor {
+    private static class FirstDataProcessor extends AbstractDataProcessor {
 
         @Override
         protected Instant processData(String data) {
@@ -123,7 +138,7 @@ public class TimePrecisionFilter implements Predicate<LogEntity> {
         }
     }
 
-    public static class SecondDataProcessor extends AbstractDataProcessor {
+    private static class SecondDataProcessor extends AbstractDataProcessor {
 
         @Override
         protected Instant processData(String data) {
@@ -140,7 +155,7 @@ public class TimePrecisionFilter implements Predicate<LogEntity> {
         }
     }
 
-    public static class ThirdDataProcessor extends AbstractDataProcessor {
+    private static class ThirdDataProcessor extends AbstractDataProcessor {
 
         @Override
         protected Instant processData(String data) {
@@ -154,7 +169,7 @@ public class TimePrecisionFilter implements Predicate<LogEntity> {
         }
     }
 
-    public static class ProcessorChainBuilder {
+    private static class ProcessorChainBuilder {
         private AbstractDataProcessor firstProcessor;
         private AbstractDataProcessor lastProcessor;
 

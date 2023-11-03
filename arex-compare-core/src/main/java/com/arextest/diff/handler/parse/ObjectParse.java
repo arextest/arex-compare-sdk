@@ -42,7 +42,7 @@ public class ObjectParse {
 
     }
 
-    private Object msgToObj(String msg, RulesConfig rulesConfig) throws JsonProcessingException {
+    public Object msgToObj(String msg, RulesConfig rulesConfig) throws JsonProcessingException {
         Object obj = null;
         if (StringUtil.isEmpty(msg)) {
             return obj;

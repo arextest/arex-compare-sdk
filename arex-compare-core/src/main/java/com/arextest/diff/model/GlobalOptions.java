@@ -2,6 +2,7 @@ package com.arextest.diff.model;
 
 import com.arextest.diff.handler.decompress.DecompressServiceBuilder;
 import com.arextest.diff.utils.StringUtil;
+import java.util.Set;
 
 public class GlobalOptions {
 
@@ -35,6 +36,11 @@ public class GlobalOptions {
      * for example：the baseMsg: {"age":null} is consistent with testMsg: "{}"
      */
     private boolean nullEqualsNotExist;
+
+    /**
+     * the nodenanme set which is ignored when comparing
+     */
+    private Set<String> ignoreNodeSet;
 
     public GlobalOptions() {
         this.nameToLower = false;
@@ -70,6 +76,11 @@ public class GlobalOptions {
         return this;
     }
 
+    public GlobalOptions putIgnoreNodeSet(Set<String> ignoreNodeSet) {
+        this.ignoreNodeSet = ignoreNodeSet;
+        return this;
+    }
+
     public String getPluginJarUrl() {
         return pluginJarUrl;
     }
@@ -88,6 +99,10 @@ public class GlobalOptions {
 
     public boolean isNullEqualsNotExist() {
         return nullEqualsNotExist;
+    }
+
+    public Set<String> getIgnoreNodeSet() {
+        return ignoreNodeSet;
     }
 
 }

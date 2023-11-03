@@ -14,6 +14,11 @@ public class EigenOptions {
   private String categoryType;
 
   /**
+   * the collection of the node name which is ignore
+   */
+  private Set<String> ignoreNodes;
+
+  /**
    * the collection of the node path which is ignore
    */
   private Set<List<String>> exclusions;
@@ -23,6 +28,33 @@ public class EigenOptions {
 
   public static EigenOptions options() {
     return new EigenOptions();
+  }
+
+  public EigenOptions putCategoryType(String categoryType) {
+    this.categoryType = categoryType;
+    return this;
+  }
+
+  public EigenOptions putIgnoreNodes(String nodeName) {
+    if (nodeName == null || nodeName.isEmpty()) {
+      return this;
+    }
+    if (this.ignoreNodes == null) {
+      this.ignoreNodes = new HashSet<>();
+    }
+    this.ignoreNodes.add(nodeName);
+    return this;
+  }
+
+  public EigenOptions putIgnoreNodes(Collection<String> nodeNames) {
+    if (nodeNames == null || nodeNames.isEmpty()) {
+      return this;
+    }
+    if (this.ignoreNodes == null) {
+      this.ignoreNodes = new HashSet<>();
+    }
+    this.ignoreNodes.addAll(nodeNames);
+    return this;
   }
 
   public EigenOptions putExclusions(List<String> path) {
@@ -53,5 +85,9 @@ public class EigenOptions {
 
   public Set<List<String>> getExclusions() {
     return exclusions;
+  }
+
+  public Set<String> getIgnoreNodes() {
+    return ignoreNodes;
   }
 }
