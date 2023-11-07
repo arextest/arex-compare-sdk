@@ -42,6 +42,23 @@ public class GlobalOptions {
      */
     private Set<String> ignoreNodeSet;
 
+    /**
+     * This option is true, the select statement does not compare
+     */
+    private Boolean selectIgnoreCompare;
+
+    /**
+     * only compare the overlapping columns
+     * ignore the non-overlapping columns
+     * This configuration works only when compareType is CompareType.DATABASE
+     */
+    private Boolean onlyCompareCoincidentColumn;
+
+    /**
+     * This option is true, the uuid is ignored when comparing
+     */
+    private Boolean uuidIgnore;
+
     public GlobalOptions() {
         this.nameToLower = false;
         this.nullEqualsEmpty = false;
@@ -81,6 +98,21 @@ public class GlobalOptions {
         return this;
     }
 
+    public GlobalOptions putSelectIgnoreCompare(boolean selectIgnoreCompare) {
+        this.selectIgnoreCompare = selectIgnoreCompare;
+        return this;
+    }
+
+    public GlobalOptions putOnlyCompareCoincidentColumn(boolean onlyCompareCoincidentColumn) {
+        this.onlyCompareCoincidentColumn = onlyCompareCoincidentColumn;
+        return this;
+    }
+
+    public GlobalOptions putUuidIgnore(boolean uuidIgnore) {
+        this.uuidIgnore = uuidIgnore;
+        return this;
+    }
+
     public String getPluginJarUrl() {
         return pluginJarUrl;
     }
@@ -103,6 +135,18 @@ public class GlobalOptions {
 
     public Set<String> getIgnoreNodeSet() {
         return ignoreNodeSet;
+    }
+
+    public Boolean getSelectIgnoreCompare() {
+        return selectIgnoreCompare;
+    }
+
+    public Boolean getOnlyCompareCoincidentColumn() {
+        return onlyCompareCoincidentColumn;
+    }
+
+    public Boolean getUuidIgnore() {
+        return uuidIgnore;
     }
 
 }

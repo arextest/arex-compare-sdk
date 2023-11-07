@@ -54,6 +54,15 @@ public class OptionsToRulesConvert {
         if (globalOptions.getIgnoreNodeSet() != null) {
             rulesConfig.setIgnoreNodeSet(globalOptions.getIgnoreNodeSet());
         }
+        if (globalOptions.getOnlyCompareCoincidentColumn() != null) {
+            rulesConfig.setOnlyCompareCoincidentColumn(globalOptions.getOnlyCompareCoincidentColumn());
+        }
+        if (globalOptions.getSelectIgnoreCompare() != null) {
+            rulesConfig.setSelectIgnoreCompare(globalOptions.getSelectIgnoreCompare());
+        }
+        if (globalOptions.getUuidIgnore() != null) {
+            rulesConfig.setUuidIgnore(globalOptions.getUuidIgnore());
+        }
     }
 
     private static void optionsToRules(CompareOptions compareOptions, RulesConfig rulesConfig) {
@@ -86,6 +95,9 @@ public class OptionsToRulesConvert {
         }
         if (compareOptions.getNullEqualsNotExist() != null) {
             rulesConfig.setNullEqualsNotExist(compareOptions.getNullEqualsNotExist());
+        }
+        if (compareOptions.getUuidIgnore() != null) {
+            rulesConfig.setUuidIgnore(compareOptions.getUuidIgnore());
         }
     }
 

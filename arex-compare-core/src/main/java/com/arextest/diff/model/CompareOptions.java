@@ -67,7 +67,7 @@ public class CompareOptions {
      */
     private Boolean nullEqualsEmpty = null;
     /**
-     * This option is tru, the select statement does not compare
+     * This option is true, the select statement does not compare
      */
     private Boolean selectIgnoreCompare = null;
 
@@ -91,6 +91,11 @@ public class CompareOptions {
      * for example：the baseMsg: {"age":null} is consistent with testMsg: "{}"
      */
     private Boolean nullEqualsNotExist;
+
+    /**
+     * This option is true, the uuid is ignored when comparing
+     */
+    private Boolean uuidIgnore;
 
     public CompareOptions() {
     }
@@ -245,6 +250,11 @@ public class CompareOptions {
         return this;
     }
 
+    public CompareOptions putUuidIgnore(Boolean uuidIgnore) {
+        this.uuidIgnore = uuidIgnore;
+        return this;
+    }
+
     public String getCategoryType() {
         return categoryType;
     }
@@ -295,5 +305,9 @@ public class CompareOptions {
 
     public Boolean getNullEqualsNotExist() {
         return nullEqualsNotExist;
+    }
+
+    public Boolean getUuidIgnore() {
+        return uuidIgnore;
     }
 }

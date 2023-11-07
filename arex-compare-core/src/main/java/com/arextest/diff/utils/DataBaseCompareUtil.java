@@ -16,7 +16,7 @@ import com.arextest.diff.handler.WhitelistHandler;
 import com.arextest.diff.handler.keycompute.KeyCompute;
 import com.arextest.diff.handler.log.LogProcess;
 import com.arextest.diff.handler.log.filterrules.ArexPrefixFilter;
-import com.arextest.diff.handler.log.filterrules.GuidFilter;
+import com.arextest.diff.handler.log.filterrules.UuidFilter;
 import com.arextest.diff.handler.log.filterrules.OnlyCompareSameColumnsFilter;
 import com.arextest.diff.handler.log.filterrules.TimePrecisionFilter;
 import com.arextest.diff.handler.metric.TimeConsumerWatch;
@@ -117,7 +117,10 @@ public class DataBaseCompareUtil {
             LogProcess logProcess = new LogProcess();
             logProcess.setRulesConfig(rulesConfig);
             logProcess.appendFilterRules(Arrays.asList(new TimePrecisionFilter(rulesConfig.getIgnoredTimePrecision()),
-                new ArexPrefixFilter(), new GuidFilter()));
+                new ArexPrefixFilter()));
+            if (rulesConfig.isUuidIgnore()) {
+                logProcess.appendFilterRules(new UuidFilter());
+            }
             if (rulesConfig.isOnlyCompareCoincidentColumn()) {
                 logProcess.appendFilterRules(new OnlyCompareSameColumnsFilter());
             }
