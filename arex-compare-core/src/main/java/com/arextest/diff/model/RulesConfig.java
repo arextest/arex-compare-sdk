@@ -51,6 +51,8 @@ public class RulesConfig {
 
     private boolean nullEqualsNotExist;
 
+    private boolean uuidIgnore;
+
     public RulesConfig() {
     }
 
@@ -189,5 +191,13 @@ public class RulesConfig {
 
     public void setNullEqualsNotExist(boolean nullEqualsNotExist) {
         this.nullEqualsNotExist = nullEqualsNotExist;
+    }
+
+    public boolean isUuidIgnore() {
+        return uuidIgnore;
+    }
+
+    public void setUuidIgnore(boolean uuidIgnore) {
+        this.uuidIgnore = uuidIgnore;
     }
 }

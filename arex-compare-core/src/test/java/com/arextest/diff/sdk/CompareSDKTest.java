@@ -47,7 +47,7 @@ public class CompareSDKTest {
 
         CompareResult result = sdk.compare(str1, str2, compareOptions);
         long end = System.currentTimeMillis();
-        Assert.assertEquals(result.getLogs().size(), 7);
+        Assert.assertEquals(7, result.getLogs().size());
         System.out.println("toatal cost:" + (end - start) + " ms");
     }
 
@@ -105,7 +105,7 @@ public class CompareSDKTest {
         compareOptions.putSelectIgnoreCompare(true);
 
         CompareResult result = sdk.compare(str1, str2, compareOptions);
-        Assert.assertEquals(result.getLogs().size(), 1);
+        Assert.assertEquals(1, result.getLogs().size());
     }
 
     @Test
@@ -123,7 +123,7 @@ public class CompareSDKTest {
         CompareOptions compareOptions = CompareOptions.options();
 
         CompareResult result = sdk.compare(str1, str2, compareOptions);
-        Assert.assertEquals(result.getLogs().size(), 0);
+        Assert.assertEquals(0,  result.getLogs().size());
     }
 
     @Test
@@ -135,7 +135,7 @@ public class CompareSDKTest {
         String str2 = "{\"arr\":null}";
         CompareOptions compareOptions = CompareOptions.options();
         CompareResult result = sdk.compare(str1, str2, compareOptions);
-        Assert.assertEquals(result.getLogs().size(), 0);
+        Assert.assertEquals(0, result.getLogs().size());
     }
 
     @Test
@@ -144,16 +144,16 @@ public class CompareSDKTest {
         String str1 = "{\"array\":\"http://www.baidu.com\"}";
         String str2 = "{\"array\":\"http://arex_www.baidu.com\"}";
         CompareResult result = sdk.compare(str1, str2);
-        Assert.assertEquals(result.getLogs().size(), 0);
+        Assert.assertEquals(0, result.getLogs().size());
     }
 
     @Test
-    public void testGuidFilter() {
+    public void testUuidFilter() {
         CompareSDK sdk = new CompareSDK();
-        String str1 = "{\"guid\":\"f4c6d9c9-9d8f-4b1f-9d5c-6e9d7a8c6b2e\"}";
-        String str2 = "{\"guid\":\"f4c6d9c9-9d8f-4b1f-9d5c-6e9d7a8c6b2f\"}";
+        String str1 = "{\"uuid\":\"f4c6d9c9-9d8f-4b1f-9d5c-6e9d7a8c6b2e\"}";
+        String str2 = "{\"uuid\":\"f4c6d9c9-9d8f-4b1f-9d5c-6e9d7a8c6b2f\"}";
         CompareResult result = sdk.compare(str1, str2);
-        Assert.assertEquals(result.getLogs().size(), 0);
+        Assert.assertEquals( 1, result.getLogs().size());
     }
 
     @Test
@@ -173,7 +173,7 @@ public class CompareSDKTest {
         compareOptions.putSelectIgnoreCompare(true);
 
         CompareResult result = sdk.compare(str1, str2, compareOptions);
-        Assert.assertEquals(result.getCode(), 0);
+        Assert.assertEquals( 0, result.getCode());
     }
 
     @Test
@@ -261,7 +261,7 @@ public class CompareSDKTest {
         compareOptions.putCategoryType(CategoryType.DATABASE);
 
         CompareResult result = compareSDK.compare(str1, str2, compareOptions);
-        Assert.assertEquals(result.getLogs().size(), 1);
+        Assert.assertEquals(1, result.getLogs().size());
     }
 
     @Test
@@ -280,7 +280,7 @@ public class CompareSDKTest {
 
         CompareResult result = sdk.compare(str1, str2, compareOptions);
 
-        Assert.assertEquals(result.getProcessedBaseMsg(), "{\"name\":\"google\"}");
+        Assert.assertEquals( "{\"name\":\"google\"}", result.getProcessedBaseMsg());
     }
 
     @Test
@@ -295,7 +295,61 @@ public class CompareSDKTest {
         compareOptions.putCategoryType(CategoryType.DATABASE);
 
         CompareResult result = compareSDK.compare(str1, str2, compareOptions);
-        Assert.assertEquals(result.getLogs().size(), 2);
+        Assert.assertEquals(2, result.getLogs().size());
 
     }
+
+    @Test
+    public void testGlobalOptionsSelectIgnoreCompare() {
+      CompareSDK sdk = new CompareSDK();
+      sdk.getGlobalOptions().putSelectIgnoreCompare(true);
+
+      String str1 = "{\"dbname\":\"dbmame\",\"body\":\"SELECT e.c3, e.c4, e.c5 FROM t1 e JOIN t2 d USING (id) " +
+          "WHERE c2 = 'SA_REP' AND c6 = 2500  ORDER BY e.c3 FOR UPDATE OF e ;\"}";
+
+      String str2 = "{\"dbname\":\"dbmame\",\"body\":\"SELECT e.c3, e.c4, e.c5 FROM t1 e JOIN t2 d USING (id)" +
+          " WHERE c2 = 'SA_REP' AND c6 = 2300  ORDER BY e.c3 FOR UPDATE OF e ;\"}";
+
+      CompareOptions compareOptions = CompareOptions.options();
+      compareOptions.putExclusions(Arrays.asList("body"));
+      compareOptions.putCategoryType(CategoryType.DATABASE);
+
+      CompareResult result = sdk.compare(str1, str2, compareOptions);
+      Assert.assertEquals(0, result.getCode());
+    }
+
+    @Test
+    public void testGlobalOptionsOnlyCompareCoincidentColumn() {
+        CompareSDK sdk = new CompareSDK();
+        sdk.getGlobalOptions().putOnlyCompareCoincidentColumn(true);
+
+        String str1 = "{\"dbname\":\"dbmame\",\"body\":\"REPLACE INTO "
+            + "orderTable(OrderId, InfoId, DataChange_LastTime, userdata_location) "
+            + "VALUES (36768383786, 36768317034, '2023-05-14 18:00:34.556', '')\"}";
+
+        String str2 = "{\"dbname\":\"dbmame\",\"body\":\"REPLACE INTO "
+            + "orderTable(OrderId, InfoId, DataChange_LastTime, userdata_location1) "
+            + "VALUES (36768383786, 36768317034, '2023-05-14 18:00:34.556', '')\"}";
+
+        CompareOptions compareOptions = CompareOptions.options();
+        compareOptions.putExclusions(Arrays.asList("body"));
+        compareOptions.putCategoryType(CategoryType.DATABASE);
+
+        CompareResult result = sdk.compare(str1, str2, compareOptions);
+        Assert.assertEquals(0, result.getCode());
+    }
+
+    @Test
+    public void testGlobalOptionsUuidIgnore() {
+
+        CompareSDK sdk = new CompareSDK();
+        sdk.getGlobalOptions().putUuidIgnore(true);
+
+        String str1 = "{\"uuid\":\"5a6798c4-e57c-481d-b6b7-00f5866350c0\"}";
+        String str2 = "{\"uuid\":\"41cd4916-9ff5-413e-812a-5f620e2ae589\"}";
+
+        CompareResult result = sdk.compare(str1, str2);
+        Assert.assertEquals(0, result.getCode());
+    }
+
 }

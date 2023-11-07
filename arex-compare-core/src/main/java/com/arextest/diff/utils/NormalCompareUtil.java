@@ -1,6 +1,7 @@
 package com.arextest.diff.utils;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -16,7 +17,7 @@ import com.arextest.diff.handler.WhitelistHandler;
 import com.arextest.diff.handler.keycompute.KeyCompute;
 import com.arextest.diff.handler.log.LogProcess;
 import com.arextest.diff.handler.log.filterrules.ArexPrefixFilter;
-import com.arextest.diff.handler.log.filterrules.GuidFilter;
+import com.arextest.diff.handler.log.filterrules.UuidFilter;
 import com.arextest.diff.handler.log.filterrules.TimePrecisionFilter;
 import com.arextest.diff.handler.metric.TimeConsumerWatch;
 import com.arextest.diff.handler.metric.TimeMetricLabel;
@@ -108,7 +109,10 @@ public class NormalCompareUtil {
             LogProcess logProcess = new LogProcess();
             logProcess.setRulesConfig(rulesConfig);
             logProcess.appendFilterRules(Arrays.asList(new TimePrecisionFilter(rulesConfig.getIgnoredTimePrecision()),
-                new ArexPrefixFilter(), new GuidFilter()));
+                new ArexPrefixFilter()));
+            if (rulesConfig.isUuidIgnore()) {
+                logProcess.appendFilterRules(Collections.singletonList(new UuidFilter()));
+            }
             logs = compareHandler.doHandler(rulesConfig, keyComputeResponse, msgStructureFuture,
                 msgWhiteObj.getBaseObj(), msgWhiteObj.getTestObj(), logProcess);
             timeConsumerWatch.end(TimeMetricLabel.COMPARE_HANDLER);
