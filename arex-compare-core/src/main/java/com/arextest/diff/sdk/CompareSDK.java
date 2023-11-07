@@ -20,31 +20,31 @@ public class CompareSDK {
     }
 
     public CompareResult compare(String baseMsg, String testMsg) {
-        RulesConfig rulesConfig = OptionsToRulesAdapter.optionsToConfig(baseMsg, testMsg, null, globalOptions);
+        RulesConfig rulesConfig = OptionsToRulesConvert.optionsToConfig(baseMsg, testMsg, null, globalOptions);
         return compare(rulesConfig);
     }
 
     public CompareResult compare(String baseMsg, String testMsg, CompareOptions compareOptions) {
         RulesConfig rulesConfig =
-            OptionsToRulesAdapter.optionsToConfig(baseMsg, testMsg, compareOptions, globalOptions);
+            OptionsToRulesConvert.optionsToConfig(baseMsg, testMsg, compareOptions, globalOptions);
         return compare(rulesConfig);
     }
 
     public CompareResult quickCompare(String baseMsg, String testMsg) {
-        RulesConfig rulesConfig = OptionsToRulesAdapter.optionsToConfig(baseMsg, testMsg, null, globalOptions);
+        RulesConfig rulesConfig = OptionsToRulesConvert.optionsToConfig(baseMsg, testMsg, null, globalOptions);
         rulesConfig.setQuickCompare(true);
         return compare(rulesConfig);
     }
 
     public CompareResult quickCompare(String baseMsg, String testMsg, CompareOptions compareOptions) {
         RulesConfig rulesConfig =
-            OptionsToRulesAdapter.optionsToConfig(baseMsg, testMsg, compareOptions, globalOptions);
+            OptionsToRulesConvert.optionsToConfig(baseMsg, testMsg, compareOptions, globalOptions);
         rulesConfig.setQuickCompare(true);
         return compare(rulesConfig);
     }
 
     private CompareResult compare(RulesConfig rulesConfig) {
-        MDCCompareUtil.addServiceName("compareSDK");
+        MDCCompareUtil.addServiceName(MDCCompareUtil.SERVICE_NAME_VALUE);
         MDCCompareUtil.addFastCompare(rulesConfig.isQuickCompare());
         MDCCompareUtil.addCompareType(rulesConfig.getCategoryType());
         if (Objects.equals(rulesConfig.getBaseMsg(), rulesConfig.getTestMsg())) {

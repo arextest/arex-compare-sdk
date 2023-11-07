@@ -4,6 +4,8 @@ import org.slf4j.MDC;
 
 public class MDCCompareUtil {
 
+    public static final String SERVICE_NAME_VALUE = "compareSDK";
+
     private static final String SERVICE_NAME = "serviceName";
     private static final String QUICK_COMPARE = "quickCompare";
 

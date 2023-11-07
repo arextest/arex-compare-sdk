@@ -10,6 +10,11 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
@@ -17,12 +22,6 @@ import net.sf.jsqlparser.statement.select.Select;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * Created by rchen9 on 2023/1/12.
@@ -53,47 +52,31 @@ public class SqlParse {
                 }
             }
 
-            // parse the body field, compatible with the case where the body is an array
-            JsonNode baseDatabaseBody = baseJSONObj.get(DbParseConstants.BODY);
-            JsonNode testDatabaseBody = testJSONObj.get(DbParseConstants.BODY);
-
-            if (baseDatabaseBody == null || testDatabaseBody == null) {
-                if (testDatabaseBody != null) {
-                    fillOriginalSql(testJSONObj, testDatabaseBody);
-                } else if (baseDatabaseBody != null) {
-                    fillOriginalSql(baseJSONObj, baseDatabaseBody);
-                }
+            ParsedResult baseParsedResult = this.sqlParse(baseJSONObj, nameToLower);
+            ParsedResult testParsedResult = this.sqlParse(testJSONObj, nameToLower);
+            if(Objects.equals(baseParsedResult.isSuccess(), false) ||
+                Objects.equals(testParsedResult.isSuccess(), false)) {
                 return;
             }
-
-            ParsedResult baseParsedResult = sqlParse(baseDatabaseBody);
-            ParsedResult testParsedResult = sqlParse(testDatabaseBody);
-            if (baseParsedResult != null && testParsedResult != null) {
-                ArrayNode baseParsedSql = baseParsedResult.getParsedSql();
-                ArrayNode testParsedSql = testParsedResult.getParsedSql();
-                if (nameToLower) {
-                    NameConvertUtil.nameConvert(baseParsedSql);
-                    NameConvertUtil.nameConvert(testParsedSql);
-                }
-                baseJSONObj.set(DbParseConstants.PARSED_SQL, baseParsedSql);
-                testJSONObj.set(DbParseConstants.PARSED_SQL, testParsedSql);
+            if (selectIgnoreCompare) {
                 List<Boolean> isSelectInBase = baseParsedResult.getIsSelect();
                 List<Boolean> isSelectInTest = testParsedResult.getIsSelect();
-                if (selectIgnoreCompare) {
-                    if (!isSelectInBase.isEmpty() && !isSelectInTest.isEmpty() &&
-                            isSelectInBase.get(0) && isSelectInTest.get(0)) {
-                        throw new SelectIgnoreException();
-                    }
+                if (!isSelectInBase.isEmpty() && !isSelectInTest.isEmpty() &&
+                        isSelectInBase.get(0) && isSelectInTest.get(0)) {
+                    throw new SelectIgnoreException();
                 }
-            } else {
-                fillOriginalSql(baseJSONObj, baseDatabaseBody);
-                fillOriginalSql(testJSONObj, testDatabaseBody);
             }
         }
     }
 
     // if return null, indicate the sql parsed fail.
-    public ParsedResult sqlParse(JsonNode databaseBody) {
+    public ParsedResult sqlParse(ObjectNode jsonObj, boolean nameToLower) {
+        JsonNode databaseBody = jsonObj.get(DbParseConstants.BODY);
+        if (databaseBody == null) {
+            return new ParsedResult(null,false);
+        }
+
+        boolean successParse = true;
         ArrayNode parsedSql = JacksonHelperUtil.getArrayNode();
         List<Boolean> isSelect = new ArrayList<>();
         try {
@@ -109,12 +92,26 @@ public class SqlParse {
                     isSelect.add(tempMutablePair.getRight());
                 }
             } else {
-                return null;
+                successParse = false;
             }
         } catch (Throwable throwable) {
-            return null;
+            logger.error("sql parse error", throwable);
+            successParse = false;
         }
-        return new ParsedResult(parsedSql, isSelect);
+
+        ParsedResult result = new ParsedResult();
+        if(!successParse) {
+          this.fillOriginalSql(jsonObj, databaseBody);
+          result.setSuccess(false);
+        } else {
+            if (nameToLower) {
+                NameConvertUtil.nameConvert(parsedSql);
+            }
+            jsonObj.set(DbParseConstants.PARSED_SQL, parsedSql);
+            result.setSuccess(true);
+            result.setIsSelect(isSelect);
+        }
+        return result;
     }
 
     @SuppressWarnings("unchecked")
@@ -252,20 +249,36 @@ public class SqlParse {
 
         }
 
-        public ParsedResult(ArrayNode parsedSql, List<Boolean> isSelect) {
-            this.parsedSql = parsedSql;
+        public ParsedResult(boolean success) {
+            this.success = success;
+        }
+
+        public ParsedResult(List<Boolean> isSelect) {
             this.isSelect = isSelect;
         }
 
-        private ArrayNode parsedSql;
+        public ParsedResult(List<Boolean> isSelect, boolean success) {
+            this.isSelect = isSelect;
+            this.success = success;
+        }
         private List<Boolean> isSelect;
 
-        public ArrayNode getParsedSql() {
-            return parsedSql;
+        private boolean success;
+
+        public boolean isSuccess() {
+            return success;
+        }
+
+        public void setSuccess(boolean success) {
+            this.success = success;
         }
 
         public List<Boolean> getIsSelect() {
-            return isSelect;
+          return isSelect;
+        }
+
+        public void setIsSelect(List<Boolean> isSelect) {
+          this.isSelect = isSelect;
         }
     }
 }

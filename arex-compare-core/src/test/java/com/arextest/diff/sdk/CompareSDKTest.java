@@ -282,4 +282,20 @@ public class CompareSDKTest {
 
         Assert.assertEquals(result.getProcessedBaseMsg(), "{\"name\":\"google\"}");
     }
+
+    @Test
+    public void testSqlBodyNull(){
+        CompareSDK compareSDK = new CompareSDK();
+        compareSDK.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true);
+        String str1 = "{\"table\":\"cp_petowner\"}";
+        String str2 = "{\"body\":\"EXEC cp_petowner @CreateTime='2017-09-07 20:46:24.977'\"}";
+
+        CompareOptions compareOptions = CompareOptions.options();
+        compareOptions.putExclusions(Arrays.asList("body"));
+        compareOptions.putCategoryType(CategoryType.DATABASE);
+
+        CompareResult result = compareSDK.compare(str1, str2, compareOptions);
+        Assert.assertEquals(result.getLogs().size(), 2);
+
+    }
 }

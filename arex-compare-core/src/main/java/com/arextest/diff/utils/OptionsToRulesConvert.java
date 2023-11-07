@@ -7,19 +7,13 @@ import com.arextest.diff.model.RulesConfig;
 import com.arextest.diff.model.SystemConfig;
 import com.arextest.diff.model.key.ListSortEntity;
 import com.arextest.diff.model.key.ReferenceEntity;
-
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-public class OptionsToRulesAdapter {
+public class OptionsToRulesConvert {
 
     public static RulesConfig optionsToConfig(String baseMsg, String testMsg, CompareOptions compareOptions, GlobalOptions globalOptions) {
         RulesConfig rulesConfig = new RulesConfig();
@@ -36,12 +30,12 @@ public class OptionsToRulesAdapter {
     }
 
     private static void configToLower(RulesConfig rulesConfig) {
-        rulesConfig.setInclusions(listListToLower(rulesConfig.getInclusions()));
-        rulesConfig.setExclusions(listListToLower(rulesConfig.getExclusions()));
-        rulesConfig.setIgnoreNodeSet(setToLower(rulesConfig.getIgnoreNodeSet()));
-        rulesConfig.setDecompressConfigMap(mapKeyToLower(rulesConfig.getDecompressConfigMap()));
-        referenceToLower(rulesConfig.getReferenceEntities());
-        keyConfigToLower(rulesConfig.getListSortEntities());
+        rulesConfig.setInclusions(FieldToLowerUtil.listListToLower(rulesConfig.getInclusions()));
+        rulesConfig.setExclusions(FieldToLowerUtil.listListToLower(rulesConfig.getExclusions()));
+        rulesConfig.setIgnoreNodeSet(FieldToLowerUtil.setToLower(rulesConfig.getIgnoreNodeSet()));
+        rulesConfig.setDecompressConfigMap(FieldToLowerUtil.mapKeyToLower(rulesConfig.getDecompressConfigMap()));
+        FieldToLowerUtil.referenceToLower(rulesConfig.getReferenceEntities());
+        FieldToLowerUtil.keyConfigToLower(rulesConfig.getListSortEntities());
     }
 
 
@@ -57,6 +51,9 @@ public class OptionsToRulesAdapter {
         rulesConfig.setNullEqualsEmpty(globalOptions.isNullEqualsEmpty());
         rulesConfig.setIgnoredTimePrecision(globalOptions.getIgnoredTimePrecision());
         rulesConfig.setNullEqualsNotExist(globalOptions.isNullEqualsNotExist());
+        if (globalOptions.getIgnoreNodeSet() != null) {
+            rulesConfig.setIgnoreNodeSet(globalOptions.getIgnoreNodeSet());
+        }
     }
 
     private static void optionsToRules(CompareOptions compareOptions, RulesConfig rulesConfig) {
@@ -90,95 +87,6 @@ public class OptionsToRulesAdapter {
         if (compareOptions.getNullEqualsNotExist() != null) {
             rulesConfig.setNullEqualsNotExist(compareOptions.getNullEqualsNotExist());
         }
-    }
-
-    private static <V> Map<List<String>, V> mapKeyToLower(Map<List<String>, V> map) {
-        if (map == null) {
-            return null;
-        }
-        Map<List<String>, V> result = new HashMap<>();
-        map.forEach((k, v) -> {
-            if (k != null && v != null) {
-                result.put(k.stream().map(String::toLowerCase).collect(Collectors.toList()), v);
-            }
-        });
-        return result;
-    }
-
-    private static List<List<String>> listListToLower(List<List<String>> lists) {
-        if (lists == null || lists.isEmpty()) {
-            return null;
-        }
-        List<List<String>> result = new ArrayList<>();
-        lists.forEach(item -> {
-            result.add(item.stream()
-                    .map(String::toLowerCase)
-                    .collect(Collectors.toList()));
-        });
-        return result;
-    }
-
-    private static Set<String> setToLower(Collection<String> collection) {
-        if (collection == null) {
-            return null;
-        }
-        return collection.stream().filter(Objects::nonNull)
-                .map(String::toLowerCase)
-                .collect(Collectors.toSet());
-    }
-
-    private static List<String> listToLower(Collection<String> collection) {
-        if (collection == null) {
-            return null;
-        }
-        return collection.stream().filter(Objects::nonNull)
-                .map(String::toLowerCase)
-                .collect(Collectors.toList());
-    }
-
-    private static void referenceToLower(List<ReferenceEntity> referenceEntities) {
-        referenceEntities.forEach(item -> {
-            item.setPkNodePath(listToLower(item.getPkNodePath()));
-            item.setPkNodeListPath(listToLower(item.getPkNodeListPath()));
-            item.setFkNodePath(listToLower(item.getFkNodePath()));
-        });
-    }
-
-    private static void keyConfigToLower(List<ListSortEntity> keyEntities) {
-        keyEntities.forEach(item -> {
-            item.setListNodepath(listToLower(item.getListNodepath()));
-            item.setKeys(listListToLower(item.getKeys()));
-            item.setReferenceNodeRelativePath(listToLower(item.getReferenceNodeRelativePath()));
-        });
-    }
-
-    private static List<List<String>> setToListConvert(Set<String> set) {
-        if (set == null || set.isEmpty()) {
-            return null;
-        }
-        List<List<String>> result = new ArrayList<>();
-        for (String path : set) {
-            if (StringUtil.isEmpty(path)) {
-                continue;
-            }
-            List<String> collect = Arrays.stream(path.split("\\\\")).collect(Collectors.toList());
-            result.add(collect);
-        }
-        return result;
-    }
-
-    private static List<List<String>> ignoredNodePathsConvert(List<String> ignoreNodePaths) {
-        if (ignoreNodePaths == null) {
-            return null;
-        }
-        List<List<String>> result = new ArrayList<>();
-        ignoreNodePaths.stream().filter(Objects::nonNull).forEach(item -> {
-            List<String> collect = Arrays.stream(item.split("\\\\")).collect(Collectors.toList());
-            if (collect != null && !collect.isEmpty()) {
-                result.add(collect);
-            }
-        });
-        return result;
     }
 
     private static Map<List<String>, DecompressConfig> decompressConfigConvert(List<DecompressConfig> decompressConfigList) {
