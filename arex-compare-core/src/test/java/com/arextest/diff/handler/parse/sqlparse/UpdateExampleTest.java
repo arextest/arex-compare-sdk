@@ -12,43 +12,43 @@ import org.junit.Test;
  */
 public class UpdateExampleTest {
 
-    @Test
-    public void testUpdate1() throws JSQLParserException {
-        String sql = "UPDATE Websites \n" +
-                "SET alexa='5000', country='USA' \n" +
-                "WHERE name='菜鸟教程';";
-        Statement statement = CCJSqlParserUtil.parse(sql);
-        testSqlParse(statement);
-    }
+  private static void testSqlParse(Statement statement) {
+    Parse parse = null;
+    parse = ActionFactory.selectParse(statement);
+    ObjectNode jsonObject = (ObjectNode) parse.parse(statement);
+    System.out.println();
+  }
 
-    @Test
-    public void testUpdate2() throws JSQLParserException {
-        String sql = "update test set column = 1 order by id desc limit 2\n";
-        Statement statement = CCJSqlParserUtil.parse(sql);
-        testSqlParse(statement);
-    }
+  @Test
+  public void testUpdate1() throws JSQLParserException {
+    String sql = "UPDATE Websites \n" +
+        "SET alexa='5000', country='USA' \n" +
+        "WHERE name='菜鸟教程';";
+    Statement statement = CCJSqlParserUtil.parse(sql);
+    testSqlParse(statement);
+  }
 
-    @Test
-    public void testUpdate3() throws JSQLParserException {
-        String sql = "UPDATE tablea a\n" +
-                "JOIN tableb b\n" +
-                "SET a.val = b.val\n" +
-                "WHERE b.id = a.id";
-        Statement statement = CCJSqlParserUtil.parse(sql);
-        testSqlParse(statement);
-    }
+  @Test
+  public void testUpdate2() throws JSQLParserException {
+    String sql = "update test set column = 1 order by id desc limit 2\n";
+    Statement statement = CCJSqlParserUtil.parse(sql);
+    testSqlParse(statement);
+  }
 
-    @Test
-    public void testUpdate4() throws JSQLParserException {
-        String sql = "UPDATE `hotelpicture` SET `hotelid`=1026268, `title`='外观', `smallpicurl`='', `largepicurl`='', `description`='外观', `sort`=0, `newpicurl`='/0206f120009irgqljCA50.jpg', `pictype`=100, `position`='H', `typeid`=0, `sharpness`=null WHERE `id`=492752329";
-        Statement statement = CCJSqlParserUtil.parse(sql);
-        testSqlParse(statement);
-    }
-    
-    private static void testSqlParse(Statement statement) {
-        Parse parse = null;
-        parse = ActionFactory.selectParse(statement);
-        ObjectNode jsonObject = (ObjectNode) parse.parse(statement);
-        System.out.println();
-    }
+  @Test
+  public void testUpdate3() throws JSQLParserException {
+    String sql = "UPDATE tablea a\n" +
+        "JOIN tableb b\n" +
+        "SET a.val = b.val\n" +
+        "WHERE b.id = a.id";
+    Statement statement = CCJSqlParserUtil.parse(sql);
+    testSqlParse(statement);
+  }
+
+  @Test
+  public void testUpdate4() throws JSQLParserException {
+    String sql = "UPDATE `hotelpicture` SET `hotelid`=1026268, `title`='外观', `smallpicurl`='', `largepicurl`='', `description`='外观', `sort`=0, `newpicurl`='/0206f120009irgqljCA50.jpg', `pictype`=100, `position`='H', `typeid`=0, `sharpness`=null WHERE `id`=492752329";
+    Statement statement = CCJSqlParserUtil.parse(sql);
+    testSqlParse(statement);
+  }
 }

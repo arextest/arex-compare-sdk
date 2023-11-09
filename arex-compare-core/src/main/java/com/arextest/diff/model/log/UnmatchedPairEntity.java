@@ -2,108 +2,116 @@ package com.arextest.diff.model.log;
 
 import com.arextest.diff.model.enumeration.UnmatchedType;
 import com.arextest.diff.utils.ListUti;
-
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
 public class UnmatchedPairEntity implements Serializable {
-    /**
-     * {@link UnmatchedType}
-     */
-    private int unmatchedType;
-    private List<NodeEntity> leftUnmatchedPath;
-    private List<NodeEntity> rightUnmatchedPath;
-    private List<String> listKeys;
-    private Trace trace;
 
-    public UnmatchedPairEntity() {
-        leftUnmatchedPath = new ArrayList<>();
-        rightUnmatchedPath = new ArrayList<>();
-    }
+  /**
+   * {@link UnmatchedType}
+   */
+  private int unmatchedType;
+  private List<NodeEntity> leftUnmatchedPath;
+  private List<NodeEntity> rightUnmatchedPath;
+  private List<String> listKeys;
+  private Trace trace;
 
-    public UnmatchedPairEntity(int unmatchedType, List<NodeEntity> leftUnmatchedPath, List<NodeEntity> rightUnmatchedPath, Trace trace) {
-        this.unmatchedType = unmatchedType;
-        this.leftUnmatchedPath = deepCopy(leftUnmatchedPath);
-        this.rightUnmatchedPath = deepCopy(rightUnmatchedPath);
-        this.trace = trace;
-    }
+  public UnmatchedPairEntity() {
+    leftUnmatchedPath = new ArrayList<>();
+    rightUnmatchedPath = new ArrayList<>();
+  }
 
-    public int getUnmatchedType() {
-        return unmatchedType;
-    }
+  public UnmatchedPairEntity(int unmatchedType, List<NodeEntity> leftUnmatchedPath,
+      List<NodeEntity> rightUnmatchedPath, Trace trace) {
+    this.unmatchedType = unmatchedType;
+    this.leftUnmatchedPath = deepCopy(leftUnmatchedPath);
+    this.rightUnmatchedPath = deepCopy(rightUnmatchedPath);
+    this.trace = trace;
+  }
 
-    public void setUnmatchedType(int unmatchedType) {
-        this.unmatchedType = unmatchedType;
-    }
+  public int getUnmatchedType() {
+    return unmatchedType;
+  }
 
-    public List<NodeEntity> getLeftUnmatchedPath() {
-        return leftUnmatchedPath;
-    }
+  public void setUnmatchedType(int unmatchedType) {
+    this.unmatchedType = unmatchedType;
+  }
 
-    public void setLeftUnmatchedPath(List<NodeEntity> leftUnmatchedPath) {
-        this.leftUnmatchedPath = leftUnmatchedPath;
-    }
+  public List<NodeEntity> getLeftUnmatchedPath() {
+    return leftUnmatchedPath;
+  }
 
-    public List<NodeEntity> getRightUnmatchedPath() {
-        return rightUnmatchedPath;
-    }
+  public void setLeftUnmatchedPath(List<NodeEntity> leftUnmatchedPath) {
+    this.leftUnmatchedPath = leftUnmatchedPath;
+  }
 
-    public void setRightUnmatchedPath(List<NodeEntity> rightUnmatchedPath) {
-        this.rightUnmatchedPath = rightUnmatchedPath;
-    }
+  public List<NodeEntity> getRightUnmatchedPath() {
+    return rightUnmatchedPath;
+  }
 
-    public UnmatchedPairEntity buildListKeys(List<String> listKeys) {
-        this.listKeys = new ArrayList<>(listKeys);
-        return this;
-    }
+  public void setRightUnmatchedPath(List<NodeEntity> rightUnmatchedPath) {
+    this.rightUnmatchedPath = rightUnmatchedPath;
+  }
 
-    public void setListKeys(List<String> listKeys) {
-        this.listKeys = listKeys;
-    }
+  public UnmatchedPairEntity buildListKeys(List<String> listKeys) {
+    this.listKeys = new ArrayList<>(listKeys);
+    return this;
+  }
 
-    public List<String> getListKeys() {
-        return listKeys;
-    }
+  public List<String> getListKeys() {
+    return listKeys;
+  }
 
-    public Trace getTrace() {
-        return trace;
-    }
+  public void setListKeys(List<String> listKeys) {
+    this.listKeys = listKeys;
+  }
 
-    public void setTrace(Trace trace) {
-        this.trace = trace;
-    }
+  public Trace getTrace() {
+    return trace;
+  }
 
-    private List<NodeEntity> deepCopy(List<NodeEntity> origList) {
-        if (origList instanceof ArrayList) {
-            return (List<NodeEntity>) ((ArrayList) origList).clone();
+  public void setTrace(Trace trace) {
+    this.trace = trace;
+  }
 
-        } else {
-            List<NodeEntity> nodeEntities = new ArrayList<>();
-            if (origList != null) {
-                for (NodeEntity node : origList) {
-                    nodeEntities.add(new NodeEntity(node.getNodeName(), node.getIndex()));
-                }
-            }
-            return nodeEntities;
+  private List<NodeEntity> deepCopy(List<NodeEntity> origList) {
+    if (origList instanceof ArrayList) {
+      return (List<NodeEntity>) ((ArrayList) origList).clone();
+
+    } else {
+      List<NodeEntity> nodeEntities = new ArrayList<>();
+      if (origList != null) {
+        for (NodeEntity node : origList) {
+          nodeEntities.add(new NodeEntity(node.getNodeName(), node.getIndex()));
         }
-
+      }
+      return nodeEntities;
     }
 
+  }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        UnmatchedPairEntity that = (UnmatchedPairEntity) o;
-        return unmatchedType == that.unmatchedType &&
-                Objects.equals(ListUti.convertToStringList(leftUnmatchedPath), ListUti.convertToStringList(that.leftUnmatchedPath)) &&
-                Objects.equals(ListUti.convertToStringList(rightUnmatchedPath), ListUti.convertToStringList(that.rightUnmatchedPath));
-    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(unmatchedType, ListUti.convertToStringList(leftUnmatchedPath), ListUti.convertToStringList(rightUnmatchedPath));
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
     }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    UnmatchedPairEntity that = (UnmatchedPairEntity) o;
+    return unmatchedType == that.unmatchedType &&
+        Objects.equals(ListUti.convertToStringList(leftUnmatchedPath),
+            ListUti.convertToStringList(that.leftUnmatchedPath)) &&
+        Objects.equals(ListUti.convertToStringList(rightUnmatchedPath),
+            ListUti.convertToStringList(that.rightUnmatchedPath));
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(unmatchedType, ListUti.convertToStringList(leftUnmatchedPath),
+        ListUti.convertToStringList(rightUnmatchedPath));
+  }
 }

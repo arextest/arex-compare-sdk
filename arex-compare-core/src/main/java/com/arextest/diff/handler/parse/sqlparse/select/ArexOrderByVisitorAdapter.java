@@ -10,14 +10,14 @@ import net.sf.jsqlparser.statement.select.OrderByVisitor;
  */
 public class ArexOrderByVisitorAdapter implements OrderByVisitor {
 
-    private ObjectNode sqlObject;
+  private ObjectNode sqlObject;
 
-    public ArexOrderByVisitorAdapter(ObjectNode object) {
-        sqlObject = object;
-    }
+  public ArexOrderByVisitorAdapter(ObjectNode object) {
+    sqlObject = object;
+  }
 
-    @Override
-    public void visit(OrderByElement orderBy) {
-        sqlObject.put(orderBy.toString(), DbParseConstants.EMPTY);
-    }
+  @Override
+  public void visit(OrderByElement orderBy) {
+    sqlObject.put(orderBy.toString(), DbParseConstants.EMPTY);
+  }
 }

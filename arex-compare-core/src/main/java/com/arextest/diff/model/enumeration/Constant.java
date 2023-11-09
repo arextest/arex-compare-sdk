@@ -5,8 +5,8 @@ import java.util.List;
 
 public interface Constant {
 
-    String DYNAMIC_PATH = "*";
+  String DYNAMIC_PATH = "*";
 
-    List<String> ROOT_PATH = Collections.singletonList("arex_root");
+  List<String> ROOT_PATH = Collections.singletonList("arex_root");
 
 }

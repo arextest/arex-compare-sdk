@@ -19,74 +19,75 @@ import net.sf.jsqlparser.statement.select.ValuesList;
  */
 public class ArexFromItemVisitorAdapter implements FromItemVisitor {
 
-    private Object sqlObj;
+  private Object sqlObj;
 
-    public ArexFromItemVisitorAdapter(ObjectNode object) {
-        sqlObj = object;
+  public ArexFromItemVisitorAdapter(ObjectNode object) {
+    sqlObj = object;
+  }
+
+
+  @Override
+  public void visit(Table table) {
+    ObjectNode sqlJSONObj = (ObjectNode) sqlObj;
+
+    // partItems parse
+    sqlJSONObj.put(DbParseConstants.TABLE, table.getFullyQualifiedName());
+
+    // alias parse
+    Alias alias = table.getAlias();
+    if (alias != null) {
+      sqlJSONObj.put(DbParseConstants.ALIAS, alias.toString());
+    }
+  }
+
+  @Override
+  public void visit(SubSelect subSelect) {
+    ObjectNode sqlJSONObj = (ObjectNode) sqlObj;
+
+    // SelectBody parse
+    SelectBody selectBody = subSelect.getSelectBody();
+    if (selectBody != null) {
+      ObjectNode tempSelectBodyObj = JacksonHelperUtil.getObjectNode();
+      ArexSelectVisitorAdapter arexSelectVisitorAdapter = new ArexSelectVisitorAdapter(
+          tempSelectBodyObj);
+      selectBody.accept(arexSelectVisitorAdapter);
+      sqlJSONObj.put(DbParseConstants.TABLE, tempSelectBodyObj);
     }
 
-
-    @Override
-    public void visit(Table table) {
-        ObjectNode sqlJSONObj = (ObjectNode) sqlObj;
-
-        // partItems parse
-        sqlJSONObj.put(DbParseConstants.TABLE, table.getFullyQualifiedName());
-
-        // alias parse
-        Alias alias = table.getAlias();
-        if (alias != null) {
-            sqlJSONObj.put(DbParseConstants.ALIAS, alias.toString());
-        }
+    // alias parse
+    Alias alias = subSelect.getAlias();
+    if (alias != null) {
+      sqlJSONObj.put(DbParseConstants.ALIAS, alias.toString());
     }
+  }
 
-    @Override
-    public void visit(SubSelect subSelect) {
-        ObjectNode sqlJSONObj = (ObjectNode) sqlObj;
+  @Override
+  public void visit(SubJoin subJoin) {
+    ObjectNode sqlJSONObj = (ObjectNode) sqlObj;
+    sqlJSONObj.put(DbParseConstants.TABLE, subJoin.toString());
+  }
 
-        // SelectBody parse
-        SelectBody selectBody = subSelect.getSelectBody();
-        if (selectBody != null) {
-            ObjectNode tempSelectBodyObj = JacksonHelperUtil.getObjectNode();
-            ArexSelectVisitorAdapter arexSelectVisitorAdapter = new ArexSelectVisitorAdapter(tempSelectBodyObj);
-            selectBody.accept(arexSelectVisitorAdapter);
-            sqlJSONObj.put(DbParseConstants.TABLE, tempSelectBodyObj);
-        }
+  @Override
+  public void visit(LateralSubSelect lateralSubSelect) {
+    ObjectNode sqlJSONObj = (ObjectNode) sqlObj;
+    sqlJSONObj.put(DbParseConstants.TABLE, lateralSubSelect.toString());
+  }
 
-        // alias parse
-        Alias alias = subSelect.getAlias();
-        if (alias != null) {
-            sqlJSONObj.put(DbParseConstants.ALIAS, alias.toString());
-        }
-    }
+  @Override
+  public void visit(ValuesList valuesList) {
+    ObjectNode sqlJSONObj = (ObjectNode) sqlObj;
+    sqlJSONObj.put(DbParseConstants.TABLE, valuesList.toString());
+  }
 
-    @Override
-    public void visit(SubJoin subJoin) {
-        ObjectNode sqlJSONObj = (ObjectNode) sqlObj;
-        sqlJSONObj.put(DbParseConstants.TABLE, subJoin.toString());
-    }
+  @Override
+  public void visit(TableFunction tableFunction) {
+    ObjectNode sqlJSONObj = (ObjectNode) sqlObj;
+    sqlJSONObj.put(DbParseConstants.TABLE, tableFunction.toString());
+  }
 
-    @Override
-    public void visit(LateralSubSelect lateralSubSelect) {
-        ObjectNode sqlJSONObj = (ObjectNode) sqlObj;
-        sqlJSONObj.put(DbParseConstants.TABLE, lateralSubSelect.toString());
-    }
-
-    @Override
-    public void visit(ValuesList valuesList) {
-        ObjectNode sqlJSONObj = (ObjectNode) sqlObj;
-        sqlJSONObj.put(DbParseConstants.TABLE, valuesList.toString());
-    }
-
-    @Override
-    public void visit(TableFunction tableFunction) {
-        ObjectNode sqlJSONObj = (ObjectNode) sqlObj;
-        sqlJSONObj.put(DbParseConstants.TABLE, tableFunction.toString());
-    }
-
-    @Override
-    public void visit(ParenthesisFromItem parenthesisFromItem) {
-        ObjectNode sqlJSONObj = (ObjectNode) sqlObj;
-        sqlJSONObj.put(DbParseConstants.TABLE, parenthesisFromItem.toString());
-    }
+  @Override
+  public void visit(ParenthesisFromItem parenthesisFromItem) {
+    ObjectNode sqlJSONObj = (ObjectNode) sqlObj;
+    sqlJSONObj.put(DbParseConstants.TABLE, parenthesisFromItem.toString());
+  }
 }

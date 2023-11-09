@@ -3,30 +3,31 @@ package com.arextest.diff.model.log;
 import java.util.List;
 
 public class LogProcessRequest {
-    private List<LogEntity> logs;
-    private List<List<String>> ignoreNodePaths;
 
-    public LogProcessRequest() {
-    }
+  private List<LogEntity> logs;
+  private List<List<String>> ignoreNodePaths;
 
-    public LogProcessRequest(List<LogEntity> logs, List<List<String>> ignoreNodePaths) {
-        this.logs = logs;
-        this.ignoreNodePaths = ignoreNodePaths;
-    }
+  public LogProcessRequest() {
+  }
 
-    public List<LogEntity> getLogs() {
-        return logs;
-    }
+  public LogProcessRequest(List<LogEntity> logs, List<List<String>> ignoreNodePaths) {
+    this.logs = logs;
+    this.ignoreNodePaths = ignoreNodePaths;
+  }
 
-    public void setLogs(List<LogEntity> logs) {
-        this.logs = logs;
-    }
+  public List<LogEntity> getLogs() {
+    return logs;
+  }
 
-    public List<List<String>> getIgnoreNodePaths() {
-        return ignoreNodePaths;
-    }
+  public void setLogs(List<LogEntity> logs) {
+    this.logs = logs;
+  }
 
-    public void setIgnoreNodePaths(List<List<String>> ignoreNodePaths) {
-        this.ignoreNodePaths = ignoreNodePaths;
-    }
+  public List<List<String>> getIgnoreNodePaths() {
+    return ignoreNodePaths;
+  }
+
+  public void setIgnoreNodePaths(List<List<String>> ignoreNodePaths) {
+    this.ignoreNodePaths = ignoreNodePaths;
+  }
 }
