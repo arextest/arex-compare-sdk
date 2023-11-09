@@ -4,43 +4,44 @@ import java.io.Serializable;
 import java.util.List;
 
 public class ListSortEntity implements Serializable {
-    private List<String> listNodepath;
 
-    private List<List<String>> keys;
+  private List<String> listNodepath;
 
-    private List<String> referenceNodeRelativePath;
+  private List<List<String>> keys;
 
-
-    public List<String> getListNodepath() {
-        return listNodepath;
-    }
-
-    public void setListNodepath(List<String> listNodepath) {
-        this.listNodepath = listNodepath;
-    }
-
-    public List<List<String>> getKeys() {
-        return keys;
-    }
-
-    public void setKeys(List<List<String>> keys) {
-        this.keys = keys;
-    }
-
-    public List<String> getReferenceNodeRelativePath() {
-        return referenceNodeRelativePath;
-    }
-
-    public void setReferenceNodeRelativePath(List<String> referenceNodeRelativePath) {
-        this.referenceNodeRelativePath = referenceNodeRelativePath;
-    }
+  private List<String> referenceNodeRelativePath;
 
 
-    public enum ListKeyType {
-        First,
-        Combination,
-        OrderlyCombination;
+  public List<String> getListNodepath() {
+    return listNodepath;
+  }
 
-    }
+  public void setListNodepath(List<String> listNodepath) {
+    this.listNodepath = listNodepath;
+  }
+
+  public List<List<String>> getKeys() {
+    return keys;
+  }
+
+  public void setKeys(List<List<String>> keys) {
+    this.keys = keys;
+  }
+
+  public List<String> getReferenceNodeRelativePath() {
+    return referenceNodeRelativePath;
+  }
+
+  public void setReferenceNodeRelativePath(List<String> referenceNodeRelativePath) {
+    this.referenceNodeRelativePath = referenceNodeRelativePath;
+  }
+
+
+  public enum ListKeyType {
+    First,
+    Combination,
+    OrderlyCombination;
+
+  }
 
 }

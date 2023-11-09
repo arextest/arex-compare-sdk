@@ -12,24 +12,24 @@ import net.sf.jsqlparser.statement.select.SelectItemVisitor;
  */
 public class ArexSelectItemVisitorAdapter implements SelectItemVisitor {
 
-    private ObjectNode sqlObject;
+  private ObjectNode sqlObject;
 
-    public ArexSelectItemVisitorAdapter(ObjectNode object) {
-        sqlObject = object;
-    }
+  public ArexSelectItemVisitorAdapter(ObjectNode object) {
+    sqlObject = object;
+  }
 
-    @Override
-    public void visit(AllColumns allColumns) {
-        sqlObject.put(allColumns.toString(), DbParseConstants.EMPTY);
-    }
+  @Override
+  public void visit(AllColumns allColumns) {
+    sqlObject.put(allColumns.toString(), DbParseConstants.EMPTY);
+  }
 
-    @Override
-    public void visit(AllTableColumns allTableColumns) {
-        sqlObject.put(allTableColumns.toString(), DbParseConstants.EMPTY);
-    }
+  @Override
+  public void visit(AllTableColumns allTableColumns) {
+    sqlObject.put(allTableColumns.toString(), DbParseConstants.EMPTY);
+  }
 
-    @Override
-    public void visit(SelectExpressionItem selectExpressionItem) {
-        sqlObject.put(selectExpressionItem.toString(), DbParseConstants.EMPTY);
-    }
+  @Override
+  public void visit(SelectExpressionItem selectExpressionItem) {
+    sqlObject.put(selectExpressionItem.toString(), DbParseConstants.EMPTY);
+  }
 }

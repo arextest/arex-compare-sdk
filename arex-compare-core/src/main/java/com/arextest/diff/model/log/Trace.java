@@ -5,37 +5,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Trace implements Serializable, Cloneable {
-    public Trace() {
-    }
 
-    public List<List<NodeEntity>> getCurrentTraceLeft() {
-        return currentTraceLeft;
-    }
+  private List<List<NodeEntity>> currentTraceLeft;
+  private List<List<NodeEntity>> currentTraceRight;
 
-    public void setCurrentTraceLeft(List<List<NodeEntity>> currentTraceLeft) {
-        this.currentTraceLeft = currentTraceLeft;
-    }
+  public Trace() {
+  }
 
-    public List<List<NodeEntity>> getCurrentTraceRight() {
-        return currentTraceRight;
-    }
+  public Trace(List<List<NodeEntity>> currentTraceLeft, List<List<NodeEntity>> currentTraceRight) {
+    this.currentTraceLeft = new ArrayList<>(currentTraceLeft);
+    this.currentTraceRight = new ArrayList<>(currentTraceRight);
+  }
 
-    public void setCurrentTraceRight(List<List<NodeEntity>> currentTraceRight) {
-        this.currentTraceRight = currentTraceRight;
-    }
+  public List<List<NodeEntity>> getCurrentTraceLeft() {
+    return currentTraceLeft;
+  }
 
-    private List<List<NodeEntity>> currentTraceLeft;
-    private List<List<NodeEntity>> currentTraceRight;
+  public void setCurrentTraceLeft(List<List<NodeEntity>> currentTraceLeft) {
+    this.currentTraceLeft = currentTraceLeft;
+  }
 
-    public Trace(List<List<NodeEntity>> currentTraceLeft, List<List<NodeEntity>> currentTraceRight) {
-        this.currentTraceLeft = new ArrayList<>(currentTraceLeft);
-        this.currentTraceRight = new ArrayList<>(currentTraceRight);
-    }
+  public List<List<NodeEntity>> getCurrentTraceRight() {
+    return currentTraceRight;
+  }
 
-    @Override
-    protected Object clone() throws CloneNotSupportedException {
-        Trace trace = ((Trace) super.clone());
-        trace.currentTraceLeft = this.currentTraceLeft;
-        return super.clone();
-    }
+  public void setCurrentTraceRight(List<List<NodeEntity>> currentTraceRight) {
+    this.currentTraceRight = currentTraceRight;
+  }
+
+  @Override
+  protected Object clone() throws CloneNotSupportedException {
+    Trace trace = ((Trace) super.clone());
+    trace.currentTraceLeft = this.currentTraceLeft;
+    return super.clone();
+  }
 }

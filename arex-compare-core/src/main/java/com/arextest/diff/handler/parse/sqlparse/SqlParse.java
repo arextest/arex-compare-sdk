@@ -28,257 +28,259 @@ import org.slf4j.LoggerFactory;
  */
 public class SqlParse {
 
-    private static final Logger logger = LoggerFactory.getLogger(SqlParse.class);
+  private static final Logger logger = LoggerFactory.getLogger(SqlParse.class);
 
-    public void doHandler(MsgObjCombination msgObjCombination, boolean onlyCompareSameColumns,
-                          boolean selectIgnoreCompare, boolean nameToLower) throws SelectIgnoreException {
-        Object baseObj = msgObjCombination.getBaseObj();
-        Object testObj = msgObjCombination.getTestObj();
-        if (baseObj == null || testObj == null) {
-            return;
+  public void doHandler(MsgObjCombination msgObjCombination, boolean onlyCompareSameColumns,
+      boolean selectIgnoreCompare, boolean nameToLower) throws SelectIgnoreException {
+    Object baseObj = msgObjCombination.getBaseObj();
+    Object testObj = msgObjCombination.getTestObj();
+    if (baseObj == null || testObj == null) {
+      return;
+    }
+    if (baseObj instanceof ObjectNode && testObj instanceof ObjectNode) {
+      ObjectNode baseJSONObj = (ObjectNode) baseObj;
+      ObjectNode testJSONObj = (ObjectNode) testObj;
+
+      // Only compare fields with the same name and parameters use positional subscripts,
+      // fill the parameters field into sql and remove the parameters
+      if (onlyCompareSameColumns) {
+        try {
+          if (judgeParam(baseJSONObj) && judgeParam(testJSONObj)) {
+            produceNewBody(baseJSONObj, testJSONObj);
+          }
+        } catch (Throwable throwable) {
         }
-        if (baseObj instanceof ObjectNode && testObj instanceof ObjectNode) {
-            ObjectNode baseJSONObj = (ObjectNode) baseObj;
-            ObjectNode testJSONObj = (ObjectNode) testObj;
+      }
 
-            // Only compare fields with the same name and parameters use positional subscripts,
-            // fill the parameters field into sql and remove the parameters
-            if (onlyCompareSameColumns) {
-                try {
-                    if (judgeParam(baseJSONObj) && judgeParam(testJSONObj)) {
-                        produceNewBody(baseJSONObj, testJSONObj);
-                    }
-                } catch (Throwable throwable) {
-                }
-            }
-
-            ParsedResult baseParsedResult = this.sqlParse(baseJSONObj, nameToLower);
-            ParsedResult testParsedResult = this.sqlParse(testJSONObj, nameToLower);
-            if(Objects.equals(baseParsedResult.isSuccess(), false) ||
-                Objects.equals(testParsedResult.isSuccess(), false)) {
-                return;
-            }
-            if (selectIgnoreCompare) {
-                List<Boolean> isSelectInBase = baseParsedResult.getIsSelect();
-                List<Boolean> isSelectInTest = testParsedResult.getIsSelect();
-                if (!isSelectInBase.isEmpty() && !isSelectInTest.isEmpty() &&
-                        isSelectInBase.get(0) && isSelectInTest.get(0)) {
-                    throw new SelectIgnoreException();
-                }
-            }
+      ParsedResult baseParsedResult = this.sqlParse(baseJSONObj, nameToLower);
+      ParsedResult testParsedResult = this.sqlParse(testJSONObj, nameToLower);
+      if (Objects.equals(baseParsedResult.isSuccess(), false) ||
+          Objects.equals(testParsedResult.isSuccess(), false)) {
+        return;
+      }
+      if (selectIgnoreCompare) {
+        List<Boolean> isSelectInBase = baseParsedResult.getIsSelect();
+        List<Boolean> isSelectInTest = testParsedResult.getIsSelect();
+        if (!isSelectInBase.isEmpty() && !isSelectInTest.isEmpty() &&
+            isSelectInBase.get(0) && isSelectInTest.get(0)) {
+          throw new SelectIgnoreException();
         }
+      }
+    }
+  }
+
+  // if return null, indicate the sql parsed fail.
+  public ParsedResult sqlParse(ObjectNode jsonObj, boolean nameToLower) {
+    JsonNode databaseBody = jsonObj.get(DbParseConstants.BODY);
+    if (databaseBody == null) {
+      return new ParsedResult(null, false);
     }
 
-    // if return null, indicate the sql parsed fail.
-    public ParsedResult sqlParse(ObjectNode jsonObj, boolean nameToLower) {
-        JsonNode databaseBody = jsonObj.get(DbParseConstants.BODY);
-        if (databaseBody == null) {
-            return new ParsedResult(null,false);
+    boolean successParse = true;
+    ArrayNode parsedSql = JacksonHelperUtil.getArrayNode();
+    List<Boolean> isSelect = new ArrayList<>();
+    try {
+      if (databaseBody instanceof TextNode) {
+        MutablePair<JsonNode, Boolean> tempMutablePair = sqlParse(databaseBody.asText());
+        parsedSql.add(tempMutablePair.getLeft());
+        isSelect.add(tempMutablePair.getRight());
+      } else if (databaseBody instanceof ArrayNode) {
+        ArrayNode databaseBodyArray = (ArrayNode) databaseBody;
+        for (int i = 0; i < databaseBodyArray.size(); i++) {
+          MutablePair<JsonNode, Boolean> tempMutablePair = sqlParse(
+              databaseBodyArray.get(i).asText());
+          parsedSql.add(tempMutablePair.getLeft());
+          isSelect.add(tempMutablePair.getRight());
         }
+      } else {
+        successParse = false;
+      }
+    } catch (Throwable throwable) {
+      logger.error("sql parse error", throwable);
+      successParse = false;
+    }
 
-        boolean successParse = true;
-        ArrayNode parsedSql = JacksonHelperUtil.getArrayNode();
-        List<Boolean> isSelect = new ArrayList<>();
-        try {
-            if (databaseBody instanceof TextNode) {
-                MutablePair<JsonNode, Boolean> tempMutablePair = sqlParse(databaseBody.asText());
-                parsedSql.add(tempMutablePair.getLeft());
-                isSelect.add(tempMutablePair.getRight());
-            } else if (databaseBody instanceof ArrayNode) {
-                ArrayNode databaseBodyArray = (ArrayNode) databaseBody;
-                for (int i = 0; i < databaseBodyArray.size(); i++) {
-                    MutablePair<JsonNode, Boolean> tempMutablePair = sqlParse(databaseBodyArray.get(i).asText());
-                    parsedSql.add(tempMutablePair.getLeft());
-                    isSelect.add(tempMutablePair.getRight());
-                }
-            } else {
-                successParse = false;
-            }
-        } catch (Throwable throwable) {
-            logger.error("sql parse error", throwable);
-            successParse = false;
-        }
+    ParsedResult result = new ParsedResult();
+    if (!successParse) {
+      this.fillOriginalSql(jsonObj, databaseBody);
+      result.setSuccess(false);
+    } else {
+      if (nameToLower) {
+        NameConvertUtil.nameConvert(parsedSql);
+      }
+      jsonObj.set(DbParseConstants.PARSED_SQL, parsedSql);
+      result.setSuccess(true);
+      result.setIsSelect(isSelect);
+    }
+    return result;
+  }
 
-        ParsedResult result = new ParsedResult();
-        if(!successParse) {
-          this.fillOriginalSql(jsonObj, databaseBody);
-          result.setSuccess(false);
+  @SuppressWarnings("unchecked")
+  public MutablePair<JsonNode, Boolean> sqlParse(String sql) throws JSQLParserException {
+    Statement statement = CCJSqlParserUtil.parse(sql);
+    Parse parse = ActionFactory.selectParse(statement);
+    return new MutablePair<>(parse.parse(statement), statement instanceof Select);
+  }
+
+  private boolean judgeParam(ObjectNode object) {
+    try {
+      Object parameters = object.get(DbParseConstants.PARAMETERS);
+      if (parameters != null) {
+        if (parameters instanceof ObjectNode) {
+          ObjectNode paramObj = (ObjectNode) parameters;
+          return isPositionParam(paramObj);
+        } else if (parameters instanceof ArrayNode) {
+          ObjectNode paramObj = (ObjectNode) ((ArrayNode) parameters).get(0);
+          return isPositionParam(paramObj);
         } else {
-            if (nameToLower) {
-                NameConvertUtil.nameConvert(parsedSql);
-            }
-            jsonObj.set(DbParseConstants.PARSED_SQL, parsedSql);
-            result.setSuccess(true);
-            result.setIsSelect(isSelect);
+          return false;
         }
-        return result;
+      }
+    } catch (Throwable throwable) {
+      logger.warn("judgeParam error: {}", throwable.getMessage());
     }
+    return false;
+  }
 
-    @SuppressWarnings("unchecked")
-    public MutablePair<JsonNode, Boolean> sqlParse(String sql) throws JSQLParserException {
-        Statement statement = CCJSqlParserUtil.parse(sql);
-        Parse parse = ActionFactory.selectParse(statement);
-        return new MutablePair<>(parse.parse(statement), statement instanceof Select);
+  private boolean isPositionParam(ObjectNode paramObj) {
+    List<String> names = JacksonHelperUtil.getNames(paramObj);
+    if (names.size() == 0) {
+      return false;
     }
-
-    private boolean judgeParam(ObjectNode object) {
-        try {
-            Object parameters = object.get(DbParseConstants.PARAMETERS);
-            if (parameters != null) {
-                if (parameters instanceof ObjectNode) {
-                    ObjectNode paramObj = (ObjectNode) parameters;
-                    return isPositionParam(paramObj);
-                } else if (parameters instanceof ArrayNode) {
-                    ObjectNode paramObj = (ObjectNode) ((ArrayNode) parameters).get(0);
-                    return isPositionParam(paramObj);
-                } else {
-                    return false;
-                }
-            }
-        } catch (Throwable throwable) {
-            logger.warn("judgeParam error: {}", throwable.getMessage());
-        }
+    Pattern pattern = Pattern.compile("^[0-9]*[1-9][0-9]*$");
+    for (String name : names) {
+      Matcher matcher = pattern.matcher(name);
+      if (!matcher.matches()) {
         return false;
+      }
+    }
+    return true;
+  }
+
+  // when onlyCompareSameColumns is true and use array subscripts,
+  // generate a new database comparison message
+  private void produceNewBody(ObjectNode baseJSONObj, ObjectNode testJSONObj) {
+
+    JsonNode originalBaseParams = baseJSONObj.get(DbParseConstants.PARAMETERS);
+    JsonNode originalTestParams = testJSONObj.get(DbParseConstants.PARAMETERS);
+    String originalBaseBody = baseJSONObj.get(DbParseConstants.BODY).asText();
+    String originalTestBody = testJSONObj.get(DbParseConstants.BODY).asText();
+    if (!Objects.equals(originalBaseParams.getClass(), originalTestParams.getClass())) {
+      return;
     }
 
-    private boolean isPositionParam(ObjectNode paramObj) {
-        List<String> names = JacksonHelperUtil.getNames(paramObj);
-        if (names.size() == 0) {
-            return false;
+    try {
+      if (originalBaseParams instanceof ObjectNode) {
+        ObjectNode originalBaseParamsObj = (ObjectNode) originalBaseParams;
+        ObjectNode originalTestParamsObj = (ObjectNode) originalTestParams;
+        String newBaseBody = processParams(originalBaseParamsObj, originalBaseBody);
+        String newTestBody = processParams(originalTestParamsObj, originalTestBody);
+        baseJSONObj.put(DbParseConstants.BODY, newBaseBody);
+        testJSONObj.put(DbParseConstants.BODY, newTestBody);
+      } else if (originalBaseParams instanceof ArrayNode) {
+        ArrayNode originalBaseParamsArr = (ArrayNode) originalBaseParams;
+        ArrayNode originalTestParamsArr = (ArrayNode) originalTestParams;
+
+        ArrayNode newBaseBodyList = JacksonHelperUtil.getArrayNode();
+        for (int i = 0; i < originalBaseParamsArr.size(); i++) {
+          ObjectNode itemBaseParamObj = (ObjectNode) originalBaseParamsArr.get(i);
+          String newBaseBody = processParams(itemBaseParamObj, originalBaseBody);
+          newBaseBodyList.add(newBaseBody);
         }
-        Pattern pattern = Pattern.compile("^[0-9]*[1-9][0-9]*$");
-        for (String name : names) {
-            Matcher matcher = pattern.matcher(name);
-            if (!matcher.matches()) {
-                return false;
-            }
+        baseJSONObj.set(DbParseConstants.BODY, newBaseBodyList);
+
+        ArrayNode newTestBodyList = JacksonHelperUtil.getArrayNode();
+        for (int i = 0; i < originalTestParamsArr.size(); i++) {
+          ObjectNode itemTestParamObj = (ObjectNode) originalTestParamsArr.get(i);
+          String newTestBody = processParams(itemTestParamObj, originalTestBody);
+          newTestBodyList.add(newTestBody);
         }
-        return true;
+        testJSONObj.set(DbParseConstants.BODY, newTestBodyList);
+      }
+      baseJSONObj.remove(DbParseConstants.PARAMETERS);
+      testJSONObj.remove(DbParseConstants.PARAMETERS);
+    } catch (Throwable throwable) {
+      logger.warn("produceNewBody error: {}", throwable.getMessage());
+      baseJSONObj.set(DbParseConstants.PARAMETERS, originalBaseParams);
+      testJSONObj.set(DbParseConstants.PARAMETERS, originalTestParams);
+      baseJSONObj.put(DbParseConstants.BODY, originalBaseBody);
+      testJSONObj.put(DbParseConstants.BODY, originalTestBody);
+    }
+  }
+
+
+  // generate a new body object
+  private String processParams(ObjectNode paramObj, String sql) {
+    if (sql == null || sql.length() == 0) {
+      return sql;
     }
 
-    // when onlyCompareSameColumns is true and use array subscripts,
-    // generate a new database comparison message
-    private void produceNewBody(ObjectNode baseJSONObj, ObjectNode testJSONObj) {
-
-        JsonNode originalBaseParams = baseJSONObj.get(DbParseConstants.PARAMETERS);
-        JsonNode originalTestParams = testJSONObj.get(DbParseConstants.PARAMETERS);
-        String originalBaseBody = baseJSONObj.get(DbParseConstants.BODY).asText();
-        String originalTestBody = testJSONObj.get(DbParseConstants.BODY).asText();
-        if (!Objects.equals(originalBaseParams.getClass(), originalTestParams.getClass())) {
-            return;
+    int count = 0;
+    StringBuilder newSql = new StringBuilder();
+    char[] sqlCharArr = sql.toCharArray();
+    for (int i = 0; i < sqlCharArr.length; i++) {
+      if (sqlCharArr[i] == '?') {
+        Object paramItem = paramObj.get(String.valueOf(++count));
+        if (paramItem == null) {
+          newSql.append(paramItem);
+        } else if (paramItem instanceof TextNode) {
+          newSql.append("\'");
+          newSql.append(((TextNode) paramItem).asText());
+          newSql.append("\'");
+        } else {
+          newSql.append(paramItem);
         }
+      } else {
+        newSql.append(sqlCharArr[i]);
+      }
+    }
+    return newSql.toString();
+  }
 
-        try {
-            if (originalBaseParams instanceof ObjectNode) {
-                ObjectNode originalBaseParamsObj = (ObjectNode) originalBaseParams;
-                ObjectNode originalTestParamsObj = (ObjectNode) originalTestParams;
-                String newBaseBody = processParams(originalBaseParamsObj, originalBaseBody);
-                String newTestBody = processParams(originalTestParamsObj, originalTestBody);
-                baseJSONObj.put(DbParseConstants.BODY, newBaseBody);
-                testJSONObj.put(DbParseConstants.BODY, newTestBody);
-            } else if (originalBaseParams instanceof ArrayNode) {
-                ArrayNode originalBaseParamsArr = (ArrayNode) originalBaseParams;
-                ArrayNode originalTestParamsArr = (ArrayNode) originalTestParams;
+  private void fillOriginalSql(ObjectNode objectNode, JsonNode databaseBody) {
+    ObjectNode backUpObj = JacksonHelperUtil.getObjectNode();
+    backUpObj.set(DbParseConstants.ORIGINAL_SQL, databaseBody);
+    ArrayNode parsedSql = JacksonHelperUtil.getArrayNode();
+    parsedSql.add(backUpObj);
+    objectNode.set(DbParseConstants.PARSED_SQL, parsedSql);
+  }
 
-                ArrayNode newBaseBodyList = JacksonHelperUtil.getArrayNode();
-                for (int i = 0; i < originalBaseParamsArr.size(); i++) {
-                    ObjectNode itemBaseParamObj = (ObjectNode) originalBaseParamsArr.get(i);
-                    String newBaseBody = processParams(itemBaseParamObj, originalBaseBody);
-                    newBaseBodyList.add(newBaseBody);
-                }
-                baseJSONObj.set(DbParseConstants.BODY, newBaseBodyList);
+  private static class ParsedResult {
 
-                ArrayNode newTestBodyList = JacksonHelperUtil.getArrayNode();
-                for (int i = 0; i < originalTestParamsArr.size(); i++) {
-                    ObjectNode itemTestParamObj = (ObjectNode) originalTestParamsArr.get(i);
-                    String newTestBody = processParams(itemTestParamObj, originalTestBody);
-                    newTestBodyList.add(newTestBody);
-                }
-                testJSONObj.set(DbParseConstants.BODY, newTestBodyList);
-            }
-            baseJSONObj.remove(DbParseConstants.PARAMETERS);
-            testJSONObj.remove(DbParseConstants.PARAMETERS);
-        } catch (Throwable throwable) {
-            logger.warn("produceNewBody error: {}", throwable.getMessage());
-            baseJSONObj.set(DbParseConstants.PARAMETERS, originalBaseParams);
-            testJSONObj.set(DbParseConstants.PARAMETERS, originalTestParams);
-            baseJSONObj.put(DbParseConstants.BODY, originalBaseBody);
-            testJSONObj.put(DbParseConstants.BODY, originalTestBody);
-        }
+    private List<Boolean> isSelect;
+    private boolean success;
+
+    public ParsedResult() {
+
     }
 
-
-    // generate a new body object
-    private String processParams(ObjectNode paramObj, String sql) {
-        if (sql == null || sql.length() == 0) {
-            return sql;
-        }
-
-        int count = 0;
-        StringBuilder newSql = new StringBuilder();
-        char[] sqlCharArr = sql.toCharArray();
-        for (int i = 0; i < sqlCharArr.length; i++) {
-            if (sqlCharArr[i] == '?') {
-                Object paramItem = paramObj.get(String.valueOf(++count));
-                if (paramItem == null) {
-                    newSql.append(paramItem);
-                } else if (paramItem instanceof TextNode) {
-                    newSql.append("\'");
-                    newSql.append(((TextNode) paramItem).asText());
-                    newSql.append("\'");
-                } else {
-                    newSql.append(paramItem);
-                }
-            } else {
-                newSql.append(sqlCharArr[i]);
-            }
-        }
-        return newSql.toString();
+    public ParsedResult(boolean success) {
+      this.success = success;
     }
 
-    private void fillOriginalSql(ObjectNode objectNode, JsonNode databaseBody) {
-        ObjectNode backUpObj = JacksonHelperUtil.getObjectNode();
-        backUpObj.set(DbParseConstants.ORIGINAL_SQL, databaseBody);
-        ArrayNode parsedSql = JacksonHelperUtil.getArrayNode();
-        parsedSql.add(backUpObj);
-        objectNode.set(DbParseConstants.PARSED_SQL, parsedSql);
+    public ParsedResult(List<Boolean> isSelect) {
+      this.isSelect = isSelect;
     }
 
-    private static class ParsedResult {
-        public ParsedResult() {
-
-        }
-
-        public ParsedResult(boolean success) {
-            this.success = success;
-        }
-
-        public ParsedResult(List<Boolean> isSelect) {
-            this.isSelect = isSelect;
-        }
-
-        public ParsedResult(List<Boolean> isSelect, boolean success) {
-            this.isSelect = isSelect;
-            this.success = success;
-        }
-        private List<Boolean> isSelect;
-
-        private boolean success;
-
-        public boolean isSuccess() {
-            return success;
-        }
-
-        public void setSuccess(boolean success) {
-            this.success = success;
-        }
-
-        public List<Boolean> getIsSelect() {
-          return isSelect;
-        }
-
-        public void setIsSelect(List<Boolean> isSelect) {
-          this.isSelect = isSelect;
-        }
+    public ParsedResult(List<Boolean> isSelect, boolean success) {
+      this.isSelect = isSelect;
+      this.success = success;
     }
+
+    public boolean isSuccess() {
+      return success;
+    }
+
+    public void setSuccess(boolean success) {
+      this.success = success;
+    }
+
+    public List<Boolean> getIsSelect() {
+      return isSelect;
+    }
+
+    public void setIsSelect(List<Boolean> isSelect) {
+      this.isSelect = isSelect;
+    }
+  }
 }

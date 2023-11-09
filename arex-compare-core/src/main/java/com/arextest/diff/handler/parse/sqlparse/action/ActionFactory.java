@@ -13,21 +13,22 @@ import net.sf.jsqlparser.statement.update.Update;
  * Created by rchen9 on 2023/1/6.
  */
 public class ActionFactory {
-    public static Parse selectParse(Statement statement) {
-        if (statement instanceof Insert) {
-            return new InsertParse();
-        } else if (statement instanceof Delete) {
-            return new DeleteParse();
-        } else if (statement instanceof Update) {
-            return new UpdateParse();
-        } else if (statement instanceof Select) {
-            return new SelectParse();
-        } else if (statement instanceof Replace) {
-            return new ReplaceParse();
-        } else if (statement instanceof Execute) {
-            return new ExecuteParse();
-        } else {
-            throw new UnsupportedOperationException("not support");
-        }
+
+  public static Parse selectParse(Statement statement) {
+    if (statement instanceof Insert) {
+      return new InsertParse();
+    } else if (statement instanceof Delete) {
+      return new DeleteParse();
+    } else if (statement instanceof Update) {
+      return new UpdateParse();
+    } else if (statement instanceof Select) {
+      return new SelectParse();
+    } else if (statement instanceof Replace) {
+      return new ReplaceParse();
+    } else if (statement instanceof Execute) {
+      return new ExecuteParse();
+    } else {
+      throw new UnsupportedOperationException("not support");
     }
+  }
 }

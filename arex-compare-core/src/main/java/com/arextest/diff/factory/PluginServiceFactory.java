@@ -1,7 +1,6 @@
 package com.arextest.diff.factory;
 
 import com.arextest.diff.plugin.LogEntityFilter;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -11,19 +10,19 @@ import java.util.ServiceLoader;
  */
 public class PluginServiceFactory {
 
-    private static List<LogEntityFilter> logEntityFilterList = new ArrayList<>();
+  private static List<LogEntityFilter> logEntityFilterList = new ArrayList<>();
 
-    public static List<LogEntityFilter> getLogEntityFilterList() {
-        return logEntityFilterList;
+  static {
+    try {
+      ServiceLoader<LogEntityFilter> serviceLoader = ServiceLoader.load(LogEntityFilter.class);
+      for (LogEntityFilter service : serviceLoader) {
+        logEntityFilterList.add(service);
+      }
+    } catch (Throwable ignored) {
     }
+  }
 
-    static {
-        try {
-            ServiceLoader<LogEntityFilter> serviceLoader = ServiceLoader.load(LogEntityFilter.class);
-            for (LogEntityFilter service : serviceLoader) {
-                logEntityFilterList.add(service);
-            }
-        } catch (Throwable ignored) {
-        }
-    }
+  public static List<LogEntityFilter> getLogEntityFilterList() {
+    return logEntityFilterList;
+  }
 }

@@ -8,5 +8,5 @@ import com.arextest.diff.model.log.LogEntity;
  */
 public interface LogEntityFilter {
 
-    boolean isIgnore(LogEntity logEntity, RulesConfig rulesConfig);
+  boolean isIgnore(LogEntity logEntity, RulesConfig rulesConfig);
 }
