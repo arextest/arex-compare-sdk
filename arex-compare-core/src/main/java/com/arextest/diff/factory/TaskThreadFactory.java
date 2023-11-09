@@ -10,6 +10,7 @@ public class TaskThreadFactory {
   private static final int CORE_SIZE = Runtime.getRuntime().availableProcessors();
   private static final int CORE_POOL_SIZE = 2;
   private static final int MAX_POOL_SIZE = CORE_SIZE + 1;
+  private static final int QUENE_SIZE = 500;
   public static ExecutorService jsonObjectThreadPool = new ThreadPoolExecutor(CORE_POOL_SIZE,
       MAX_POOL_SIZE,
       1, TimeUnit.MINUTES, new LinkedBlockingQueue<>(QUENE_SIZE),
@@ -20,6 +21,6 @@ public class TaskThreadFactory {
       1, TimeUnit.MINUTES, new LinkedBlockingQueue<>(QUENE_SIZE),
       new NamedThreadFactory("structureHandler"),
       new CallerRunsPolicyWithReport("structureHandler"));
-  private static final int QUENE_SIZE = 500;
+
 
 }
