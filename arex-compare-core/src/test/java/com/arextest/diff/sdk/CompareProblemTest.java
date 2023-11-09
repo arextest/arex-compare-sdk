@@ -385,4 +385,14 @@ public class CompareProblemTest {
         Assert.assertEquals(result.getLogs().size(), 4);
     }
 
+    @Test
+    public void testNullEqualsEmptyProblem() {
+        CompareSDK sdk = new CompareSDK();
+        sdk.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true);
+        String baseMsg = "{\"body\":\"\"}";
+        String testMsg = "{\"body\":null}";
+        CompareResult result = sdk.compare(baseMsg, testMsg);
+        Assert.assertEquals(result.getLogs().size(), 0);
+    }
+
 }

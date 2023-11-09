@@ -5,6 +5,8 @@ import com.arextest.diff.model.compare.CompareContext;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.node.TextNode;
+import java.util.Objects;
 
 /**
  * Created by rchen9 on 2023/4/6.
@@ -63,9 +65,11 @@ public class LogRegisterCondition {
             return ((ArrayNode) o).size() == 0;
         } else if (o instanceof ObjectNode) {
             return false;
+        } else if (o instanceof TextNode) {
+            return Objects.equals(((TextNode) o).asText(), "");
         } else {
             String s = String.valueOf(o);
-            return s.equals("");
+            return Objects.equals(s, "");
         }
     }
 
