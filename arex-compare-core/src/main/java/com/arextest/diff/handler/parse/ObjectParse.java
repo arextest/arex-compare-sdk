@@ -58,6 +58,10 @@ public class ObjectParse {
       }
     }
 
+    if (StringUtil.isEmpty(msg)) {
+      return obj;
+    }
+
     if (msg.startsWith("[")) {
       obj = JacksonHelperUtil.objectMapper.readValue(msg, ArrayNode.class);
     } else {
