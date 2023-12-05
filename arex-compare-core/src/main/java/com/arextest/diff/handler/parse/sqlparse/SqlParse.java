@@ -96,7 +96,7 @@ public class SqlParse {
         successParse = false;
       }
     } catch (Throwable throwable) {
-      logger.error("sql parse error", throwable);
+      logger.warn("sql parse error", throwable);
       successParse = false;
     }
 

@@ -14,7 +14,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
-import org.apache.commons.lang3.tuple.MutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,47 +32,46 @@ public class ObjectParse {
     obj1 = TaskThreadFactory.jsonObjectThreadPool.submit(callable1).get();
     obj2 = TaskThreadFactory.jsonObjectThreadPool.submit(callable2).get();
 
-    MutablePair<Object, Object> objectObjectMutablePair = compatibleDiffType(obj1, obj2);
-    response.setBaseObj(objectObjectMutablePair.getLeft());
-    response.setTestObj(objectObjectMutablePair.getRight());
+    response.setBaseObj(obj1);
+    response.setTestObj(obj2);
     return response;
 
   }
 
-  public Object msgToObj(String msg, RulesConfig rulesConfig) throws JsonProcessingException {
-    Object obj = null;
+  public Object msgToObj(String msg, RulesConfig rulesConfig) {
     if (StringUtil.isEmpty(msg)) {
-      return obj;
+      return msg;
     }
 
+    Object obj = null;
     // process the msg
     String pluginJarUrl = rulesConfig.getPluginJarUrl();
     Map<List<String>, DecompressConfig> decompressConfigMap = rulesConfig.getDecompressConfigMap();
     if (decompressConfigMap != null && decompressConfigMap.containsKey(Constant.ROOT_PATH)) {
       try {
-        msg = DecompressUtil.decompressPlugin(pluginJarUrl,
+        String decompressMsg = DecompressUtil.decompressPlugin(pluginJarUrl,
             decompressConfigMap.get(Constant.ROOT_PATH), msg);
+        if (!StringUtil.isEmpty(decompressMsg)) {
+          msg = decompressMsg;
+        } else {
+          LOGGER.error("decompress root error");
+        }
       } catch (Throwable throwable) {
-        LOGGER.error("decompress root error, msg:{}", msg, throwable);
+        LOGGER.error("decompress root error", throwable);
       }
     }
 
-    if (msg.startsWith("[")) {
-      obj = JacksonHelperUtil.objectMapper.readValue(msg, ArrayNode.class);
-    } else {
-      obj = JacksonHelperUtil.objectMapper.readValue(msg, ObjectNode.class);
+    try {
+      if (msg.startsWith("[")) {
+        obj = JacksonHelperUtil.objectMapper.readValue(msg, ArrayNode.class);
+      } else if (msg.startsWith("{")) {
+        obj = JacksonHelperUtil.objectMapper.readValue(msg, ObjectNode.class);
+      } else {
+        obj = msg;
+      }
+    } catch (RuntimeException | JsonProcessingException e) {
+      obj = msg;
     }
     return obj;
-  }
-
-  private MutablePair<Object, Object> compatibleDiffType(Object obj1, Object obj2)
-      throws Exception {
-    MutablePair<Object, Object> result = new MutablePair<>();
-    if (obj1 == null || obj2 == null || !obj1.getClass().equals(obj2.getClass())) {
-      throw new Exception("The JSON types corresponding to baseMsg and testMsg are inconsistent.");
-    }
-    result.setLeft(obj1);
-    result.setRight(obj2);
-    return result;
   }
 }

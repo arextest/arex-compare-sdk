@@ -2,6 +2,7 @@ package com.arextest.diff.sdk;
 
 import com.arextest.diff.model.CompareOptions;
 import com.arextest.diff.model.CompareResult;
+import com.arextest.diff.model.DecompressConfig;
 import com.arextest.diff.model.enumeration.CategoryType;
 import com.arextest.diff.model.enumeration.DiffResultCode;
 import java.util.Arrays;
@@ -408,5 +409,95 @@ public class CompareProblemTest {
     CompareResult result = sdk.compare(baseMsg, testMsg);
     Assert.assertEquals(result.getLogs().size(), 0);
   }
+
+  @Test
+  public void testNullString() {
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true);
+    String baseMsg = null;
+    String testMsg = "";
+    CompareResult result = sdk.compare(baseMsg, testMsg);
+    Assert.assertEquals(result.getCode(), 0);
+  }
+
+  @Test
+  public void testRootDecompress() {
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true)
+        .putPluginJarUrl("./lib/arex-compare-sdk-plugin-0.1.0-jar-with-dependencies.jar");
+
+    CompareOptions compareOptions = CompareOptions.options()
+        .putDecompressConfig(new DecompressConfig("Gzip",
+            Arrays.asList(Arrays.asList("arex_root"))));
+
+    String baseMsg = "H4sIAAAAAAAAAEtMTAQALXMH8AMAAAA=";
+    String testMsg = "H4sIAAAAAAAAAEtMTEwEAEXlmK0EAAAA";
+    CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
+    Assert.assertEquals("aaa", result.getProcessedBaseMsg());
+
+    CompareResult quickResult = sdk.quickCompare(baseMsg, testMsg, compareOptions);
+    Assert.assertEquals("H4sIAAAAAAAAAEtMTAQALXMH8AMAAAA=", quickResult.getProcessedBaseMsg());
+  }
+
+  @Test
+  public void testRootDecompress2() {
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true)
+        .putPluginJarUrl("./lib/arex-compare-sdk-plugin-0.1.0-jar-with-dependencies.jar");
+
+    CompareOptions compareOptions = CompareOptions.options()
+        .putDecompressConfig(new DecompressConfig("Gzip",
+            Arrays.asList(Arrays.asList("arex_root"))));
+
+    String baseMsg = null;
+    String testMsg = "H4sIAAAAAAAAAEtMTEwEAEXlmK0EAAAA";
+    CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
+    Assert.assertEquals("aaaa", result.getProcessedTestMsg());
+
+    CompareResult quickResult = sdk.quickCompare(baseMsg, testMsg, compareOptions);
+    Assert.assertEquals("H4sIAAAAAAAAAEtMTEwEAEXlmK0EAAAA=", quickResult.getProcessedTestMsg());
+
+  }
+
+  @Test
+  public void testRootDecompress3() {
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true)
+        .putPluginJarUrl("./lib/arex-compare-sdk-plugin-0.1.0-jar-with-dependencies.jar");
+
+    CompareOptions compareOptions = CompareOptions.options()
+        .putDecompressConfig(new DecompressConfig("Gzip",
+            Arrays.asList(Arrays.asList("arex_root"))));
+
+    String baseMsg = "H4sIAAAAAAAAAKtWSlSyUkpSqgUAnFz2awkAAAA=";
+    String testMsg = "H4sIAAAAAAAAAKtWSlSyAuJaAMXisGkJAAAA";
+    CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
+    Assert.assertEquals(1, result.getCode());
+
+    CompareResult quickResult = sdk.quickCompare(baseMsg, testMsg, compareOptions);
+    Assert.assertEquals("H4sIAAAAAAAAAKtWSlSyAuJaAMXisGkJAAAA", quickResult.getProcessedTestMsg());
+
+  }
+
+  @Test
+  public void testRootDecompress4() {
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true)
+        .putPluginJarUrl("./lib/arex-compare-sdk-plugin-0.1.0-jar-with-dependencies.jar");
+
+    CompareOptions compareOptions = CompareOptions.options()
+        .putDecompressConfig(new DecompressConfig("Gzip",
+            Arrays.asList(Arrays.asList("arex_root"))));
+
+    String baseMsg = "H4sIAAAAAAAAAKtOTEwEAL5SPJIEAAAA";
+    String testMsg = "H4sIAAAAAAAAAKtOBAIAmhz8xAUAAAA=";
+    CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
+    Assert.assertEquals(1, result.getCode());
+
+    CompareResult quickResult = sdk.quickCompare(baseMsg, testMsg, compareOptions);
+    Assert.assertEquals("H4sIAAAAAAAAAKtOBAIAmhz8xAUAAAA=", quickResult.getProcessedTestMsg());
+
+  }
+
 
 }
