@@ -15,6 +15,7 @@ import com.arextest.diff.handler.parse.JSONParse;
 import com.arextest.diff.handler.parse.JSONStructureParse;
 import com.arextest.diff.handler.parse.ObjectParse;
 import com.arextest.diff.handler.parse.sqlparse.SqlParse;
+import com.arextest.diff.handler.verify.VerifyObjectParse;
 import com.arextest.diff.model.CompareResult;
 import com.arextest.diff.model.RulesConfig;
 import com.arextest.diff.model.enumeration.DiffResultCode;
@@ -41,6 +42,8 @@ public class DataBaseCompareUtil {
   private static final Logger LOGGER = LoggerFactory.getLogger(DataBaseCompareUtil.class);
 
   private static ObjectParse objectParse = new ObjectParse();
+
+  private static VerifyObjectParse verifyObjectParse = new VerifyObjectParse();
 
   private static SqlParse sqlParse = new SqlParse();
 
@@ -71,6 +74,18 @@ public class DataBaseCompareUtil {
       timeConsumerWatch.start(TimeMetricLabel.OBJECT_PARSE);
       msgObjCombination = objectParse.doHandler(rulesConfig);
       timeConsumerWatch.end(TimeMetricLabel.OBJECT_PARSE);
+
+      // verify parse results
+      boolean verifyResult = verifyObjectParse.verify(msgObjCombination);
+      if (!verifyResult) {
+        result = CompareResult.builder()
+            .addEqualsCompare(msgObjCombination.getBaseObj(), msgObjCombination.getTestObj(),
+                rulesConfig)
+            .build();
+        timeConsumerWatch.end(TimeMetricLabel.TOTAL);
+        timeConsumerWatch.record(result);
+        return result;
+      }
     } catch (Exception e) {
       result = CompareResult.builder().addStringUnMatched(baseMsg, testMsg).build();
       timeConsumerWatch.end(TimeMetricLabel.TOTAL);
@@ -145,7 +160,8 @@ public class DataBaseCompareUtil {
     } catch (SelectIgnoreException e) {
       result = CompareResult.builder().noDiff(baseMsg, testMsg).build();
     } catch (FindErrorException e) {
-      result = CompareResult.builder().addFindErrorException(baseMsg, testMsg, processedMsgList, e)
+      result = CompareResult.builder()
+          .addFindErrorException(baseMsg, testMsg, processedMsgList, e, rulesConfig)
           .build();
     } catch (Exception e) {
       LOGGER.error("compare error, exception:", e);

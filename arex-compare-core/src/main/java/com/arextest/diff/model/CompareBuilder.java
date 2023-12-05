@@ -10,6 +10,7 @@ import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.Future;
 
 public class CompareBuilder {
@@ -90,6 +91,28 @@ public class CompareBuilder {
     return this;
   }
 
+  public CompareBuilder addEqualsCompare(Object baseMsg, Object testMsg, RulesConfig rulesConfig) {
+    String baseMsgStr = baseMsg == null ? null : baseMsg.toString();
+    String testMsgStr = testMsg == null ? null : testMsg.toString();
+    boolean equals = Objects.equals(baseMsgStr, testMsgStr);
+    this.code(equals ? DiffResultCode.COMPARED_WITHOUT_DIFFERENCE
+        : DiffResultCode.COMPARED_WITH_DIFFERENCE);
+    this.message("compare successfully");
+    this.msgInfo(baseMsgStr, testMsgStr);
+    this.processedBaseMsg(rulesConfig.isQuickCompare() ? rulesConfig.getBaseMsg() : baseMsgStr);
+    this.processedTestMsg(rulesConfig.isQuickCompare() ? rulesConfig.getTestMsg() : testMsgStr);
+    if (!equals && !rulesConfig.isQuickCompare()) {
+      LogEntity logEntity = new LogEntity();
+      logEntity.setBaseValue(baseMsgStr);
+      logEntity.setTestValue(testMsgStr);
+      UnmatchedPairEntity pairEntity = new UnmatchedPairEntity();
+      pairEntity.setUnmatchedType(UnmatchedType.UNMATCHED);
+      logEntity.setPathPair(pairEntity);
+      this.logs(Collections.singletonList(logEntity));
+    }
+    return this;
+  }
+
   public CompareBuilder addStringUnMatched(String baseMsg, String testMsg) {
     this.code(DiffResultCode.COMPARED_WITH_DIFFERENCE);
     this.message("compare successfully");
@@ -140,8 +163,9 @@ public class CompareBuilder {
     return this;
   }
 
+  // the endpoint of the logic "quick compare"
   public CompareBuilder addFindErrorException(String baseMsg, String testMsg,
-      List<Future<String>> processedMsgList, Exception e) {
+      List<Future<String>> processedMsgList, Exception e, RulesConfig rulesConfig) {
     String processedBaseMsg;
     String processedTestMsg;
     try {
@@ -155,8 +179,8 @@ public class CompareBuilder {
         .code(DiffResultCode.COMPARED_WITH_DIFFERENCE)
         .message("compare successfully")
         .msgInfo(baseMsg, testMsg)
-        .processedBaseMsg(processedBaseMsg)
-        .processedTestMsg(processedTestMsg);
+        .processedBaseMsg(rulesConfig.isQuickCompare() ? baseMsg : processedBaseMsg)
+        .processedTestMsg(rulesConfig.isQuickCompare() ? testMsg : processedTestMsg);
   }
 
   private String exceptionToString(Throwable e) {
