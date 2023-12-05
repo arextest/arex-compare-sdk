@@ -479,5 +479,25 @@ public class CompareProblemTest {
 
   }
 
+  @Test
+  public void testRootDecompress4() {
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true)
+        .putPluginJarUrl("./lib/arex-compare-sdk-plugin-0.1.0-jar-with-dependencies.jar");
+
+    CompareOptions compareOptions = CompareOptions.options()
+        .putDecompressConfig(new DecompressConfig("Gzip",
+            Arrays.asList(Arrays.asList("arex_root"))));
+
+    String baseMsg = "H4sIAAAAAAAAAKtOTEwEAL5SPJIEAAAA";
+    String testMsg = "H4sIAAAAAAAAAKtOBAIAmhz8xAUAAAA=";
+    CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
+    Assert.assertEquals(1, result.getCode());
+
+    CompareResult quickResult = sdk.quickCompare(baseMsg, testMsg, compareOptions);
+    Assert.assertEquals("H4sIAAAAAAAAAKtOBAIAmhz8xAUAAAA=", quickResult.getProcessedTestMsg());
+
+  }
+
 
 }

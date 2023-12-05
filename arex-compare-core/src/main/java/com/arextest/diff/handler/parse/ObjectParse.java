@@ -38,7 +38,7 @@ public class ObjectParse {
 
   }
 
-  public Object msgToObj(String msg, RulesConfig rulesConfig) throws JsonProcessingException {
+  public Object msgToObj(String msg, RulesConfig rulesConfig) {
     if (StringUtil.isEmpty(msg)) {
       return msg;
     }
@@ -69,7 +69,7 @@ public class ObjectParse {
       } else {
         obj = msg;
       }
-    } catch (RuntimeException e) {
+    } catch (RuntimeException | JsonProcessingException e) {
       obj = msg;
     }
     return obj;
