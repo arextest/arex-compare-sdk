@@ -1,7 +1,8 @@
 package com.arextest.diff.handler.verify;
 
 import com.arextest.diff.model.parse.MsgObjCombination;
-import java.util.Objects;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class VerifyObjectParse {
 
@@ -9,18 +10,14 @@ public class VerifyObjectParse {
     Object baseObj = msgObjCombination.getBaseObj();
     Object testObj = msgObjCombination.getTestObj();
 
-    if (baseObj == null || testObj == null) {
-      return false;
+    if (baseObj instanceof ObjectNode && testObj instanceof ObjectNode) {
+      return true;
     }
 
-    if (baseObj instanceof String || testObj instanceof String) {
-      return false;
+    if (baseObj instanceof ArrayNode && testObj instanceof ArrayNode) {
+      return true;
     }
-
-    if (!Objects.equals(baseObj.getClass(), testObj.getClass())) {
-      return false;
-    }
-    return true;
+    return false;
   }
 
 }
