@@ -13,7 +13,7 @@ public class EigenSDKTest {
     EigenSDK eigenSDK = new EigenSDK();
     String msg = "test";
     EigenResult eigenResult = eigenSDK.calculateEigen(msg);
-    Assert.assertEquals(1, 1);
+    Assert.assertEquals( true, eigenResult.getEigenMap().containsKey(0));
   }
 
   @Test
