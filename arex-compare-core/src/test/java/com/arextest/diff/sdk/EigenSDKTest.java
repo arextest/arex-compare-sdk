@@ -38,4 +38,22 @@ public class EigenSDKTest {
     EigenResult eigenResult = eigenSDK.calculateEigen(msg, eigenOptions);
     Assert.assertEquals(1, eigenResult.getEigenMap().keySet().size());
   }
+
+  @Test
+  public void testBase64NoJSONEigen() {
+    EigenSDK eigenSDK = new EigenSDK();
+    String msg = "dGVzdA==";
+    EigenResult eigenResult = eigenSDK.calculateEigen(msg);
+    Assert.assertEquals(true, eigenResult.getEigenMap().containsKey(0));
+  }
+
+  @Test
+  public void testBase64JSONEigen() {
+    EigenSDK eigenSDK = new EigenSDK();
+    String msg = "eyJuYW1lIjoieHgiLCJhZ2UiOjE4fQ==";
+    EigenResult eigenResult = eigenSDK.calculateEigen(msg);
+    Assert.assertEquals(2, eigenResult.getEigenMap().keySet().size());
+  }
+
+
 }

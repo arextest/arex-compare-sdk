@@ -9,7 +9,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class WhitelistHandler {
@@ -17,11 +17,14 @@ public class WhitelistHandler {
   public MsgObjCombination doHandler(Object baseObj, Object testObj, List<List<String>> whiteList)
       throws ExecutionException, InterruptedException {
     if (whiteList != null && !whiteList.isEmpty()) {
-      Callable<Object> callable1 = () -> getInclusionsTask(baseObj, whiteList);
-      Callable<Object> callable2 = () -> getInclusionsTask(testObj, whiteList);
-      Object baseNewObj = TaskThreadFactory.jsonObjectThreadPool.submit(callable1).get();
-      Object testNewObj = TaskThreadFactory.jsonObjectThreadPool.submit(callable2).get();
-      return new MsgObjCombination(baseNewObj, testNewObj);
+
+      CompletableFuture<Object> future1 = CompletableFuture.supplyAsync(
+          () -> getInclusionsTask(baseObj, whiteList), TaskThreadFactory.jsonObjectThreadPool);
+      CompletableFuture<Object> future2 = CompletableFuture.supplyAsync(
+          () -> getInclusionsTask(testObj, whiteList), TaskThreadFactory.jsonObjectThreadPool);
+      CompletableFuture.allOf(future1, future2).join();
+
+      return new MsgObjCombination(future1.get(), future2.get());
     }
     return new MsgObjCombination(baseObj, testObj);
   }

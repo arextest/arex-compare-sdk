@@ -7,7 +7,7 @@ import com.arextest.diff.utils.JSONParseUtil;
 import com.arextest.diff.utils.NameConvertUtil;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
 public class JSONParse {
@@ -15,18 +15,17 @@ public class JSONParse {
   public Map<String, List<String>> doHandler(RulesConfig rulesConfig, Object baseObj,
       Object testObj) throws ExecutionException, InterruptedException {
 
-    Callable<Map<List<NodeEntity>, String>> callable1 = () -> this.getJSONParseResult(baseObj,
-        rulesConfig);
+    CompletableFuture<Map<List<NodeEntity>, String>> mapCompletableFuture1 =
+        CompletableFuture.supplyAsync(
+            () -> this.getJSONParseResult(baseObj,
+                rulesConfig), TaskThreadFactory.jsonObjectThreadPool);
+    CompletableFuture<Map<List<NodeEntity>, String>> mapCompletableFuture2 =
+        CompletableFuture.supplyAsync(
+            () -> this.getJSONParseResult(testObj,
+                rulesConfig), TaskThreadFactory.jsonObjectThreadPool);
+    CompletableFuture.allOf(mapCompletableFuture1, mapCompletableFuture2).join();
 
-    Callable<Map<List<NodeEntity>, String>> callable2 = () -> this.getJSONParseResult(testObj,
-        rulesConfig);
-
-    Map<List<NodeEntity>, String> baseOriginal = TaskThreadFactory.jsonObjectThreadPool.submit(
-        callable1).get();
-    Map<List<NodeEntity>, String> testOriginal = TaskThreadFactory.jsonObjectThreadPool.submit(
-        callable2).get();
-
-    return JSONParseUtil.getTotalParses(baseOriginal, testOriginal);
+    return JSONParseUtil.getTotalParses(mapCompletableFuture1.get(), mapCompletableFuture2.get());
   }
 
   public Map<List<NodeEntity>, String> getJSONParseResult(Object obj, RulesConfig rulesConfig) {
