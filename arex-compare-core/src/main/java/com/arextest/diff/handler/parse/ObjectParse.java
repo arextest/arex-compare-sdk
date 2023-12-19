@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Callable;
+import java.util.concurrent.CompletableFuture;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,15 +25,16 @@ public class ObjectParse {
 
     MsgObjCombination response = new MsgObjCombination();
 
-    Object obj1 = null, obj2 = null;
-    Callable<Object> callable1 = () -> msgToObj(rulesConfig.getBaseMsg(), rulesConfig);
-    Callable<Object> callable2 = () -> msgToObj(rulesConfig.getTestMsg(), rulesConfig);
+    CompletableFuture<Object> future1 = CompletableFuture.supplyAsync(
+        () -> msgToObj(rulesConfig.getBaseMsg(), rulesConfig),
+        TaskThreadFactory.jsonObjectThreadPool);
+    CompletableFuture<Object> future2 = CompletableFuture.supplyAsync(
+        () -> msgToObj(rulesConfig.getTestMsg(), rulesConfig),
+        TaskThreadFactory.jsonObjectThreadPool);
+    CompletableFuture.allOf(future1, future2).join();
 
-    obj1 = TaskThreadFactory.jsonObjectThreadPool.submit(callable1).get();
-    obj2 = TaskThreadFactory.jsonObjectThreadPool.submit(callable2).get();
-
-    response.setBaseObj(obj1);
-    response.setTestObj(obj2);
+    response.setBaseObj(future1.get());
+    response.setTestObj(future2.get());
     return response;
 
   }

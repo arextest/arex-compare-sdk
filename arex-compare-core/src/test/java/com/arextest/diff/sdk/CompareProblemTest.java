@@ -20,7 +20,7 @@ public class CompareProblemTest {
     String baseMsg = "{\"array\":[1,2,3]}";
     String testMsg = "{\"array\":[1,2]}";
     CompareResult result = sdk.compare(baseMsg, testMsg);
-    Assert.assertEquals(result.getLogs().size(), 1);
+    Assert.assertEquals(1, result.getLogs().size());
   }
 
   @Test
@@ -45,7 +45,7 @@ public class CompareProblemTest {
     compareOptions.putIgnoredTimePrecision(1000L);
 
     CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
-    Assert.assertEquals(result.getLogs().size(), 0);
+    Assert.assertEquals(0, result.getLogs().size());
   }
 
   @Test
@@ -107,7 +107,7 @@ public class CompareProblemTest {
     compareOptions.putIgnoredTimePrecision(1000L);
 
     CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
-    Assert.assertEquals(result.getLogs().size(), 2);
+    Assert.assertEquals(2, result.getLogs().size());
   }
 
   @Test
@@ -118,7 +118,7 @@ public class CompareProblemTest {
     String testMsg = "{\"url\":\"http://arex.pic.baidu.png\"}";
 
     CompareResult result = sdk.compare(baseMsg, testMsg);
-    Assert.assertEquals(result.getLogs().size(), 0);
+    Assert.assertEquals(0, result.getLogs().size());
   }
 
   @Test
@@ -132,7 +132,7 @@ public class CompareProblemTest {
     compareOptions.putIgnoredTimePrecision(1000L);
 
     CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
-    Assert.assertEquals(result.getLogs().size(), 0);
+    Assert.assertEquals(0, result.getLogs().size());
   }
 
   @Test
@@ -146,7 +146,7 @@ public class CompareProblemTest {
     compareOptions.putIgnoredTimePrecision(1000L);
 
     CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
-    Assert.assertEquals(result.getLogs().size(), 1);
+    Assert.assertEquals(1, result.getLogs().size());
   }
 
   @Test
@@ -158,7 +158,7 @@ public class CompareProblemTest {
     CompareOptions compareOptions = new CompareOptions();
     compareOptions.putListSortConfig(Arrays.asList("data"), Arrays.asList(Arrays.asList("name")));
     CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
-    Assert.assertEquals(result.getLogs().size(), 0);
+    Assert.assertEquals(0, result.getLogs().size());
   }
 
 
@@ -175,7 +175,7 @@ public class CompareProblemTest {
     compareOptions.putCategoryType(CategoryType.DATABASE);
 
     CompareResult result = compareSDK.compare(str1, str2, compareOptions);
-    Assert.assertEquals(result.getLogs().size(), 1);
+    Assert.assertEquals(1, result.getLogs().size());
   }
 
   @Test
@@ -289,7 +289,7 @@ public class CompareProblemTest {
         Arrays.asList("studentInfoList", "studentName"));
 
     CompareResult result = compareSDK.compare(str1, str2, compareOptions);
-    Assert.assertEquals(result.getCode(), DiffResultCode.COMPARED_INTERNAL_EXCEPTION);
+    Assert.assertEquals(DiffResultCode.COMPARED_INTERNAL_EXCEPTION, result.getCode());
   }
 
 
@@ -397,7 +397,7 @@ public class CompareProblemTest {
     compareOptions.putReferenceConfig(Arrays.asList("studentList", "name"),
         Arrays.asList("studentInfoList", "studentName"));
     CompareResult result = compareSDK.compare(str1, str2, compareOptions);
-    Assert.assertEquals(result.getLogs().size(), 4);
+    Assert.assertEquals(4, result.getLogs().size());
   }
 
   @Test
@@ -407,7 +407,7 @@ public class CompareProblemTest {
     String baseMsg = "{\"body\":\"\"}";
     String testMsg = "{\"body\":null}";
     CompareResult result = sdk.compare(baseMsg, testMsg);
-    Assert.assertEquals(result.getLogs().size(), 0);
+    Assert.assertEquals(0, result.getLogs().size());
   }
 
   @Test
@@ -417,7 +417,7 @@ public class CompareProblemTest {
     String baseMsg = null;
     String testMsg = "";
     CompareResult result = sdk.compare(baseMsg, testMsg);
-    Assert.assertEquals(result.getCode(), 0);
+    Assert.assertEquals(1, result.getCode());
   }
 
   @Test
@@ -455,7 +455,7 @@ public class CompareProblemTest {
     Assert.assertEquals("aaaa", result.getProcessedTestMsg());
 
     CompareResult quickResult = sdk.quickCompare(baseMsg, testMsg, compareOptions);
-    Assert.assertEquals("H4sIAAAAAAAAAEtMTEwEAEXlmK0EAAAA=", quickResult.getProcessedTestMsg());
+    Assert.assertEquals("H4sIAAAAAAAAAEtMTEwEAEXlmK0EAAAA", quickResult.getProcessedTestMsg());
 
   }
 

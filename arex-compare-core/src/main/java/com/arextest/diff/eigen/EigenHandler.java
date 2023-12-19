@@ -3,7 +3,6 @@ package com.arextest.diff.eigen;
 import com.arextest.diff.handler.parse.JSONParse;
 import com.arextest.diff.handler.parse.ObjectParse;
 import com.arextest.diff.handler.parse.sqlparse.SqlParse;
-import com.arextest.diff.handler.verify.VerifyObjectParse;
 import com.arextest.diff.model.RulesConfig;
 import com.arextest.diff.model.eigen.EigenResult;
 import com.arextest.diff.model.enumeration.CategoryType;
@@ -16,7 +15,6 @@ public class EigenHandler {
 
   private static ObjectParse objectParse = new ObjectParse();
   private static JSONParse jsonParse = new JSONParse();
-  private static VerifyObjectParse verifyObjectParse = new VerifyObjectParse();
 
   private static SqlParse sqlParse = new SqlParse();
 
