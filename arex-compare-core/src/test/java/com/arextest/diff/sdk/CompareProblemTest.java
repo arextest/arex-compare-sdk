@@ -499,5 +499,101 @@ public class CompareProblemTest {
 
   }
 
+  @Test
+  public void testListSortNullPointer() {
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true);
+
+    CompareOptions compareOptions = CompareOptions.options()
+        .putListSortConfig(Arrays.asList("refundapplyresultlist"),
+            Arrays.asList(Arrays.asList("reorderid")))
+        .putListSortConfig(Arrays.asList("parameters"),
+            Arrays.asList(Arrays.asList("seq", "pname", "reorderid")))
+        .putReferenceConfig(Arrays.asList("parameters", "stype"),
+            Arrays.asList("parameters", "stype"));
+
+    String baseMsg = "{\n"
+        + "    \"parameters\": [\n"
+        + "        {\n"
+        + "            \"seq\": 1,\n"
+        + "            \"afford\": true,\n"
+        + "            \"latest\": \"String\",\n"
+        + "            \"orderid\": 1,\n"
+        + "            \"stype\": 1,\n"
+        + "            \"sstatus\": 1,\n"
+        + "            \"pname\": \"String\",\n"
+        + "            \"reorderid\": 1,\n"
+        + "            \"rebookingid\": 1,\n"
+        + "            \"cancan\": true\n"
+        + "        }\n"
+        + "    ],\n"
+        + "    \"body\": \"String\",\n"
+        + "    \"dbname\": \"String\",\n"
+        + "    \"parsedsql\": [\n"
+        + "        {\n"
+        + "            \"columns\": [\n"
+        + "                {\n"
+        + "                    \"`latest`\": \"String\",\n"
+        + "                    \"`afford`\": \"String\",\n"
+        + "                    \"`rebookingid`\": \"String\",\n"
+        + "                    \"`seq`\": \"String\",\n"
+        + "                    \"`pname`\": \"String\",\n"
+        + "                    \"`reorderid`\": \"String\",\n"
+        + "                    \"`sstatus`\": \"String\",\n"
+        + "                    \"`orderid`\": \"String\",\n"
+        + "                    \"`cancan`\": \"String\",\n"
+        + "                    \"`stype`\": \"String\"\n"
+        + "                }\n"
+        + "            ],\n"
+        + "            \"action\": \"String\",\n"
+        + "            \"table\": \"String\"\n"
+        + "        }\n"
+        + "    ],\n"
+        + "    \"dbName\": \"String\"\n"
+        + "}";
+    String testMsg = "{\n"
+        + "    \"parameters\": [\n"
+        + "        {\n"
+        + "            \"seq\": 2,\n"
+        + "            \"afford\": true,\n"
+        + "            \"latest\": \"String\",\n"
+        + "            \"orderid\": 1,\n"
+        + "            \"stype\": 1,\n"
+        + "            \"sstatus\": 1,\n"
+        + "            \"pname\": \"String\",\n"
+        + "            \"reorderid\": 1,\n"
+        + "            \"rebookingid\": 1,\n"
+        + "            \"cancan\": true\n"
+        + "        }\n"
+        + "    ],\n"
+        + "    \"body\": \"String\",\n"
+        + "    \"dbname\": \"String\",\n"
+        + "    \"parsedsql\": [\n"
+        + "        {\n"
+        + "            \"columns\": [\n"
+        + "                {\n"
+        + "                    \"`latest`\": \"String\",\n"
+        + "                    \"`afford`\": \"String\",\n"
+        + "                    \"`rebookingid`\": \"String\",\n"
+        + "                    \"`seq`\": \"String\",\n"
+        + "                    \"`pname`\": \"String\",\n"
+        + "                    \"`reorderid`\": \"String\",\n"
+        + "                    \"`sstatus`\": \"String\",\n"
+        + "                    \"`orderid`\": \"String\",\n"
+        + "                    \"`cancan`\": \"String\",\n"
+        + "                    \"`stype`\": \"String\"\n"
+        + "                }\n"
+        + "            ],\n"
+        + "            \"action\": \"String\",\n"
+        + "            \"table\": \"String\"\n"
+        + "        }\n"
+        + "    ],\n"
+        + "    \"dbName\": \"String\"\n"
+        + "}";
+    CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
+    Assert.assertEquals(1, result.getLogs().size());
+
+  }
+
 
 }

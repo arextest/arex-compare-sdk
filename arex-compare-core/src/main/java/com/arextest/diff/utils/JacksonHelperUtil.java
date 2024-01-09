@@ -31,4 +31,13 @@ public class JacksonHelperUtil {
     return objectMapper.createArrayNode();
   }
 
+  public static boolean isObjectNode(Object object) {
+    return object instanceof ObjectNode;
+  }
+
+  public static boolean isArrayNode(Object object) {
+    return object instanceof ArrayNode;
+  }
+
+
 }
