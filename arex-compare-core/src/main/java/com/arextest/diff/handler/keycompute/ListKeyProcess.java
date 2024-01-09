@@ -201,7 +201,7 @@ public class ListKeyProcess {
           value = value.substring(0, value.lastIndexOf('.'));
         }
 
-        if (referencePaths.size() > 0 && !value.equals("0")) {
+        if (!referencePaths.isEmpty() && !value.equals("0")) {
           int cnt = 0;
           for (String referencePath : referencePaths) {
             String refKey = null;
@@ -337,30 +337,37 @@ public class ListKeyProcess {
 
     try {
       while ((listSortEntity = priorityListSortEntities.poll()) != null) {
+
         List<String> listNodePath = listSortEntity.getListNodepath();
+        List<List<String>> keys = listSortEntity.getKeys();
+        List<String> referenceNodeRelativePath = listSortEntity.getReferenceNodeRelativePath();
+
         Object object = getObject(obj, listNodePath);
-        if (object == null || obj instanceof NullNode) {
+
+        if (!JacksonHelperUtil.isArrayNode(object)) {
+          LOGGER.warn("list node path is not array node, path: {}", listNodePath);
           continue;
         }
         ArrayNode listObj = (ArrayNode) object;
 
         HashMap<String, String> referenceKeyValue = new HashMap<>();
         referenceKeys.put(
-            ListUti.convertToString2(
-                mergePath(listNodePath, listSortEntity.getReferenceNodeRelativePath())),
+            ListUti.convertToString2(mergePath(listNodePath, referenceNodeRelativePath)),
             referenceKeyValue);
 
+        // traverse list elements, compute pKkey -> listkey
         for (int i = 0; i < listObj.size(); i++) {
           StringBuilder fullKey = new StringBuilder();
           Object listElement = listObj.get(i);
-          String refValue = getObject(listElement,
-              listSortEntity.getReferenceNodeRelativePath()).toString();
 
-          if (listSortEntity.getKeys() == null || listSortEntity.getKeys().isEmpty()) {
+          Object refObj = getObject(listElement, referenceNodeRelativePath);
+          String refValue = refObj == null ? null : refObj.toString();
+
+          if (keys == null || keys.isEmpty()) {
             throw new RuntimeException("ref list node don't have listkey!");
           }
-          for (List<String> path : listSortEntity.getKeys()) {
-            currentParentPath = ListUti.deepCopy(listSortEntity.getListNodepath());
+          for (List<String> path : keys) {
+            currentParentPath = ListUti.deepCopy(listNodePath);
             currentParentPath.add(null);
 
             String currentKey = getKeyValueByPath(path, listElement);
@@ -425,7 +432,7 @@ public class ListKeyProcess {
           currentNodePath.remove(currentNodePath.size() - 1);
         }
 
-        if (indexKeys.size() > 0) {
+        if (!indexKeys.isEmpty()) {
           listIndexKeys.put(new ArrayList<>(currentNodePath), indexKeys);
         }
 
@@ -442,11 +449,11 @@ public class ListKeyProcess {
   }
 
   private Object getObject(Object obj, List<String> listNodePath) {
-    for (int i = 0; i < listNodePath.size(); i++) {
-      if (obj == null || obj instanceof NullNode) {
+    for (String s : listNodePath) {
+      if (!(JacksonHelperUtil.isObjectNode(obj))) {
         return null;
       }
-      obj = ((ObjectNode) obj).get(listNodePath.get(i));
+      obj = ((ObjectNode) obj).get(s);
     }
     return obj;
   }
@@ -462,21 +469,21 @@ public class ListKeyProcess {
     List<List<String>> refPkPaths = new ArrayList<>();
 
     List<String> paths = new ArrayList<>();
-    for (int i = 0; i < currentPath.size(); i++) {
-      if (currentPath.get(i) != null) {
-        paths.add(currentPath.get(i));
+    for (String s : currentPath) {
+      if (s != null) {
+        paths.add(s);
       }
     }
 
     List<String> list;
-    for (int i = 0; i < responseReferences.size(); i++) {
-      List<String> fkNodePath = responseReferences.get(i).getFkNodePath();
+    for (ReferenceEntity responseReference : responseReferences) {
+      List<String> fkNodePath = responseReference.getFkNodePath();
       if ("%value%".equals(fkNodePath.get(fkNodePath.size() - 1))) {
         fkNodePath = fkNodePath.subList(0, fkNodePath.size() - 1);
       }
       // support dynamic path
       if (ListUti.stringListEqualsOnWildcard(paths, fkNodePath)) {
-        list = responseReferences.get(i).getPkNodePath();
+        list = responseReference.getPkNodePath();
         refPkPaths.add(list);
       }
     }
@@ -485,9 +492,9 @@ public class ListKeyProcess {
 
   private ListSortEntity findListKeys(List<NodeEntity> path) {
     List<String> pathWithoutIndex = new ArrayList<>();
-    for (int i = 0; i < path.size(); i++) {
-      if (path.get(i).getNodeName() != null) {
-        pathWithoutIndex.add(path.get(i).getNodeName());
+    for (NodeEntity nodeEntity : path) {
+      if (nodeEntity.getNodeName() != null) {
+        pathWithoutIndex.add(nodeEntity.getNodeName());
       }
     }
     if (pathWithoutIndex.isEmpty()) {
