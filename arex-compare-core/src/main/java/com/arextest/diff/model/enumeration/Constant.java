@@ -9,4 +9,8 @@ public interface Constant {
 
   List<String> ROOT_PATH = Collections.singletonList("arex_root");
 
+  String EXPRESSION_PATH_IDENTIFIER_START = "[";
+
+  String EXPRESSION_PATH_IDENTIFIER_END = "]";
+
 }

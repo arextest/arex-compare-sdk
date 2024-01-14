@@ -36,7 +36,9 @@ public class EigenMapCalculate {
 
     CalculateContext calculateContext = new CalculateContext();
     calculateContext.ignoreNodeSet = rulesConfig.getIgnoreNodeSet();
-    calculateContext.exclusions = rulesConfig.getExclusions();
+
+    calculateContext.exclusions = null;
+//    calculateContext.exclusions = rulesConfig.getExclusions();
     calculateContext.nodePath = new LinkedList<>();
     doCalculateJsonNode(obj, calculateContext, eigenMap);
     eigenResult.setEigenMap(eigenMap);
@@ -48,10 +50,14 @@ public class EigenMapCalculate {
       Map<Integer, Long> eigenMap) {
 
     // ignore by node name and node path
-    if (IgnoreUtil.ignoreProcessor(calculateContext.nodePath, calculateContext.exclusions,
+    if (IgnoreUtil.ignoreProcessor(calculateContext.nodePath, null,
         calculateContext.ignoreNodeSet)) {
       return;
     }
+//    if (IgnoreUtil.ignoreProcessor(calculateContext.nodePath, calculateContext.exclusions,
+//        calculateContext.ignoreNodeSet)) {
+//      return;
+//    }
 
     if (obj instanceof ObjectNode) {
       ObjectNode objectNode = (ObjectNode) obj;

@@ -120,6 +120,10 @@ public class NormalCompareUtil {
           msgObjCombination.getTestObj(), rulesConfig.getInclusions());
       timeConsumerWatch.end(TimeMetricLabel.WHITE_LIST);
 
+      // convert expression exclusion to exact nodePath
+
+
+
       // compare jsonObject
       timeConsumerWatch.start(TimeMetricLabel.COMPARE_HANDLER);
       LogProcess logProcess = new LogProcess();

@@ -364,4 +364,124 @@ public class CompareSDKTest {
     Assert.assertEquals(0, result.getCode());
   }
 
+
+  @Test
+  public void testWhiteListObj() {
+
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions()
+        .putNameToLower(true)
+        .putNullEqualsEmpty(true);
+
+    String str1 = "{\n"
+        + "    \"response\": {\n"
+        + "        \"students\": [\n"
+        + "            {\n"
+        + "                \"info\": {\n"
+        + "                    \"name\": \"xiaomi\",\n"
+        + "                    \"roomName\": \"A\"\n"
+        + "                },\n"
+        + "                \"age\": 18\n"
+        + "            },\n"
+        + "            {\n"
+        + "                \"info\": {\n"
+        + "                    \"name\": \"apple\",\n"
+        + "                    \"roomName\": \"A\"\n"
+        + "                },\n"
+        + "                \"age\": 19\n"
+        + "            }\n"
+        + "        ]\n"
+        + "    }\n"
+        + "}";
+
+    String str2 = "{\n"
+        + "    \"response\": {\n"
+        + "        \"students\": [\n"
+        + "            {\n"
+        + "                \"info\": {\n"
+        + "                    \"name\": \"xiaomi\"\n"
+        + "                },\n"
+        + "                \"age\": 18\n"
+        + "            },\n"
+        + "            {\n"
+        + "                \"info\": {\n"
+        + "                    \"name\": \"apple\"\n"
+        + "                },\n"
+        + "                \"age\": 20\n"
+        + "            }\n"
+        + "        ]\n"
+        + "    }\n"
+        + "}";
+
+    CompareOptions compareOptions = CompareOptions.options()
+        .putInclusions(
+            Arrays.asList(Arrays.asList("response", "Students", "info", "name")));
+
+    CompareResult result = sdk.quickCompare(str1, str2, compareOptions);
+
+    System.out.println();
+  }
+
+  @Test
+  public void testExpressionNodeIgnore() {
+
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions()
+        .putNameToLower(true)
+        .putNullEqualsEmpty(true)
+        .putPluginJarUrl("./lib/arex-compare-sdk-plugin-0.1.0-jar-with-dependencies.jar");
+
+    String str1 = "{\n"
+        + "    \"response\": {\n"
+        + "        \"students\": [\n"
+        + "            {\n"
+        + "                \"info\": {\n"
+        + "                    \"name\": \"xiaomi\"\n"
+        + "                },\n"
+        + "                \"age\": 18\n"
+        + "            },\n"
+        + "            {\n"
+        + "                \"info\": {\n"
+        + "                    \"name\": \"apple\"\n"
+        + "                },\n"
+        + "                \"age\": 19\n"
+        + "            }\n"
+        + "        ],\n"
+        + "        \"region\": \"shanghai\"\n"
+        + "    }\n"
+        + "}";
+
+    String str2 = "{\n"
+        + "    \"response\": {\n"
+        + "        \"students\": [\n"
+        + "            {\n"
+        + "                \"info\": {\n"
+        + "                    \"name\": \"xiaomi\"\n"
+        + "                },\n"
+        + "                \"age\": 18\n"
+        + "            },\n"
+        + "            {\n"
+        + "                \"info\": {\n"
+        + "                    \"name\": \"apple\"\n"
+        + "                },\n"
+        + "                \"age\": 19\n"
+        + "            }\n"
+        + "        ],\n"
+        + "        \"region\": \"beijing\"\n"
+        + "    }\n"
+        + "}";
+
+    CompareOptions compareOptions = CompareOptions.options()
+        .putExclusions(
+            Arrays.asList(Arrays.asList("response", "Students", "[info/Name=apple]", "age"))
+        )
+        .putExclusions(
+            Arrays.asList(Arrays.asList("response", "Region"))
+        );
+
+    CompareResult result = sdk.quickCompare(str1, str2, compareOptions);
+
+    System.out.println();
+  }
+
 }

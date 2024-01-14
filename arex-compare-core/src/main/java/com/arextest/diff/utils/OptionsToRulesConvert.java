@@ -32,7 +32,10 @@ public class OptionsToRulesConvert {
 
   private static void configToLower(RulesConfig rulesConfig) {
     rulesConfig.setInclusions(FieldToLowerUtil.listListToLower(rulesConfig.getInclusions()));
-    rulesConfig.setExclusions(FieldToLowerUtil.listListToLower(rulesConfig.getExclusions()));
+    rulesConfig.setExclusions(
+        FieldToLowerUtil.expressionNodeListToLower(rulesConfig.getExclusions()));
+    rulesConfig.setExpressionExclusions(
+        FieldToLowerUtil.expressionNodeListToLower(rulesConfig.getExpressionExclusions()));
     rulesConfig.setIgnoreNodeSet(FieldToLowerUtil.setToLower(rulesConfig.getIgnoreNodeSet()));
     rulesConfig.setDecompressConfigMap(
         FieldToLowerUtil.mapKeyToLower(rulesConfig.getDecompressConfigMap()));
@@ -77,8 +80,12 @@ public class OptionsToRulesConvert {
         decompressConfigConvert(compareOptions.getDecompressConfigList()));
     rulesConfig.setInclusions(compareOptions.getInclusions() == null ? null
         : new ArrayList<>(compareOptions.getInclusions()));
-    rulesConfig.setExclusions(compareOptions.getExclusions() == null ? null
-        : new ArrayList<>(compareOptions.getExclusions()));
+//    rulesConfig.setExclusions(compareOptions.getExclusions() == null ? null
+//        : new ArrayList<>(compareOptions.getExclusions()));
+    rulesConfig.setExpressionExclusions(
+        ExpressionNodeParser.doParse(compareOptions.getExclusions()));
+    rulesConfig.setExclusions(
+        ExpressionNodeParser.doConvertNameNode(compareOptions.getExclusions()));
     rulesConfig.setReferenceEntities(referenceConfigConvert(compareOptions.getReferenceConfig()));
     rulesConfig.setListSortEntities(listSortConfigConvert(compareOptions.getListSortConfig(),
         rulesConfig.getReferenceEntities()));

@@ -5,6 +5,7 @@ import com.arextest.diff.model.key.ReferenceEntity;
 import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.model.parse.MsgStructure;
+import com.arextest.diff.model.pathparse.ExpressionNodeEntity;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,7 +18,8 @@ public class CompareContext {
   public Object baseObj;
   public Object testObj;
 
-  public List<List<String>> exclusions;
+//  public List<List<String>> exclusions;
+  public List<List<ExpressionNodeEntity>> exclusions;
   public Set<String> ignoreNodeSet;
   public boolean notDistinguishNullAndEmpty = false;
   public boolean nullEqualsNotExist = false;
@@ -52,6 +54,11 @@ public class CompareContext {
   public MsgStructure baseMsgStructure;
   public MsgStructure testMsgStructure;
 
+  // store the last array node of the left
+  public Object lastArrayNodeLeft;
+  // store the last array node of the right
+  public Object lastArrayNodeRight;
+
   public byte ignoreReferenceNotFound = 0;
 
   public CompareContext() {
@@ -77,13 +84,22 @@ public class CompareContext {
     this.testObj = testObj;
   }
 
-  public List<List<String>> getExclusions() {
+  public List<List<ExpressionNodeEntity>> getExclusions() {
     return exclusions;
   }
 
-  public void setExclusions(List<List<String>> exclusions) {
+  public void setExclusions(
+      List<List<ExpressionNodeEntity>> exclusions) {
     this.exclusions = exclusions;
   }
+
+//  public List<List<String>> getExclusions() {
+//    return exclusions;
+//  }
+//
+//  public void setExclusions(List<List<String>> exclusions) {
+//    this.exclusions = exclusions;
+//  }
 
   public Set<String> getIgnoreNodeSet() {
     return ignoreNodeSet;

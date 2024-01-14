@@ -3,6 +3,8 @@ package com.arextest.diff.model;
 import com.arextest.diff.model.enumeration.CategoryType;
 import com.arextest.diff.model.key.ListSortEntity;
 import com.arextest.diff.model.key.ReferenceEntity;
+import com.arextest.diff.model.log.NodeEntity;
+import com.arextest.diff.model.pathparse.ExpressionNodeEntity;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -30,7 +32,9 @@ public class RulesConfig {
 
   private List<List<String>> inclusions;
 
-  private List<List<String>> exclusions;
+  // todo: support the index of array
+//  private List<List<String>> exclusions;
+  private List<List<ExpressionNodeEntity>> exclusions;
 
   private Set<String> ignoreNodeSet;
 
@@ -51,6 +55,11 @@ public class RulesConfig {
   private boolean nullEqualsNotExist;
 
   private boolean uuidIgnore;
+
+  //region: inner processed class
+  private List<List<ExpressionNodeEntity>> expressionExclusions;
+
+  //endregion
 
   public RulesConfig() {
   }
@@ -103,11 +112,20 @@ public class RulesConfig {
     this.inclusions = inclusions;
   }
 
-  public List<List<String>> getExclusions() {
+//  public List<List<String>> getExclusions() {
+//    return exclusions;
+//  }
+//
+//  public void setExclusions(List<List<String>> exclusions) {
+//    this.exclusions = exclusions;
+//  }
+
+
+  public List<List<ExpressionNodeEntity>> getExclusions() {
     return exclusions;
   }
 
-  public void setExclusions(List<List<String>> exclusions) {
+  public void setExclusions(List<List<ExpressionNodeEntity>> exclusions) {
     this.exclusions = exclusions;
   }
 
@@ -198,5 +216,14 @@ public class RulesConfig {
 
   public void setUuidIgnore(boolean uuidIgnore) {
     this.uuidIgnore = uuidIgnore;
+  }
+
+  public List<List<ExpressionNodeEntity>> getExpressionExclusions() {
+    return expressionExclusions;
+  }
+
+  public void setExpressionExclusions(
+      List<List<ExpressionNodeEntity>> expressionExclusions) {
+    this.expressionExclusions = expressionExclusions;
   }
 }

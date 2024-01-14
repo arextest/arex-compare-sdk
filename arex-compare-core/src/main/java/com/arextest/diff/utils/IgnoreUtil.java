@@ -1,6 +1,7 @@
 package com.arextest.diff.utils;
 
 import com.arextest.diff.model.enumeration.Constant;
+import com.arextest.diff.model.pathparse.ExpressionNodeEntity;
 import java.util.List;
 import java.util.Set;
 
@@ -9,21 +10,38 @@ import java.util.Set;
  */
 public class IgnoreUtil {
 
-  public static boolean ignoreProcessor(List<String> nodePath, List<List<String>> ignoreNodePaths,
-      Set<String> ignoreNodeSet) {
-    if (ignoreNodeProcessor(nodePath, ignoreNodeSet)) {
-      return true;
-    }
 
-    if (ignoreNodePaths != null && !ignoreNodePaths.isEmpty()) {
-      for (List<String> ignoreNodePath : ignoreNodePaths) {
-        if (ignoreMatch(nodePath, ignoreNodePath)) {
-          return true;
-        }
-      }
-    }
+  public static boolean ignoreProcessor(List<String> nodePath, List<List<ExpressionNodeEntity>> ignoreNodePaths,
+      Set<String> ignoreNodeSet) {
+//    if (ignoreNodeProcessor(nodePath, ignoreNodeSet)) {
+//      return true;
+//    }
+//
+//    if (ignoreNodePaths != null && !ignoreNodePaths.isEmpty()) {
+//      for (List<String> ignoreNodePath : ignoreNodePaths) {
+//        if (ignoreMatch(nodePath, ignoreNodePath)) {
+//          return true;
+//        }
+//      }
+//    }
     return false;
   }
+
+//  public static boolean ignoreProcessor(List<String> nodePath, List<List<String>> ignoreNodePaths,
+//      Set<String> ignoreNodeSet) {
+//    if (ignoreNodeProcessor(nodePath, ignoreNodeSet)) {
+//      return true;
+//    }
+//
+//    if (ignoreNodePaths != null && !ignoreNodePaths.isEmpty()) {
+//      for (List<String> ignoreNodePath : ignoreNodePaths) {
+//        if (ignoreMatch(nodePath, ignoreNodePath)) {
+//          return true;
+//        }
+//      }
+//    }
+//    return false;
+//  }
 
   private static boolean ignoreMatch(List<String> pathInList, List<String> ignoreNodePath) {
 

@@ -2,6 +2,10 @@ package com.arextest.diff.utils;
 
 import com.arextest.diff.model.key.ListSortEntity;
 import com.arextest.diff.model.key.ReferenceEntity;
+import com.arextest.diff.model.pathparse.ExpressionNodeEntity;
+import com.arextest.diff.model.pathparse.ExpressionNodeType;
+import com.arextest.diff.model.pathparse.expression.EqualsExpression;
+import com.arextest.diff.model.pathparse.expression.PathExpression;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -38,6 +42,34 @@ public class FieldToLowerUtil {
     });
     return result;
   }
+
+  public static List<List<ExpressionNodeEntity>> expressionNodeListToLower(
+      List<List<ExpressionNodeEntity>> expressionNodeLists) {
+    if (expressionNodeLists == null || expressionNodeLists.isEmpty()) {
+      return expressionNodeLists;
+    }
+
+    for (List<ExpressionNodeEntity> expressionNodeEntities : expressionNodeLists) {
+      for (ExpressionNodeEntity expressionNodeEntity : expressionNodeEntities) {
+        switch (expressionNodeEntity.getNodeType()) {
+          case ExpressionNodeType.NAME_NODE:
+            expressionNodeEntity.setNodeName(expressionNodeEntity.getNodeName().toLowerCase());
+            break;
+          case ExpressionNodeType.EXPRESSION_NODE:
+            PathExpression expression = expressionNodeEntity.getExpression();
+            if (expression instanceof EqualsExpression) {
+              EqualsExpression equalsExpression = (EqualsExpression) expression;
+              equalsExpression.setLeftValue(listToLower(equalsExpression.getLeftValue()));
+            }
+            break;
+          default:
+            break;
+        }
+      }
+    }
+    return expressionNodeLists;
+  }
+
 
   public static Set<String> setToLower(Collection<String> collection) {
     if (collection == null) {

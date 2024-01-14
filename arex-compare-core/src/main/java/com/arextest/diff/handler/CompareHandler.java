@@ -28,7 +28,8 @@ public class CompareHandler {
     compareContext.setListIndexKeysLeft(keyComputeResponse.getListIndexKeysLeft());
     compareContext.setListIndexKeysRight(keyComputeResponse.getListIndexKeysRight());
 
-    compareContext.setExclusions(rulesConfig.getExclusions());
+//    compareContext.setExclusions(rulesConfig.getExclusions());
+    compareContext.setExclusions(null);
     compareContext.setIgnoreNodeSet(rulesConfig.getIgnoreNodeSet());
     compareContext.setNotDistinguishNullAndEmpty(rulesConfig.isNullEqualsEmpty());
     compareContext.setNullEqualsNotExist(rulesConfig.isNullEqualsNotExist());
