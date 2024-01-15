@@ -8,6 +8,9 @@ public class ExpressionNodeEntity {
   private int index;
   private PathExpression expression;
 
+  /**
+   * @see ExpressionNodeType
+   */
   private int nodeType;
 
   public ExpressionNodeEntity() {
