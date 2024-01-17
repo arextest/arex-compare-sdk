@@ -86,21 +86,4 @@ public class ExpressionNodeParser {
     return new MutablePair<>(result, isExpression);
   }
 
-//  private static List<ExpressionNodeEntity> convertNameNode(List<String> exclusion) {
-//
-//    if (exclusion == null || exclusion.isEmpty()) {
-//      return null;
-//    }
-//
-//    List<ExpressionNodeEntity> result = new ArrayList<>();
-//    for (String item : exclusion) {
-//      // judge if it is a expression
-//      if (!item.startsWith(Constant.EXPRESSION_PATH_IDENTIFIER_START) || !item.endsWith(
-//          Constant.EXPRESSION_PATH_IDENTIFIER_END)) {
-//        result.add(new ExpressionNodeEntity(item, ExpressionNodeType.NAME_NODE));
-//      }
-//    }
-//    return result;
-//  }
-
 }
