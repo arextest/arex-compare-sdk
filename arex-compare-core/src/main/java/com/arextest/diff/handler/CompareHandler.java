@@ -20,26 +20,27 @@ public class CompareHandler {
     CompareContext compareContext = new CompareContext();
 
     List<LogEntity> logs = new ArrayList<>();
-    compareContext.setLogs(logs);
+    compareContext.logs = logs;
 
-    compareContext.setBaseObj(baseObj);
-    compareContext.setTestObj(testObj);
+    compareContext.baseObj = baseObj;
+    compareContext.testObj = testObj;
+    compareContext.listIndexKeysLeft = keyComputeResponse.getListIndexKeysLeft();
+    compareContext.listIndexKeysRight = keyComputeResponse.getListIndexKeysRight();
     compareContext.setResponseReferences(keyComputeResponse.getAllReferenceEntities());
-    compareContext.setListIndexKeysLeft(keyComputeResponse.getListIndexKeysLeft());
-    compareContext.setListIndexKeysRight(keyComputeResponse.getListIndexKeysRight());
 
-//    compareContext.setExclusions(rulesConfig.getExclusions());
-    compareContext.setExclusions(null);
-    compareContext.setIgnoreNodeSet(rulesConfig.getIgnoreNodeSet());
-    compareContext.setNotDistinguishNullAndEmpty(rulesConfig.isNullEqualsEmpty());
-    compareContext.setNullEqualsNotExist(rulesConfig.isNullEqualsNotExist());
-    compareContext.setLogProcess(logProcess);
-    compareContext.setQuickCompare(rulesConfig.isQuickCompare());
+    compareContext.exclusions = rulesConfig.getExclusions();
+    compareContext.expressionExclusions = rulesConfig.getExpressionExclusions();
+    compareContext.ignoreNodeSet = rulesConfig.getIgnoreNodeSet();
+
+    compareContext.notDistinguishNullAndEmpty = rulesConfig.isNullEqualsEmpty();
+    compareContext.nullEqualsNotExist = rulesConfig.isNullEqualsNotExist();
+    compareContext.logProcess = logProcess;
+    compareContext.quickCompare = rulesConfig.isQuickCompare();
 
     if (msgStructureFuture != null) {
       MutablePair<MsgStructure, MsgStructure> msgStructureMutablePair = msgStructureFuture.join();
-      compareContext.setBaseMsgStructure(msgStructureMutablePair.getLeft());
-      compareContext.setTestMsgStructure(msgStructureMutablePair.getRight());
+      compareContext.baseMsgStructure = msgStructureMutablePair.getLeft();
+      compareContext.testMsgStructure = msgStructureMutablePair.getRight();
     }
     GenericCompare.jsonCompare(baseObj, testObj, compareContext);
     return logs;

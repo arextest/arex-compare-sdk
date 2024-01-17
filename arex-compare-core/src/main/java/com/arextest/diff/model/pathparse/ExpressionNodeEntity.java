@@ -1,6 +1,7 @@
 package com.arextest.diff.model.pathparse;
 
 import com.arextest.diff.model.pathparse.expression.PathExpression;
+import java.util.Objects;
 
 public class ExpressionNodeEntity {
 
@@ -62,5 +63,28 @@ public class ExpressionNodeEntity {
 
   public void setNodeType(int nodeType) {
     this.nodeType = nodeType;
+  }
+
+  @Override
+  public int hashCode() {
+    int result = index;
+    result = 31 * result + (nodeName != null ? nodeName.hashCode() : 0) + (
+        expression != null ? expression.hashCode() : 0);
+    return result;
+  }
+
+  @Override
+  public boolean equals(Object obj) {
+    if (this == obj) {
+      return true;
+    }
+    if (!(obj instanceof ExpressionNodeEntity)) {
+      return false;
+    }
+
+    ExpressionNodeEntity that = (ExpressionNodeEntity) obj;
+    return Objects.equals(this.getNodeName(), that.getNodeName())
+        && this.getIndex() == that.getIndex()
+        && Objects.equals(this.getExpression(), that.getExpression());
   }
 }

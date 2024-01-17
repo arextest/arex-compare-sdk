@@ -80,8 +80,6 @@ public class OptionsToRulesConvert {
         decompressConfigConvert(compareOptions.getDecompressConfigList()));
     rulesConfig.setInclusions(compareOptions.getInclusions() == null ? null
         : new ArrayList<>(compareOptions.getInclusions()));
-//    rulesConfig.setExclusions(compareOptions.getExclusions() == null ? null
-//        : new ArrayList<>(compareOptions.getExclusions()));
     rulesConfig.setExpressionExclusions(
         ExpressionNodeParser.doParse(compareOptions.getExclusions()));
     rulesConfig.setExclusions(

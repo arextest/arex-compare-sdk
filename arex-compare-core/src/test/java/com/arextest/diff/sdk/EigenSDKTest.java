@@ -4,8 +4,8 @@ import com.arextest.diff.model.eigen.EigenOptions;
 import com.arextest.diff.model.eigen.EigenResult;
 import com.arextest.diff.model.enumeration.CategoryType;
 import java.util.Arrays;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class EigenSDKTest {
 
@@ -14,7 +14,7 @@ public class EigenSDKTest {
     EigenSDK eigenSDK = new EigenSDK();
     String msg = "test";
     EigenResult eigenResult = eigenSDK.calculateEigen(msg);
-    Assert.assertEquals(true, eigenResult.getEigenMap().containsKey(0));
+    Assertions.assertEquals(true, eigenResult.getEigenMap().containsKey(0));
   }
 
   @Test
@@ -27,7 +27,7 @@ public class EigenSDKTest {
     EigenSDK eigenSDK = new EigenSDK();
     EigenOptions eigenOptions = EigenOptions.options().putCategoryType(CategoryType.DATABASE);
     EigenResult eigenResult = eigenSDK.calculateEigen(msg, eigenOptions);
-    Assert.assertEquals(1, 1);
+    Assertions.assertEquals(1, 1);
   }
 
   @Test
@@ -36,7 +36,7 @@ public class EigenSDKTest {
     EigenOptions eigenOptions = EigenOptions.options().putExclusions(Arrays.asList("student"));
     String msg = "{\"Student\":\"john\",\"Room\":\"101\"}";
     EigenResult eigenResult = eigenSDK.calculateEigen(msg, eigenOptions);
-    Assert.assertEquals(1, eigenResult.getEigenMap().keySet().size());
+    Assertions.assertEquals(1, eigenResult.getEigenMap().keySet().size());
   }
 
   @Test
@@ -44,7 +44,7 @@ public class EigenSDKTest {
     EigenSDK eigenSDK = new EigenSDK();
     String msg = "dGVzdA==";
     EigenResult eigenResult = eigenSDK.calculateEigen(msg);
-    Assert.assertEquals(true, eigenResult.getEigenMap().containsKey(0));
+    Assertions.assertEquals(true, eigenResult.getEigenMap().containsKey(0));
   }
 
   @Test
@@ -52,7 +52,7 @@ public class EigenSDKTest {
     EigenSDK eigenSDK = new EigenSDK();
     String msg = "eyJuYW1lIjoieHgiLCJhZ2UiOjE4fQ==";
     EigenResult eigenResult = eigenSDK.calculateEigen(msg);
-    Assert.assertEquals(2, eigenResult.getEigenMap().keySet().size());
+    Assertions.assertEquals(2, eigenResult.getEigenMap().keySet().size());
   }
 
 

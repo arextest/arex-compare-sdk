@@ -13,6 +13,7 @@ import com.arextest.diff.handler.metric.TimeMetricLabel;
 import com.arextest.diff.handler.parse.JSONParse;
 import com.arextest.diff.handler.parse.JSONStructureParse;
 import com.arextest.diff.handler.parse.ObjectParse;
+import com.arextest.diff.handler.pathparse.JsonPathExpressionHandler;
 import com.arextest.diff.handler.verify.VerifyObjectParse;
 import com.arextest.diff.model.CompareResult;
 import com.arextest.diff.model.RulesConfig;
@@ -50,6 +51,8 @@ public class NormalCompareUtil {
   private static WhitelistHandler whitelistHandler = new WhitelistHandler();
 
   private static KeyCompute keyCompute = new KeyCompute();
+
+  private static JsonPathExpressionHandler jsonPathExpressionHandler = new JsonPathExpressionHandler();
 
   private static CompareHandler compareHandler = new CompareHandler();
 
@@ -121,8 +124,10 @@ public class NormalCompareUtil {
       timeConsumerWatch.end(TimeMetricLabel.WHITE_LIST);
 
       // convert expression exclusion to exact nodePath
-
-
+      timeConsumerWatch.start(TimeMetricLabel.EXPRESSION_HANDLER);
+      jsonPathExpressionHandler.doExpressionParse(rulesConfig, msgWhiteObj.getBaseObj(),
+          msgWhiteObj.getTestObj());
+      timeConsumerWatch.end(TimeMetricLabel.EXPRESSION_HANDLER);
 
       // compare jsonObject
       timeConsumerWatch.start(TimeMetricLabel.COMPARE_HANDLER);

@@ -1,8 +1,11 @@
 package com.arextest.diff.utils;
 
 import com.arextest.diff.model.enumeration.Constant;
+import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.model.pathparse.ExpressionNodeEntity;
+import com.arextest.diff.model.pathparse.ExpressionNodeType;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -11,39 +14,36 @@ import java.util.Set;
 public class IgnoreUtil {
 
 
-  public static boolean ignoreProcessor(List<String> nodePath, List<List<ExpressionNodeEntity>> ignoreNodePaths,
+  public static boolean ignoreProcessor(List<String> fuzzyNodePath, List<NodeEntity> nodePath,
+      List<List<ExpressionNodeEntity>> exclusions,
+      List<List<ExpressionNodeEntity>> expressionExclusions,
       Set<String> ignoreNodeSet) {
-//    if (ignoreNodeProcessor(nodePath, ignoreNodeSet)) {
-//      return true;
-//    }
-//
-//    if (ignoreNodePaths != null && !ignoreNodePaths.isEmpty()) {
-//      for (List<String> ignoreNodePath : ignoreNodePaths) {
-//        if (ignoreMatch(nodePath, ignoreNodePath)) {
-//          return true;
-//        }
-//      }
-//    }
+    if (ignoreNodeProcessor(fuzzyNodePath, ignoreNodeSet)) {
+      return true;
+    }
+
+    if (exclusions != null && !exclusions.isEmpty()) {
+      for (List<ExpressionNodeEntity> ignoreNodePath : exclusions) {
+        if (ignoreMatch(fuzzyNodePath, ignoreNodePath)) {
+          return true;
+        }
+      }
+    }
+
+    if (expressionExclusions != null && !expressionExclusions.isEmpty()) {
+      for (List<ExpressionNodeEntity> ignoreNodePath : expressionExclusions) {
+        if (ignoreExpressionMatch(nodePath, ignoreNodePath)) {
+          return true;
+        }
+      }
+    }
+
     return false;
   }
 
-//  public static boolean ignoreProcessor(List<String> nodePath, List<List<String>> ignoreNodePaths,
-//      Set<String> ignoreNodeSet) {
-//    if (ignoreNodeProcessor(nodePath, ignoreNodeSet)) {
-//      return true;
-//    }
-//
-//    if (ignoreNodePaths != null && !ignoreNodePaths.isEmpty()) {
-//      for (List<String> ignoreNodePath : ignoreNodePaths) {
-//        if (ignoreMatch(nodePath, ignoreNodePath)) {
-//          return true;
-//        }
-//      }
-//    }
-//    return false;
-//  }
 
-  private static boolean ignoreMatch(List<String> pathInList, List<String> ignoreNodePath) {
+  private static boolean ignoreMatch(List<String> pathInList,
+      List<ExpressionNodeEntity> ignoreNodePath) {
 
     int size = ignoreNodePath.size();
     if (size > pathInList.size()) {
@@ -51,8 +51,8 @@ public class IgnoreUtil {
     }
 
     for (int i = 0; i < size; i++) {
-      if (!ignoreNodePath.get(i).equals(pathInList.get(i)) && !ignoreNodePath.get(i)
-          .equals(Constant.DYNAMIC_PATH)) {
+      if (!Objects.equals(ignoreNodePath.get(i).getNodeName(), pathInList.get(i)) &&
+          !Objects.equals(ignoreNodePath.get(i).getNodeName(), Constant.DYNAMIC_PATH)) {
         return false;
       }
     }
@@ -76,4 +76,38 @@ public class IgnoreUtil {
     }
     return false;
   }
+
+  private static boolean ignoreExpressionMatch(List<NodeEntity> nodePath,
+      List<ExpressionNodeEntity> expressionNodeEntityListNodePath) {
+
+    int size = expressionNodeEntityListNodePath.size();
+    if (size > nodePath.size()) {
+      return false;
+    }
+    for (int i = 0; i < size; i++) {
+      ExpressionNodeEntity expressionNodeEntity = expressionNodeEntityListNodePath.get(i);
+      NodeEntity nodeEntity = nodePath.get(i);
+      if (expressionNodeEntity.getNodeType() == ExpressionNodeType.INDEX_NODE) {
+        if (nodeEntity.getNodeName() != null) {
+          return false;
+        }
+        if (expressionNodeEntity.getIndex() != nodeEntity.getIndex()) {
+          return false;
+        }
+      } else if (expressionNodeEntity.getNodeType() == ExpressionNodeType.NAME_NODE) {
+        if (nodeEntity.getNodeName() == null) {
+          return false;
+        }
+        if (!Objects.equals(expressionNodeEntity.getNodeName(), nodePath.get(i).getNodeName())) {
+          return false;
+        }
+
+      } else {
+        return false;
+      }
+    }
+    return true;
+  }
+
+
 }

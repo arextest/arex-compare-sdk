@@ -3,7 +3,6 @@ package com.arextest.diff.model;
 import com.arextest.diff.model.enumeration.CategoryType;
 import com.arextest.diff.model.key.ListSortEntity;
 import com.arextest.diff.model.key.ReferenceEntity;
-import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.model.pathparse.ExpressionNodeEntity;
 import java.util.Collections;
 import java.util.List;
@@ -31,9 +30,6 @@ public class RulesConfig {
   private Map<List<String>, DecompressConfig> decompressConfigMap;
 
   private List<List<String>> inclusions;
-
-  // todo: support the index of array
-//  private List<List<String>> exclusions;
   private List<List<ExpressionNodeEntity>> exclusions;
 
   private Set<String> ignoreNodeSet;
@@ -111,14 +107,6 @@ public class RulesConfig {
   public void setInclusions(List<List<String>> inclusions) {
     this.inclusions = inclusions;
   }
-
-//  public List<List<String>> getExclusions() {
-//    return exclusions;
-//  }
-//
-//  public void setExclusions(List<List<String>> exclusions) {
-//    this.exclusions = exclusions;
-//  }
 
 
   public List<List<ExpressionNodeEntity>> getExclusions() {

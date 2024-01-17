@@ -3,7 +3,6 @@ package com.arextest.diff.handler.log.register;
 import static com.arextest.diff.compare.CompareHelper.findReferenceNode;
 import static com.arextest.diff.compare.CompareHelper.getPkNodePath;
 import static com.arextest.diff.compare.CompareHelper.getUnmatchedPair;
-
 import com.arextest.diff.handler.log.LogMarker;
 import com.arextest.diff.handler.log.LogProcess;
 import com.arextest.diff.model.compare.CompareContext;
@@ -38,7 +37,7 @@ public class LogRegister {
         break;
       case TYPE_DIFF:
         log = produceLog(obj1, obj2, UnmatchedType.UNMATCHED, ErrorType.TYPE_UNMATCHED,
-            compareContext.getCurrentListKeysLeft(), compareContext);
+            compareContext.currentListKeysLeft, compareContext);
         break;
       case RIGHT_OBJECT_MISSING:
         log = rightObjMissing(obj1, obj2, logMarker, compareContext);
@@ -48,7 +47,7 @@ public class LogRegister {
         break;
       case DIFF_ARRAY_COUNT:
         log = produceLog(obj1, obj2, UnmatchedType.DIFFERENT_COUNT, ErrorType.NA,
-            compareContext.getCurrentListKeysLeft(), compareContext);
+            compareContext.currentListKeysLeft, compareContext);
         break;
       case RIGHT_ARRAY_MISSING:
         log = rightArrayMissing(obj1, obj2, logMarker, compareContext);
@@ -69,27 +68,27 @@ public class LogRegister {
         log = leftArrayMissing(obj1, obj2, logMarker, compareContext);
         break;
       case LEFT_REF_NOT_FOUND:
-        log = refNotFound(obj1, obj2, compareContext.getCurrentListKeysLeft(), logMarker,
+        log = refNotFound(obj1, obj2, compareContext.currentListKeysLeft, logMarker,
             compareContext);
         break;
       case RIGHT_REF_NOT_FOUND:
-        log = refNotFound(obj1, obj2, compareContext.getCurrentListKeysRight(), logMarker,
+        log = refNotFound(obj1, obj2, compareContext.currentListKeysRight, logMarker,
             compareContext);
         break;
       case VALUE_DIFF:
         log = produceLog(obj1, obj2, UnmatchedType.UNMATCHED, ErrorType.VALUE_UNMATCHED,
-            compareContext.getCurrentListKeysLeft(), compareContext);
+            compareContext.currentListKeysLeft, compareContext);
         break;
       default:
         break;
     }
 
     // filter logEntity
-    LogProcess logProcess = compareContext.getLogProcess();
+    LogProcess logProcess = compareContext.logProcess;
     if (logProcess.process(Collections.singletonList(log))) {
       return;
     }
-    if (compareContext.isQuickCompare()) {
+    if (compareContext.quickCompare) {
       LOGGER.info("quick compare find value diff, log: {}", log);
       throw new FindErrorException("find value diff");
     }
@@ -100,8 +99,8 @@ public class LogRegister {
       CompareContext compareContext) {
     boolean leftNull = (obj1 == null || obj1 instanceof NullNode);
     List<String> currentListKeys =
-        leftNull ? compareContext.getCurrentListKeysRight()
-            : compareContext.getCurrentListKeysLeft();
+        leftNull ? compareContext.currentListKeysRight
+            : compareContext.currentListKeysLeft;
     return produceLog(obj1, obj2, UnmatchedType.UNMATCHED, ErrorType.NULL_EXIST, currentListKeys,
         compareContext);
   }
@@ -112,7 +111,7 @@ public class LogRegister {
         ? ErrorType.SCHEMA_RIGHT_MISSING
         : ErrorType.OTHER_RIGHT_MISSING;
     return produceLog(obj1, obj2, UnmatchedType.RIGHT_MISSING, errorType,
-        compareContext.getCurrentListKeysLeft(),
+        compareContext.currentListKeysLeft,
         compareContext);
   }
 
@@ -122,7 +121,7 @@ public class LogRegister {
         isStructMissing(UnmatchedType.LEFT_MISSING, compareContext) ? ErrorType.SCHEMA_LEFT_MISSING
             : ErrorType.OTHER_LEFT_MISSING;
     return produceLog(obj1, obj2, UnmatchedType.LEFT_MISSING, errorType,
-        compareContext.getCurrentListKeysRight(),
+        compareContext.currentListKeysRight,
         compareContext);
   }
 
@@ -130,10 +129,10 @@ public class LogRegister {
       CompareContext compareContext) {
     LogEntity log = produceLog(obj1, obj2, UnmatchedType.RIGHT_MISSING,
         ErrorType.LIST_RIGHT_MISSING,
-        compareContext.getCurrentListKeysLeft(), compareContext);
+        compareContext.currentListKeysLeft, compareContext);
     List<ReferenceEntity> references =
-        findReferenceNode(compareContext.getCurrentNodeLeft(),
-            compareContext.getResponseReferences());
+        findReferenceNode(compareContext.currentNodeLeft,
+            compareContext.responseReferences);
     if (!references.isEmpty()) {
       List<NodeEntity> pkNodePath = getPkNodePath(references, true, obj1, compareContext);
       if (pkNodePath != null) {
@@ -147,8 +146,8 @@ public class LogRegister {
       CompareContext compareContext) {
     Object usedObj = logMarker == LogMarker.REPEAT_LEFT_KEY ? obj1 : obj2;
     List<String> currentListKeys =
-        logMarker == LogMarker.REPEAT_LEFT_KEY ? compareContext.getCurrentListKeysLeft()
-            : compareContext.getCurrentListKeysRight();
+        logMarker == LogMarker.REPEAT_LEFT_KEY ? compareContext.currentListKeysLeft
+            : compareContext.currentListKeysRight;
     LogEntity log = produceLog(obj1, obj2, UnmatchedType.NOT_UNIQUE, ErrorType.NA, currentListKeys,
         compareContext);
     log.setWarn(1);
@@ -159,10 +158,9 @@ public class LogRegister {
   private static LogEntity leftArrayMissing(Object obj1, Object obj2, LogMarker logMarker,
       CompareContext compareContext) {
     LogEntity log = produceLog(obj1, obj2, UnmatchedType.LEFT_MISSING, ErrorType.LIST_LEFT_MISSING,
-        compareContext.getCurrentListKeysRight(), compareContext);
+        compareContext.currentListKeysRight, compareContext);
     List<ReferenceEntity> references =
-        findReferenceNode(compareContext.getCurrentNodeRight(),
-            compareContext.getResponseReferences());
+        findReferenceNode(compareContext.currentNodeRight, compareContext.responseReferences);
     if (!references.isEmpty()) {
       List<NodeEntity> pkNodePath = getPkNodePath(references, false, obj2, compareContext);
       if (pkNodePath != null) {
@@ -193,17 +191,17 @@ public class LogRegister {
 
   private static void saveLog(LogEntity logEntity, CompareContext compareContext) {
     if (logEntity != null) {
-      compareContext.getLogs().add(logEntity);
+      compareContext.logs.add(logEntity);
     }
   }
 
   private static boolean isStructMissing(int unmatchedType, CompareContext compareContext) {
     List<NodeEntity> path =
-        unmatchedType == UnmatchedType.LEFT_MISSING ? compareContext.getCurrentNodeRight()
-            : compareContext.getCurrentNodeLeft();
+        unmatchedType == UnmatchedType.LEFT_MISSING ? compareContext.currentNodeRight
+            : compareContext.currentNodeLeft;
     MsgStructure msgStructure =
-        unmatchedType == UnmatchedType.LEFT_MISSING ? compareContext.getBaseMsgStructure()
-            : compareContext.getTestMsgStructure();
+        unmatchedType == UnmatchedType.LEFT_MISSING ? compareContext.baseMsgStructure
+            : compareContext.testMsgStructure;
     if (msgStructure != null) {
       for (NodeEntity nodeEntity : path) {
         if (nodeEntity.getNodeName() != null) {
@@ -222,8 +220,8 @@ public class LogRegister {
       CompareContext compareContext) {
     List<ReferenceEntity> references =
         findReferenceNode(
-            left ? compareContext.getCurrentNodeLeft() : compareContext.getCurrentNodeRight(),
-            compareContext.getResponseReferences());
+            left ? compareContext.currentNodeLeft : compareContext.currentNodeRight,
+            compareContext.responseReferences);
     if (!references.isEmpty()) {
       List<NodeEntity> pkNodePath = getPkNodePath(references, left, obj, compareContext);
       if (pkNodePath != null) {

@@ -6,8 +6,8 @@ import com.arextest.diff.model.DecompressConfig;
 import com.arextest.diff.model.enumeration.CategoryType;
 import com.arextest.diff.model.enumeration.DiffResultCode;
 import java.util.Arrays;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 /**
  * Created by rchen9 on 2023/4/21.
@@ -20,7 +20,7 @@ public class CompareProblemTest {
     String baseMsg = "{\"array\":[1,2,3]}";
     String testMsg = "{\"array\":[1,2]}";
     CompareResult result = sdk.compare(baseMsg, testMsg);
-    Assert.assertEquals(1, result.getLogs().size());
+    Assertions.assertEquals(1, result.getLogs().size());
   }
 
   @Test
@@ -45,7 +45,7 @@ public class CompareProblemTest {
     compareOptions.putIgnoredTimePrecision(1000L);
 
     CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
-    Assert.assertEquals(0, result.getLogs().size());
+    Assertions.assertEquals(0, result.getLogs().size());
   }
 
   @Test
@@ -107,7 +107,7 @@ public class CompareProblemTest {
     compareOptions.putIgnoredTimePrecision(1000L);
 
     CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
-    Assert.assertEquals(2, result.getLogs().size());
+    Assertions.assertEquals(2, result.getLogs().size());
   }
 
   @Test
@@ -118,7 +118,7 @@ public class CompareProblemTest {
     String testMsg = "{\"url\":\"http://arex.pic.baidu.png\"}";
 
     CompareResult result = sdk.compare(baseMsg, testMsg);
-    Assert.assertEquals(0, result.getLogs().size());
+    Assertions.assertEquals(0, result.getLogs().size());
   }
 
   @Test
@@ -132,7 +132,7 @@ public class CompareProblemTest {
     compareOptions.putIgnoredTimePrecision(1000L);
 
     CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
-    Assert.assertEquals(0, result.getLogs().size());
+    Assertions.assertEquals(0, result.getLogs().size());
   }
 
   @Test
@@ -146,7 +146,7 @@ public class CompareProblemTest {
     compareOptions.putIgnoredTimePrecision(1000L);
 
     CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
-    Assert.assertEquals(1, result.getLogs().size());
+    Assertions.assertEquals(1, result.getLogs().size());
   }
 
   @Test
@@ -158,7 +158,7 @@ public class CompareProblemTest {
     CompareOptions compareOptions = new CompareOptions();
     compareOptions.putListSortConfig(Arrays.asList("data"), Arrays.asList(Arrays.asList("name")));
     CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
-    Assert.assertEquals(0, result.getLogs().size());
+    Assertions.assertEquals(0, result.getLogs().size());
   }
 
 
@@ -175,7 +175,7 @@ public class CompareProblemTest {
     compareOptions.putCategoryType(CategoryType.DATABASE);
 
     CompareResult result = compareSDK.compare(str1, str2, compareOptions);
-    Assert.assertEquals(1, result.getLogs().size());
+    Assertions.assertEquals(1, result.getLogs().size());
   }
 
   @Test
@@ -289,7 +289,7 @@ public class CompareProblemTest {
         Arrays.asList("studentInfoList", "studentName"));
 
     CompareResult result = compareSDK.compare(str1, str2, compareOptions);
-    Assert.assertEquals(DiffResultCode.COMPARED_INTERNAL_EXCEPTION, result.getCode());
+    Assertions.assertEquals(DiffResultCode.COMPARED_INTERNAL_EXCEPTION, result.getCode());
   }
 
 
@@ -397,7 +397,7 @@ public class CompareProblemTest {
     compareOptions.putReferenceConfig(Arrays.asList("studentList", "name"),
         Arrays.asList("studentInfoList", "studentName"));
     CompareResult result = compareSDK.compare(str1, str2, compareOptions);
-    Assert.assertEquals(4, result.getLogs().size());
+    Assertions.assertEquals(4, result.getLogs().size());
   }
 
   @Test
@@ -407,7 +407,7 @@ public class CompareProblemTest {
     String baseMsg = "{\"body\":\"\"}";
     String testMsg = "{\"body\":null}";
     CompareResult result = sdk.compare(baseMsg, testMsg);
-    Assert.assertEquals(0, result.getLogs().size());
+    Assertions.assertEquals(0, result.getLogs().size());
   }
 
   @Test
@@ -417,7 +417,7 @@ public class CompareProblemTest {
     String baseMsg = null;
     String testMsg = "";
     CompareResult result = sdk.compare(baseMsg, testMsg);
-    Assert.assertEquals(1, result.getCode());
+    Assertions.assertEquals(1, result.getCode());
   }
 
   @Test
@@ -433,10 +433,10 @@ public class CompareProblemTest {
     String baseMsg = "H4sIAAAAAAAAAEtMTAQALXMH8AMAAAA=";
     String testMsg = "H4sIAAAAAAAAAEtMTEwEAEXlmK0EAAAA";
     CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
-    Assert.assertEquals("aaa", result.getProcessedBaseMsg());
+    Assertions.assertEquals("aaa", result.getProcessedBaseMsg());
 
     CompareResult quickResult = sdk.quickCompare(baseMsg, testMsg, compareOptions);
-    Assert.assertEquals("H4sIAAAAAAAAAEtMTAQALXMH8AMAAAA=", quickResult.getProcessedBaseMsg());
+    Assertions.assertEquals("H4sIAAAAAAAAAEtMTAQALXMH8AMAAAA=", quickResult.getProcessedBaseMsg());
   }
 
   @Test
@@ -452,10 +452,10 @@ public class CompareProblemTest {
     String baseMsg = null;
     String testMsg = "H4sIAAAAAAAAAEtMTEwEAEXlmK0EAAAA";
     CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
-    Assert.assertEquals("aaaa", result.getProcessedTestMsg());
+    Assertions.assertEquals("aaaa", result.getProcessedTestMsg());
 
     CompareResult quickResult = sdk.quickCompare(baseMsg, testMsg, compareOptions);
-    Assert.assertEquals("H4sIAAAAAAAAAEtMTEwEAEXlmK0EAAAA", quickResult.getProcessedTestMsg());
+    Assertions.assertEquals("H4sIAAAAAAAAAEtMTEwEAEXlmK0EAAAA", quickResult.getProcessedTestMsg());
 
   }
 
@@ -472,10 +472,10 @@ public class CompareProblemTest {
     String baseMsg = "H4sIAAAAAAAAAKtWSlSyUkpSqgUAnFz2awkAAAA=";
     String testMsg = "H4sIAAAAAAAAAKtWSlSyAuJaAMXisGkJAAAA";
     CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
-    Assert.assertEquals(1, result.getCode());
+    Assertions.assertEquals(1, result.getCode());
 
     CompareResult quickResult = sdk.quickCompare(baseMsg, testMsg, compareOptions);
-    Assert.assertEquals("H4sIAAAAAAAAAKtWSlSyAuJaAMXisGkJAAAA", quickResult.getProcessedTestMsg());
+    Assertions.assertEquals("H4sIAAAAAAAAAKtWSlSyAuJaAMXisGkJAAAA", quickResult.getProcessedTestMsg());
 
   }
 
@@ -492,10 +492,10 @@ public class CompareProblemTest {
     String baseMsg = "H4sIAAAAAAAAAKtOTEwEAL5SPJIEAAAA";
     String testMsg = "H4sIAAAAAAAAAKtOBAIAmhz8xAUAAAA=";
     CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
-    Assert.assertEquals(1, result.getCode());
+    Assertions.assertEquals(1, result.getCode());
 
     CompareResult quickResult = sdk.quickCompare(baseMsg, testMsg, compareOptions);
-    Assert.assertEquals("H4sIAAAAAAAAAKtOBAIAmhz8xAUAAAA=", quickResult.getProcessedTestMsg());
+    Assertions.assertEquals("H4sIAAAAAAAAAKtOBAIAmhz8xAUAAAA=", quickResult.getProcessedTestMsg());
 
   }
 
@@ -591,7 +591,7 @@ public class CompareProblemTest {
         + "    \"dbName\": \"String\"\n"
         + "}";
     CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
-    Assert.assertEquals(1, result.getLogs().size());
+    Assertions.assertEquals(1, result.getLogs().size());
 
   }
 

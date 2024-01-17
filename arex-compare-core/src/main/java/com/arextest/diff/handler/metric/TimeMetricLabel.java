@@ -11,5 +11,7 @@ public interface TimeMetricLabel {
 
   String WHITE_LIST = "whiteList";
 
+  String EXPRESSION_HANDLER = "expressionHandler";
+
   String COMPARE_HANDLER = "compareHandler";
 }

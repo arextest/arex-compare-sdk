@@ -3,6 +3,8 @@ package com.arextest.diff.eigen;
 import com.arextest.diff.handler.log.filterrules.TimePrecisionFilter;
 import com.arextest.diff.model.RulesConfig;
 import com.arextest.diff.model.eigen.EigenResult;
+import com.arextest.diff.model.log.NodeEntity;
+import com.arextest.diff.model.pathparse.ExpressionNodeEntity;
 import com.arextest.diff.utils.IgnoreUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -10,6 +12,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -36,10 +39,11 @@ public class EigenMapCalculate {
 
     CalculateContext calculateContext = new CalculateContext();
     calculateContext.ignoreNodeSet = rulesConfig.getIgnoreNodeSet();
+    calculateContext.exclusions = rulesConfig.getExclusions();
+    calculateContext.expressionExclusions = rulesConfig.getExpressionExclusions();
 
-    calculateContext.exclusions = null;
-//    calculateContext.exclusions = rulesConfig.getExclusions();
     calculateContext.nodePath = new LinkedList<>();
+    calculateContext.currentNodeEntity = new LinkedList<>();
     doCalculateJsonNode(obj, calculateContext, eigenMap);
     eigenResult.setEigenMap(eigenMap);
     return eigenResult;
@@ -50,14 +54,11 @@ public class EigenMapCalculate {
       Map<Integer, Long> eigenMap) {
 
     // ignore by node name and node path
-    if (IgnoreUtil.ignoreProcessor(calculateContext.nodePath, null,
+    if (IgnoreUtil.ignoreProcessor(calculateContext.nodePath, calculateContext.currentNodeEntity,
+        calculateContext.exclusions, calculateContext.expressionExclusions,
         calculateContext.ignoreNodeSet)) {
       return;
     }
-//    if (IgnoreUtil.ignoreProcessor(calculateContext.nodePath, calculateContext.exclusions,
-//        calculateContext.ignoreNodeSet)) {
-//      return;
-//    }
 
     if (obj instanceof ObjectNode) {
       ObjectNode objectNode = (ObjectNode) obj;
@@ -67,11 +68,13 @@ public class EigenMapCalculate {
         JsonNode jsonNode = objectNode.get(fieldName);
 
         int lastHash = calculateContext.lastHash;
-        calculateContext.lastHash = this.pathHashWithLastHash(fieldName, lastHash);
         calculateContext.nodePath.addLast(fieldName);
+        calculateContext.currentNodeEntity.addLast(new NodeEntity(fieldName, 0));
+        calculateContext.lastHash = this.pathHashWithLastHash(fieldName, lastHash);
         this.doCalculateJsonNode(jsonNode, calculateContext, eigenMap);
-        calculateContext.nodePath.removeLast();
         calculateContext.lastHash = lastHash;
+        calculateContext.nodePath.removeLast();
+        calculateContext.currentNodeEntity.removeLast();
       }
 
 
@@ -79,9 +82,11 @@ public class EigenMapCalculate {
       ArrayNode arrayNode = (ArrayNode) obj;
       for (int i = 0; i < arrayNode.size(); i++) {
         JsonNode jsonNode = arrayNode.get(i);
+        calculateContext.currentNodeEntity.addLast(new NodeEntity(null, i));
         int lastHash = calculateContext.lastHash;
         this.doCalculateJsonNode(jsonNode, calculateContext, eigenMap);
         calculateContext.lastHash = lastHash;
+        calculateContext.currentNodeEntity.removeLast();
       }
     } else {
       // calculate eigen value
@@ -133,29 +138,15 @@ public class EigenMapCalculate {
   private static class CalculateContext {
 
     private LinkedList<String> nodePath;
+    private LinkedList<NodeEntity> currentNodeEntity;
 
     private int lastHash = OFFSET_BASIS;
 
     private Set<String> ignoreNodeSet;
-    private List<List<String>> exclusions;
+    private List<List<ExpressionNodeEntity>> exclusions;
+    private List<List<ExpressionNodeEntity>> expressionExclusions;
 
     public CalculateContext() {
-    }
-
-    public LinkedList<String> getNodePath() {
-      return nodePath;
-    }
-
-    public void setNodePath(LinkedList<String> nodePath) {
-      this.nodePath = nodePath;
-    }
-
-    public int getLastHash() {
-      return lastHash;
-    }
-
-    public void setLastHash(int lastHash) {
-      this.lastHash = lastHash;
     }
   }
 }

@@ -18,7 +18,7 @@ public class GenericCompare {
 
     List<NodeEntity> currentNode =
         compareContext.currentNodeLeft.size() >= compareContext.currentNodeRight.size()
-            ? compareContext.getCurrentNodeLeft() : compareContext.getCurrentNodeRight();
+            ? compareContext.currentNodeLeft : compareContext.currentNodeRight;
     List<String> fuzzyPath = ListUti.convertToStringList(currentNode);
 
     // ignore primary key node
@@ -31,13 +31,10 @@ public class GenericCompare {
     }
 
     // not compare by exclusions
-    if (IgnoreUtil.ignoreProcessor(fuzzyPath, compareContext.exclusions,
-        compareContext.ignoreNodeSet)) {
+    if (IgnoreUtil.ignoreProcessor(fuzzyPath, currentNode, compareContext.exclusions,
+        compareContext.expressionExclusions, compareContext.ignoreNodeSet)) {
       return;
     }
-//    if (IgnoreUtil.ignoreProcessor(fuzzyPath, compareContext)){
-//      return;;
-//    }
 
     // field missing
     if (obj1 == null && obj2 == null) {
