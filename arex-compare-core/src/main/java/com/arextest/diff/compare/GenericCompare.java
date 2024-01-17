@@ -63,8 +63,6 @@ public class GenericCompare {
     if (obj1 instanceof ObjectNode) {
       ObjectCompare.objectCompare(obj1, obj2, compareContext);
     } else if (obj1 instanceof ArrayNode) {
-      compareContext.lastArrayNodeLeft = obj1;
-      compareContext.lastArrayNodeRight = obj2;
       ArrayCompare.arrayCompare(obj1, obj2, compareContext);
     } else {
       ValueCompare.valueCompare(obj1, obj2, compareContext);

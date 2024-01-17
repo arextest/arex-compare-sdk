@@ -44,7 +44,8 @@ public class CompareContext {
 
   public List<ReferenceEntity> responseReferences;
   public HashSet<List<String>> pkNodePaths;
-  // store the pkList has compared the paired index, because of the situation that the paired indexes compared by the reference
+  // store the pkList has compared the paired index,
+  // because of the situation that the paired indexes compared by the reference
   public Map<List<String>, List<IndexPair>> pkListIndexPair;
   public HashMap<List<NodeEntity>, HashMap<Integer, String>> listIndexKeysLeft = new HashMap<>();
   public HashMap<List<NodeEntity>, HashMap<Integer, String>> listIndexKeysRight = new HashMap<>();
@@ -53,11 +54,6 @@ public class CompareContext {
 
   public MsgStructure baseMsgStructure;
   public MsgStructure testMsgStructure;
-
-  // store the last array node of the left
-  public Object lastArrayNodeLeft;
-  // store the last array node of the right
-  public Object lastArrayNodeRight;
 
   public byte ignoreReferenceNotFound = 0;
 
