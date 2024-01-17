@@ -2,6 +2,7 @@ package com.arextest.diff.handler.pathparse;
 
 import com.arextest.diff.factory.TaskThreadFactory;
 import com.arextest.diff.model.RulesConfig;
+import com.arextest.diff.model.enumeration.Constant;
 import com.arextest.diff.model.pathparse.ExpressionNodeEntity;
 import com.arextest.diff.model.pathparse.ExpressionNodeType;
 import com.arextest.diff.model.pathparse.expression.EqualsExpression;
@@ -17,6 +18,8 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.logging.Logger;
 
 public class JsonPathExpressionHandler {
@@ -39,14 +42,14 @@ public class JsonPathExpressionHandler {
           () -> doMultiExpressionParse(expressionExclusions, testObj),
           TaskThreadFactory.jsonObjectThreadPool
       );
-      CompletableFuture.allOf(future1, future2).join();
 
-      LinkedList<LinkedList<ExpressionNodeEntity>> leftExpression = future1.get();
-      LinkedList<LinkedList<ExpressionNodeEntity>> rightExpression = future2.get();
-      result.addAll(leftExpression);
-      result.addAll(rightExpression);
+      CompletableFuture<Void> voidCompletableFuture = CompletableFuture.allOf(future1, future2);
+      voidCompletableFuture.get(Constant.JSON_PATH_PARSE_MINUTES_TIME, TimeUnit.MINUTES);
 
-    } catch (RuntimeException e) {
+      result.addAll(future1.get());
+      result.addAll(future2.get());
+
+    } catch (RuntimeException | TimeoutException e) {
       LOGGER.warning("doExpressionParse error: " + e.getMessage());
     }
     rulesConfig.setExpressionExclusions(new LinkedList<>(result));
@@ -56,16 +59,21 @@ public class JsonPathExpressionHandler {
       List<List<ExpressionNodeEntity>> expressionExclusions, Object object) {
 
     LinkedList<LinkedList<ExpressionNodeEntity>> result = new LinkedList<>();
-    if (ListUti.isEmpty(expressionExclusions)) {
-      return result;
-    }
 
-    for (List<ExpressionNodeEntity> expressionNodeEntityList : expressionExclusions) {
-      LinkedList<LinkedList<ExpressionNodeEntity>> linkedLists = doSinglePathExpressionParse(
-          expressionNodeEntityList, 0, expressionNodeEntityList.size(), object, false);
-      if (linkedLists != null) {
-        result.addAll(linkedLists);
+    try {
+      if (ListUti.isEmpty(expressionExclusions)) {
+        return result;
       }
+
+      for (List<ExpressionNodeEntity> expressionNodeEntityList : expressionExclusions) {
+        LinkedList<LinkedList<ExpressionNodeEntity>> linkedLists = doSinglePathExpressionParse(
+            expressionNodeEntityList, 0, expressionNodeEntityList.size(), object, false);
+        if (linkedLists != null) {
+          result.addAll(linkedLists);
+        }
+      }
+    } catch (RuntimeException exception) {
+      LOGGER.warning("doMultiExpressionParse error: " + exception.getMessage());
     }
     return result;
   }

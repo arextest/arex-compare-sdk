@@ -13,4 +13,8 @@ public interface Constant {
 
   String EXPRESSION_PATH_IDENTIFIER_END = "]";
 
+  int KEY_COMPUTE_WAIT_MINUTES_TIME = 2;
+
+  int JSON_PATH_PARSE_MINUTES_TIME = 2;
+
 }
