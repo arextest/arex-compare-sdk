@@ -5,7 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Created by rchen9 on 2023/1/11.
@@ -47,7 +47,9 @@ public class UpdateExampleTest {
 
   @Test
   public void testUpdate4() throws JSQLParserException {
-    String sql = "UPDATE `hotelpicture` SET `hotelid`=1026268, `title`='外观', `smallpicurl`='', `largepicurl`='', `description`='外观', `sort`=0, `newpicurl`='/0206f120009irgqljCA50.jpg', `pictype`=100, `position`='H', `typeid`=0, `sharpness`=null WHERE `id`=492752329";
+    String sql = "UPDATE `hotelpicture` SET `hotelid`=1026268, `title`='外观', `smallpicurl`='', "
+        + "`largepicurl`='', `description`='外观', `sort`=0, `newpicurl`='/0206f120009irgqljCA50.jpg', "
+        + "`pictype`=100, `position`='H', `typeid`=0, `sharpness`=null WHERE `id`=492752329";
     Statement statement = CCJSqlParserUtil.parse(sql);
     testSqlParse(statement);
   }

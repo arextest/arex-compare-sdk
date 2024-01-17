@@ -29,10 +29,9 @@ public class CompareHelper {
 
   public static UnmatchedPairEntity getUnmatchedPair(int unmatchedType,
       CompareContext compareContext) {
-    return new UnmatchedPairEntity(unmatchedType, compareContext.getCurrentNodeLeft(),
-        compareContext.getCurrentNodeRight(),
-        new Trace(compareContext.getCurrentTraceLeftForShow(),
-            compareContext.getCurrentTraceRightForShow()));
+    return new UnmatchedPairEntity(unmatchedType, compareContext.currentNodeLeft,
+        compareContext.currentNodeRight,
+        new Trace(compareContext.currentTraceLeftForShow, compareContext.currentTraceRightForShow));
   }
 
 
@@ -100,13 +99,12 @@ public class CompareHelper {
 
       Object refList;
       Map<List<String>, Object> refPkListNodeCache =
-          isLeft ? compareContext.getRefPkListNodeCacheLeft()
-              : compareContext.getRefPkListNodeCacheRight();
+          isLeft ? compareContext.refPkListNodeCacheLeft : compareContext.refPkListNodeCacheRight;
 
       if (refPkListNodeCache.containsKey(pkNodeListPath)) {
         refList = refPkListNodeCache.get(pkNodeListPath);
       } else {
-        refList = findByPath(isLeft ? compareContext.getBaseObj() : compareContext.getTestObj(),
+        refList = findByPath(isLeft ? compareContext.baseObj : compareContext.testObj,
             pkNodeListPath);
         refPkListNodeCache.put(pkNodeListPath, refList);
       }

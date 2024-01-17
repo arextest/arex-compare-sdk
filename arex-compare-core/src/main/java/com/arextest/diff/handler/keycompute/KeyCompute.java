@@ -2,6 +2,7 @@ package com.arextest.diff.handler.keycompute;
 
 import com.arextest.diff.factory.TaskThreadFactory;
 import com.arextest.diff.model.RulesConfig;
+import com.arextest.diff.model.enumeration.Constant;
 import com.arextest.diff.model.key.KeyComputeResponse;
 import com.arextest.diff.model.key.ListSortEntity;
 import com.arextest.diff.model.key.ReferenceEntity;
@@ -18,7 +19,6 @@ import org.slf4j.LoggerFactory;
 public class KeyCompute {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(KeyCompute.class);
-  private static final int KEY_COMPUTE_WAIT_MINUTES_TIME = 2;
 
   public KeyComputeResponse doHandler(RulesConfig rulesConfig, Object baseObj, Object testObj)
       throws ExecutionException, InterruptedException, TimeoutException {
@@ -42,7 +42,7 @@ public class KeyCompute {
 
     CompletableFuture<Void> combinedFuture = CompletableFuture.allOf(future1, future2);
     try {
-      combinedFuture.get(KEY_COMPUTE_WAIT_MINUTES_TIME, TimeUnit.MINUTES);
+      combinedFuture.get(Constant.KEY_COMPUTE_WAIT_MINUTES_TIME, TimeUnit.MINUTES);
     } catch (TimeoutException e) {
       LOGGER.error("KeyCompute doHandler TimeoutException", e);
       throw e;

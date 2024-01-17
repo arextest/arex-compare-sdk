@@ -2,7 +2,6 @@ package com.arextest.diff.utils;
 
 import com.arextest.diff.model.RulesConfig;
 import com.arextest.diff.model.eigen.EigenOptions;
-import java.util.ArrayList;
 
 public class EigenOptionsToRulesConvert {
 
@@ -20,15 +19,18 @@ public class EigenOptionsToRulesConvert {
       return;
     }
     rulesConfig.setCategoryType(eigenOptions.getCategoryType());
-    rulesConfig.setExclusions(eigenOptions.getExclusions() == null ? null
-        : new ArrayList<>(eigenOptions.getExclusions()));
+    rulesConfig.setExclusions(
+        ExpressionNodeParser.doConvertNameNode(eigenOptions.getExclusions()));
+    rulesConfig.setExpressionExclusions(
+        ExpressionNodeParser.doParse(eigenOptions.getExclusions()));
     rulesConfig.setIgnoreNodeSet(eigenOptions.getIgnoreNodes());
   }
 
   private static void configToLower(RulesConfig rulesConfig) {
-    rulesConfig.setExclusions(FieldToLowerUtil.listListToLower(rulesConfig.getExclusions()));
+    rulesConfig.setExclusions(
+        FieldToLowerUtil.expressionNodeListToLower(rulesConfig.getExclusions()));
+    rulesConfig.setExpressionExclusions(
+        FieldToLowerUtil.expressionNodeListToLower(rulesConfig.getExpressionExclusions()));
     rulesConfig.setIgnoreNodeSet(FieldToLowerUtil.setToLower(rulesConfig.getIgnoreNodeSet()));
   }
-
-
 }

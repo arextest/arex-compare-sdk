@@ -102,11 +102,11 @@ public class WhitelistHandler {
             if (tempObj instanceof ObjectNode) {
               tempWhiteObj = JacksonHelperUtil.getObjectNode();
               getInclusionsObj(tempObj, tempWhiteObj, white.subList(i, white.size()));
-              whiteObjArr.set(j, (ObjectNode) tempWhiteObj);
+              whiteObjArr.add((ObjectNode) tempWhiteObj);
             } else if (tempObj instanceof ArrayNode) {
               tempWhiteObj = JacksonHelperUtil.getArrayNode();
               getInclusionsObj(tempObj, tempWhiteObj, white.subList(i, white.size()));
-              whiteObjArr.set(j, (ArrayNode) tempWhiteObj);
+              whiteObjArr.add((ArrayNode) tempWhiteObj);
             }
           }
         }

@@ -5,8 +5,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import net.sf.jsqlparser.JSQLParserException;
 import net.sf.jsqlparser.parser.CCJSqlParserUtil;
 import net.sf.jsqlparser.statement.Statement;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 /**
  * Created by rchen9 on 2023/1/11.
@@ -17,7 +16,6 @@ public class DeleteExampleTest {
     Parse parse = null;
     parse = ActionFactory.selectParse(statement);
     ObjectNode jsonObject = (ObjectNode) parse.parse(statement);
-    Assert.assertEquals(1, 1);
   }
 
   @Test

@@ -7,8 +7,8 @@ import com.arextest.diff.model.enumeration.CategoryType;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 public class CompareSDKTest {
 
@@ -48,7 +48,7 @@ public class CompareSDKTest {
 
     CompareResult result = sdk.compare(str1, str2, compareOptions);
     long end = System.currentTimeMillis();
-    Assert.assertEquals(7, result.getLogs().size());
+    Assertions.assertEquals(7, result.getLogs().size());
     System.out.println("toatal cost:" + (end - start) + " ms");
   }
 
@@ -108,7 +108,7 @@ public class CompareSDKTest {
     compareOptions.putSelectIgnoreCompare(true);
 
     CompareResult result = sdk.compare(str1, str2, compareOptions);
-    Assert.assertEquals(1, result.getLogs().size());
+    Assertions.assertEquals(1, result.getLogs().size());
   }
 
   @Test
@@ -126,7 +126,7 @@ public class CompareSDKTest {
     CompareOptions compareOptions = CompareOptions.options();
 
     CompareResult result = sdk.compare(str1, str2, compareOptions);
-    Assert.assertEquals(0, result.getLogs().size());
+    Assertions.assertEquals(0, result.getLogs().size());
   }
 
   @Test
@@ -138,7 +138,7 @@ public class CompareSDKTest {
     String str2 = "{\"arr\":null}";
     CompareOptions compareOptions = CompareOptions.options();
     CompareResult result = sdk.compare(str1, str2, compareOptions);
-    Assert.assertEquals(0, result.getLogs().size());
+    Assertions.assertEquals(0, result.getLogs().size());
   }
 
   @Test
@@ -147,7 +147,7 @@ public class CompareSDKTest {
     String str1 = "{\"array\":\"http://www.baidu.com\"}";
     String str2 = "{\"array\":\"http://arex_www.baidu.com\"}";
     CompareResult result = sdk.compare(str1, str2);
-    Assert.assertEquals(0, result.getLogs().size());
+    Assertions.assertEquals(0, result.getLogs().size());
   }
 
   @Test
@@ -156,7 +156,7 @@ public class CompareSDKTest {
     String str1 = "{\"uuid\":\"f4c6d9c9-9d8f-4b1f-9d5c-6e9d7a8c6b2e\"}";
     String str2 = "{\"uuid\":\"f4c6d9c9-9d8f-4b1f-9d5c-6e9d7a8c6b2f\"}";
     CompareResult result = sdk.compare(str1, str2);
-    Assert.assertEquals(1, result.getLogs().size());
+    Assertions.assertEquals(1, result.getLogs().size());
   }
 
   @Test
@@ -179,7 +179,7 @@ public class CompareSDKTest {
     compareOptions.putSelectIgnoreCompare(true);
 
     CompareResult result = sdk.compare(str1, str2, compareOptions);
-    Assert.assertEquals(0, result.getCode());
+    Assertions.assertEquals(0, result.getCode());
   }
 
   @Test
@@ -269,7 +269,7 @@ public class CompareSDKTest {
     compareOptions.putCategoryType(CategoryType.DATABASE);
 
     CompareResult result = compareSDK.compare(str1, str2, compareOptions);
-    Assert.assertEquals(1, result.getLogs().size());
+    Assertions.assertEquals(1, result.getLogs().size());
   }
 
   @Test
@@ -289,7 +289,7 @@ public class CompareSDKTest {
 
     CompareResult result = sdk.compare(str1, str2, compareOptions);
 
-    Assert.assertEquals("{\"name\":\"google\"}", result.getProcessedBaseMsg());
+    Assertions.assertEquals("{\"name\":\"google\"}", result.getProcessedBaseMsg());
   }
 
   @Test
@@ -304,7 +304,7 @@ public class CompareSDKTest {
     compareOptions.putCategoryType(CategoryType.DATABASE);
 
     CompareResult result = compareSDK.compare(str1, str2, compareOptions);
-    Assert.assertEquals(2, result.getLogs().size());
+    Assertions.assertEquals(2, result.getLogs().size());
 
   }
 
@@ -327,7 +327,7 @@ public class CompareSDKTest {
     compareOptions.putCategoryType(CategoryType.DATABASE);
 
     CompareResult result = sdk.compare(str1, str2, compareOptions);
-    Assert.assertEquals(0, result.getCode());
+    Assertions.assertEquals(0, result.getCode());
   }
 
   @Test
@@ -348,7 +348,7 @@ public class CompareSDKTest {
     compareOptions.putCategoryType(CategoryType.DATABASE);
 
     CompareResult result = sdk.compare(str1, str2, compareOptions);
-    Assert.assertEquals(0, result.getCode());
+    Assertions.assertEquals(0, result.getCode());
   }
 
   @Test
@@ -361,7 +361,125 @@ public class CompareSDKTest {
     String str2 = "{\"uuid\":\"41cd4916-9ff5-413e-812a-5f620e2ae589\"}";
 
     CompareResult result = sdk.compare(str1, str2);
-    Assert.assertEquals(0, result.getCode());
+    Assertions.assertEquals(0, result.getCode());
+  }
+
+
+  @Test
+  public void testWhiteListObj() {
+
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions()
+        .putNameToLower(true)
+        .putNullEqualsEmpty(true);
+
+    String str1 = "{\n"
+        + "    \"response\": {\n"
+        + "        \"students\": [\n"
+        + "            {\n"
+        + "                \"info\": {\n"
+        + "                    \"name\": \"xiaomi\",\n"
+        + "                    \"roomName\": \"A\"\n"
+        + "                },\n"
+        + "                \"age\": 18\n"
+        + "            },\n"
+        + "            {\n"
+        + "                \"info\": {\n"
+        + "                    \"name\": \"apple\",\n"
+        + "                    \"roomName\": \"A\"\n"
+        + "                },\n"
+        + "                \"age\": 19\n"
+        + "            }\n"
+        + "        ]\n"
+        + "    }\n"
+        + "}";
+
+    String str2 = "{\n"
+        + "    \"response\": {\n"
+        + "        \"students\": [\n"
+        + "            {\n"
+        + "                \"info\": {\n"
+        + "                    \"name\": \"xiaomi\"\n"
+        + "                },\n"
+        + "                \"age\": 18\n"
+        + "            },\n"
+        + "            {\n"
+        + "                \"info\": {\n"
+        + "                    \"name\": \"apple\"\n"
+        + "                },\n"
+        + "                \"age\": 20\n"
+        + "            }\n"
+        + "        ]\n"
+        + "    }\n"
+        + "}";
+
+    CompareOptions compareOptions = CompareOptions.options()
+        .putInclusions(
+            Arrays.asList(Arrays.asList("response", "Students", "info", "name")));
+
+    CompareResult result = sdk.quickCompare(str1, str2, compareOptions);
+
+    System.out.println();
+  }
+
+  @Test
+  public void testExpressionNodeIgnore() {
+
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions()
+        .putNameToLower(true)
+        .putNullEqualsEmpty(true);
+
+    String str1 = "{\n"
+        + "    \"response\": {\n"
+        + "        \"students\": [\n"
+        + "            {\n"
+        + "                \"info\": {\n"
+        + "                    \"name\": \"xiaomi\"\n"
+        + "                },\n"
+        + "                \"age\": 18\n"
+        + "            },\n"
+        + "            {\n"
+        + "                \"info\": {\n"
+        + "                    \"name\": \"apple\"\n"
+        + "                },\n"
+        + "                \"age\": 19\n"
+        + "            }\n"
+        + "        ],\n"
+        + "        \"region\": \"shanghai\"\n"
+        + "    }\n"
+        + "}";
+
+    String str2 = "{\n"
+        + "    \"response\": {\n"
+        + "        \"students\": [\n"
+        + "            {\n"
+        + "                \"info\": {\n"
+        + "                    \"name\": \"xiaomi\"\n"
+        + "                },\n"
+        + "                \"age\": 18\n"
+        + "            },\n"
+        + "            {\n"
+        + "                \"info\": {\n"
+        + "                    \"name\": \"apple\"\n"
+        + "                },\n"
+        + "                \"age\": 20\n"
+        + "            }\n"
+        + "        ],\n"
+        + "        \"region\": \"beijing\"\n"
+        + "    }\n"
+        + "}";
+
+    CompareOptions compareOptions = CompareOptions.options()
+        .putExclusions(
+            Arrays.asList(Arrays.asList("response", "Students", "[info/Name=apple]", "age"))
+        )
+        .putExclusions(
+            Arrays.asList(Arrays.asList("response", "Region"))
+        );
+
+    CompareResult result = sdk.quickCompare(str1, str2, compareOptions);
+    System.out.println();
   }
 
 }
