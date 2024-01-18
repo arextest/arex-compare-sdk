@@ -7,6 +7,8 @@ import com.arextest.diff.model.enumeration.CategoryType;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import org.junit.Assert;
+import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -511,4 +513,17 @@ public class CompareSDKTest {
     CompareResult result = sdk.compare(str1, str2);
     Assertions.assertEquals(0, result.getCode());
   }
+
+  @Test
+  public void testIpFilter() {
+
+    CompareSDK sdk = new CompareSDK();
+
+    String str1 = "{\"ip\":\"0001:0:0:0:0:0:0:1\"}";
+    String str2 = "{\"ip\":\"0:0:0:0:0:0:0:1\"}";
+
+    CompareResult result = sdk.compare(str1, str2);
+    Assert.assertEquals(0, result.getCode());
+  }
+
 }
