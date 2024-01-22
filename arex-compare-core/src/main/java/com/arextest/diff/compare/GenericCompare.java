@@ -16,6 +16,9 @@ public class GenericCompare {
   public static void jsonCompare(Object obj1, Object obj2, CompareContext compareContext)
       throws Exception {
 
+    compareContext.currentBaseObj = obj1;
+    compareContext.currentTestObj = obj2;
+
     List<NodeEntity> currentNode =
         compareContext.currentNodeLeft.size() >= compareContext.currentNodeRight.size()
             ? compareContext.currentNodeLeft : compareContext.currentNodeRight;
