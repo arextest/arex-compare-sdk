@@ -68,6 +68,9 @@ public class OptionsToRulesConvert {
     if (globalOptions.getUuidIgnore() != null) {
       rulesConfig.setUuidIgnore(globalOptions.getUuidIgnore());
     }
+    if (globalOptions.getIpIgnore() != null) {
+      rulesConfig.setIpIgnore(globalOptions.getIpIgnore());
+    }
   }
 
   private static void optionsToRules(CompareOptions compareOptions, RulesConfig rulesConfig) {
@@ -109,6 +112,9 @@ public class OptionsToRulesConvert {
     }
     if (compareOptions.getUuidIgnore() != null) {
       rulesConfig.setUuidIgnore(compareOptions.getUuidIgnore());
+    }
+    if (compareOptions.getIpIgnore() != null) {
+      rulesConfig.setIpIgnore(compareOptions.getIpIgnore());
     }
   }
 

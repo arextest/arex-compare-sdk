@@ -6,6 +6,7 @@ import com.arextest.diff.handler.WhitelistHandler;
 import com.arextest.diff.handler.keycompute.KeyCompute;
 import com.arextest.diff.handler.log.LogProcess;
 import com.arextest.diff.handler.log.filterrules.ArexPrefixFilter;
+import com.arextest.diff.handler.log.filterrules.IPFilter;
 import com.arextest.diff.handler.log.filterrules.TimePrecisionFilter;
 import com.arextest.diff.handler.log.filterrules.UuidFilter;
 import com.arextest.diff.handler.metric.TimeConsumerWatch;
@@ -138,6 +139,9 @@ public class NormalCompareUtil {
               new ArexPrefixFilter()));
       if (rulesConfig.isUuidIgnore()) {
         logProcess.appendFilterRules(Collections.singletonList(new UuidFilter()));
+      }
+      if (rulesConfig.isIpIgnore()) {
+        logProcess.appendFilterRules(Collections.singletonList(new IPFilter()));
       }
       logs = compareHandler.doHandler(rulesConfig, keyComputeResponse, msgStructureFuture,
           msgWhiteObj.getBaseObj(), msgWhiteObj.getTestObj(), logProcess);

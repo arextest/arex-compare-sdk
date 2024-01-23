@@ -511,4 +511,18 @@ public class CompareSDKTest {
     CompareResult result = sdk.compare(str1, str2);
     Assertions.assertEquals(0, result.getCode());
   }
+
+  @Test
+  public void testIpFilter() {
+
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions().putIpIgnore(true);
+
+    String str1 = "{\"ip\":\"0001:0:0:0:0:0:0:1\"}";
+    String str2 = "{\"ip\":\"0:0:0:0:0:0:0:1\"}";
+
+    CompareResult result = sdk.compare(str1, str2);
+    Assertions.assertEquals(0, result.getCode());
+  }
+
 }
