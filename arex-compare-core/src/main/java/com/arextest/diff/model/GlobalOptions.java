@@ -58,6 +58,11 @@ public class GlobalOptions {
    */
   private Boolean uuidIgnore;
 
+  /**
+   * This option is true, the ipV4 and ipV6 is ignored when comparing
+   */
+  private Boolean ipIgnore;
+
   public GlobalOptions() {
     this.nameToLower = false;
     this.nullEqualsEmpty = false;
@@ -112,6 +117,11 @@ public class GlobalOptions {
     return this;
   }
 
+  public GlobalOptions putIpIgnore(boolean ipIgnore) {
+    this.ipIgnore = ipIgnore;
+    return this;
+  }
+
   public String getPluginJarUrl() {
     return pluginJarUrl;
   }
@@ -146,6 +156,10 @@ public class GlobalOptions {
 
   public Boolean getUuidIgnore() {
     return uuidIgnore;
+  }
+
+  public Boolean getIpIgnore() {
+    return ipIgnore;
   }
 
 }

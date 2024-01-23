@@ -152,7 +152,9 @@ public class DataBaseCompareUtil {
       if (rulesConfig.isOnlyCompareCoincidentColumn()) {
         logProcess.appendFilterRules(new OnlyCompareSameColumnsFilter());
       }
-      logProcess.appendFilterRules(Collections.singletonList(new IPFilter()));
+      if (rulesConfig.isIpIgnore()) {
+        logProcess.appendFilterRules(Collections.singletonList(new IPFilter()));
+      }
       logs = compareHandler.doHandler(rulesConfig, keyComputeResponse, msgStructureFuture,
           msgWhiteObj.getBaseObj(), msgWhiteObj.getTestObj(), logProcess);
       timeConsumerWatch.end(TimeMetricLabel.COMPARE_HANDLER);

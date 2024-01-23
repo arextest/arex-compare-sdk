@@ -23,7 +23,7 @@ public class IPFilter implements Predicate<LogEntity> {
     return false;
   }
 
-  public static boolean isIPv4(String ipAddress) {
+  private static boolean isIPv4(String ipAddress) {
     String ipv4Regex = "^((25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\\.){3}(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)$";
     Pattern pattern = Pattern.compile(ipv4Regex);
     Matcher matcher = pattern.matcher(ipAddress);
@@ -31,7 +31,7 @@ public class IPFilter implements Predicate<LogEntity> {
   }
 
 
-  public static boolean isIPv6(String ipAddress) {
+  private static boolean isIPv6(String ipAddress) {
     String ipv6Regex = "^(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}$";
     Pattern pattern = Pattern.compile(ipv6Regex);
     Matcher matcher = pattern.matcher(ipAddress);
@@ -50,11 +50,6 @@ public class IPFilter implements Predicate<LogEntity> {
       }
     }
     return true;
-  }
-
-  public static void main(String[] args) {
-    String ip = "0:0:0:0:0:0:0:1";
-    System.out.println(isIPv6(ip));
   }
 
 }

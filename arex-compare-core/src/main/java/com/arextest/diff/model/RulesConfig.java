@@ -52,6 +52,8 @@ public class RulesConfig {
 
   private boolean uuidIgnore;
 
+  private boolean ipIgnore;
+
   //region: inner processed class
   private List<List<ExpressionNodeEntity>> expressionExclusions;
 
@@ -204,6 +206,14 @@ public class RulesConfig {
 
   public void setUuidIgnore(boolean uuidIgnore) {
     this.uuidIgnore = uuidIgnore;
+  }
+
+  public boolean isIpIgnore() {
+    return ipIgnore;
+  }
+
+  public void setIpIgnore(boolean ipIgnore) {
+    this.ipIgnore = ipIgnore;
   }
 
   public List<List<ExpressionNodeEntity>> getExpressionExclusions() {

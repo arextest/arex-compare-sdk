@@ -92,6 +92,11 @@ public class CompareOptions {
    */
   private Boolean uuidIgnore;
 
+  /**
+   * This option is true, the ipV4 and ipV6 is ignored when comparing
+   */
+  private Boolean ipIgnore;
+
   public CompareOptions() {
   }
 
@@ -250,6 +255,11 @@ public class CompareOptions {
     return this;
   }
 
+  public CompareOptions putIpIgnore(Boolean ipIgnore) {
+    this.ipIgnore = ipIgnore;
+    return this;
+  }
+
   public String getCategoryType() {
     return categoryType;
   }
@@ -304,5 +314,9 @@ public class CompareOptions {
 
   public Boolean getUuidIgnore() {
     return uuidIgnore;
+  }
+
+  public Boolean getIpIgnore() {
+    return ipIgnore;
   }
 }
