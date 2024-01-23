@@ -482,4 +482,33 @@ public class CompareSDKTest {
     System.out.println();
   }
 
+  @Test
+  public void testPrimitiveArrayNodeAutoSort() {
+
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions()
+        .putNameToLower(true)
+        .putNullEqualsEmpty(true);
+
+    String str1 = "{\n"
+        + "    \"classroom\": [\n"
+        + "        \"classroomA\",\n"
+        + "        \"classroomB\",\n"
+        + "        \"classroomA\",\n"
+        + "        \"classroomC\"\n"
+        + "    ]\n"
+        + "}";
+
+    String str2 = "{\n"
+        + "    \"classroom\": [\n"
+        + "        \"classroomB\",\n"
+        + "        \"classroomA\",\n"
+        + "        \"classroomA\",\n"
+        + "        \"classroomC\"\n"
+        + "    ]\n"
+        + "}";
+
+    CompareResult result = sdk.compare(str1, str2);
+    Assertions.assertEquals(0, result.getCode());
+  }
 }
