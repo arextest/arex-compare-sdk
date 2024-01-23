@@ -475,7 +475,8 @@ public class CompareProblemTest {
     Assertions.assertEquals(1, result.getCode());
 
     CompareResult quickResult = sdk.quickCompare(baseMsg, testMsg, compareOptions);
-    Assertions.assertEquals("H4sIAAAAAAAAAKtWSlSyAuJaAMXisGkJAAAA", quickResult.getProcessedTestMsg());
+    Assertions.assertEquals("H4sIAAAAAAAAAKtWSlSyAuJaAMXisGkJAAAA",
+        quickResult.getProcessedTestMsg());
 
   }
 
@@ -592,7 +593,24 @@ public class CompareProblemTest {
         + "}";
     CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
     Assertions.assertEquals(1, result.getLogs().size());
+  }
 
+  @Test
+  public void testStringEqualsWithArexPrefix() {
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions()
+        .putNameToLower(true)
+        .putNullEqualsEmpty(true)
+        .putPluginJarUrl("./lib/arex-compare-sdk-plugin-0.1.0-jar-with-dependencies.jar");
+
+    CompareOptions compareOptions = CompareOptions.options()
+        .putDecompressConfig(new DecompressConfig("Base64",
+            Arrays.asList(Arrays.asList("arex_root"))));
+
+    String baseMsg = "aHR0cHM6Ly9iYWlkdS5jb20=";
+    String testMsg = "aHR0cHM6Ly9hcmV4LmJhaWR1LmNvbQ==";
+    CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
+    Assertions.assertEquals(0, result.getCode());
   }
 
 
