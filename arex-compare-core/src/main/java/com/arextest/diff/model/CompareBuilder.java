@@ -5,12 +5,12 @@ import com.arextest.diff.model.enumeration.MsgMissingCode;
 import com.arextest.diff.model.enumeration.UnmatchedType;
 import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.model.log.UnmatchedPairEntity;
+import com.arextest.diff.utils.ArexStringEqualsUtil;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.Future;
 
 public class CompareBuilder {
@@ -94,7 +94,7 @@ public class CompareBuilder {
   public CompareBuilder addEqualsCompare(Object baseMsg, Object testMsg, RulesConfig rulesConfig) {
     String baseMsgStr = baseMsg == null ? null : baseMsg.toString();
     String testMsgStr = testMsg == null ? null : testMsg.toString();
-    boolean equals = Objects.equals(baseMsgStr, testMsgStr);
+    boolean equals = ArexStringEqualsUtil.stringEquals(baseMsgStr, testMsgStr);
     this.code(equals ? DiffResultCode.COMPARED_WITHOUT_DIFFERENCE
         : DiffResultCode.COMPARED_WITH_DIFFERENCE);
     this.message("compare successfully");
