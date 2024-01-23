@@ -67,6 +67,8 @@ public class IndexSelectorFactory {
       testList.add(jsonNode.asText());
     }
 
+    // If it can be directly compared before sorting,
+    // do not use PrimitiveArrayIndexSelector.
     if (Objects.equals(baseList, testList)) {
       return false;
     }
