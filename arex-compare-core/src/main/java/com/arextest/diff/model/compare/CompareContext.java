@@ -15,8 +15,13 @@ import java.util.Set;
 
 public class CompareContext {
 
+  // baseObj and testObj are the original objects to be compared
   public Object baseObj;
   public Object testObj;
+
+  // currentBaseObj and currentTestObj are the objects being compared
+  public Object currentBaseObj;
+  public Object currentTestObj;
 
   public List<List<ExpressionNodeEntity>> exclusions;
   public List<List<ExpressionNodeEntity>> expressionExclusions;
