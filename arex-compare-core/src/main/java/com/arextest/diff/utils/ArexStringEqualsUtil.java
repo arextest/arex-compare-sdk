@@ -18,8 +18,8 @@ public class ArexStringEqualsUtil {
   };
 
   /**
+   * The agent will add a prefix to the email or URL.
    * compare two string if the string is not equal, then compare without prefix
-   *
    * @param baseStr
    * @param testStr
    * @return
