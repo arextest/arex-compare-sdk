@@ -52,10 +52,16 @@ public class OptionsToRulesConvert {
     if (globalOptions == null) {
       return;
     }
-    rulesConfig.setNameToLower(globalOptions.isNameToLower());
-    rulesConfig.setNullEqualsEmpty(globalOptions.isNullEqualsEmpty());
     rulesConfig.setIgnoredTimePrecision(globalOptions.getIgnoredTimePrecision());
-    rulesConfig.setNullEqualsNotExist(globalOptions.isNullEqualsNotExist());
+    if (globalOptions.isNameToLower() != null) {
+      rulesConfig.setNameToLower(globalOptions.isNameToLower());
+    }
+    if (globalOptions.isNullEqualsEmpty() != null) {
+      rulesConfig.setNullEqualsEmpty(globalOptions.isNullEqualsEmpty());
+    }
+    if (globalOptions.isNullEqualsNotExist() != null) {
+      rulesConfig.setNullEqualsNotExist(globalOptions.isNullEqualsNotExist());
+    }
     if (globalOptions.getIgnoreNodeSet() != null) {
       rulesConfig.setIgnoreNodeSet(globalOptions.getIgnoreNodeSet());
     }

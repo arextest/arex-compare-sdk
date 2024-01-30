@@ -16,13 +16,13 @@ public class GlobalOptions {
    * change the message and configuration to lowercase, for the inconsistency between the actual
    * message and the contract case
    */
-  private boolean nameToLower;
+  private Boolean nameToLower;
 
   /**
    * This option is true, The null, CollectionUtils.isEmpty and Strings.empty are equal for
    * example：the baseMsg: {"age":""} is consistent with testMsg: "{\"age\":null}"
    */
-  private boolean nullEqualsEmpty;
+  private Boolean nullEqualsEmpty;
 
   /**
    * This refers to ignoring the precision of specified time fields when comparing them, which means
@@ -35,7 +35,7 @@ public class GlobalOptions {
    * This option is true, The "null" and the situation that the field is not existed are equal for
    * example：the baseMsg: {"age":null} is consistent with testMsg: "{}"
    */
-  private boolean nullEqualsNotExist;
+  private Boolean nullEqualsNotExist;
 
   /**
    * the nodenanme set which is ignored when comparing
@@ -77,12 +77,12 @@ public class GlobalOptions {
     return this;
   }
 
-  public GlobalOptions putNameToLower(boolean nameToLower) {
+  public GlobalOptions putNameToLower(Boolean nameToLower) {
     this.nameToLower = nameToLower;
     return this;
   }
 
-  public GlobalOptions putNullEqualsEmpty(boolean nullEqualsEmpty) {
+  public GlobalOptions putNullEqualsEmpty(Boolean nullEqualsEmpty) {
     this.nullEqualsEmpty = nullEqualsEmpty;
     return this;
   }
@@ -92,7 +92,7 @@ public class GlobalOptions {
     return this;
   }
 
-  public GlobalOptions putNullEqualsNotExist(boolean nullEqualsNotExist) {
+  public GlobalOptions putNullEqualsNotExist(Boolean nullEqualsNotExist) {
     this.nullEqualsNotExist = nullEqualsNotExist;
     return this;
   }
@@ -102,22 +102,22 @@ public class GlobalOptions {
     return this;
   }
 
-  public GlobalOptions putSelectIgnoreCompare(boolean selectIgnoreCompare) {
+  public GlobalOptions putSelectIgnoreCompare(Boolean selectIgnoreCompare) {
     this.selectIgnoreCompare = selectIgnoreCompare;
     return this;
   }
 
-  public GlobalOptions putOnlyCompareCoincidentColumn(boolean onlyCompareCoincidentColumn) {
+  public GlobalOptions putOnlyCompareCoincidentColumn(Boolean onlyCompareCoincidentColumn) {
     this.onlyCompareCoincidentColumn = onlyCompareCoincidentColumn;
     return this;
   }
 
-  public GlobalOptions putUuidIgnore(boolean uuidIgnore) {
+  public GlobalOptions putUuidIgnore(Boolean uuidIgnore) {
     this.uuidIgnore = uuidIgnore;
     return this;
   }
 
-  public GlobalOptions putIpIgnore(boolean ipIgnore) {
+  public GlobalOptions putIpIgnore(Boolean ipIgnore) {
     this.ipIgnore = ipIgnore;
     return this;
   }
@@ -126,11 +126,11 @@ public class GlobalOptions {
     return pluginJarUrl;
   }
 
-  public boolean isNameToLower() {
+  public Boolean isNameToLower() {
     return nameToLower;
   }
 
-  public boolean isNullEqualsEmpty() {
+  public Boolean isNullEqualsEmpty() {
     return nullEqualsEmpty;
   }
 
@@ -138,7 +138,7 @@ public class GlobalOptions {
     return ignoredTimePrecision;
   }
 
-  public boolean isNullEqualsNotExist() {
+  public Boolean isNullEqualsNotExist() {
     return nullEqualsNotExist;
   }
 
