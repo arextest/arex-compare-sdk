@@ -525,4 +525,183 @@ public class CompareSDKTest {
     Assertions.assertEquals(0, result.getCode());
   }
 
+
+  @Test
+  public void testListKeyWithPrefix() throws Exception {
+    long start = System.currentTimeMillis();
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions()
+        .putNameToLower(true)
+        .putNullEqualsEmpty(true);
+
+    String str1 = "{\n"
+        + "    \"key\": \"testListKeyWithPrefix\",\n"
+        + "    \"weblist\": [\n"
+        + "        \"http://www.baidu.com\",\n"
+        + "        \"http://www.didi.com\",\n"
+        + "        \"http://www.taobao.com\"\n"
+        + "    ]\n"
+        + "}";
+
+    String str2 = "{\n"
+        + "    \"key\": \"testListKeyWithPrefix\",\n"
+        + "    \"weblist\": [\n"
+        + "        \"http://www.arex.baidu.com\",\n"
+        + "        \"http://www.arex.taobao.com\",\n"
+        + "        \"http://www.arex.didi.com\"\n"
+        + "    ]\n"
+        + "}";
+
+    CompareOptions compareOptions = CompareOptions.options()
+        .putListSortConfig(new HashMap<List<String>, List<List<String>>>() {
+          {
+            put(Arrays.asList("weblist"), Arrays.asList(Arrays.asList("%value%")));
+          }
+        });
+    CompareResult result = sdk.compare(str1, str2, compareOptions);
+    Assertions.assertEquals(0, result.getCode());
+  }
+
+
+  @Test
+  public void testReferenceWithPrefix() throws Exception {
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions()
+        .putNameToLower(true)
+        .putNullEqualsEmpty(true);
+
+    String str1 = "{\n"
+        + "    \"alist\": [\n"
+        + "        {\n"
+        + "            \"aid\": {\n"
+        + "                \"id\": \"1\"\n"
+        + "            },\n"
+        + "            \"test\": [\n"
+        + "                {\n"
+        + "                    \"subject\": \"1\"\n"
+        + "                }\n"
+        + "            ]\n"
+        + "        },\n"
+        + "        {\n"
+        + "            \"aid\": {\n"
+        + "                \"id\": \"2\"\n"
+        + "            },\n"
+        + "            \"test\": [\n"
+        + "                {\n"
+        + "                    \"subject\": \"2\"\n"
+        + "                }\n"
+        + "            ],\n"
+        + "            \"addtion\": \"ad\"\n"
+        + "        }\n"
+        + "    ],\n"
+        + "    \"family\": [\n"
+        + "        {\n"
+        + "            \"id\": \"1\",\n"
+        + "            \"subject\": {\n"
+        + "                \"mother\": \"B\",\n"
+        + "                \"father\": \"A\",\n"
+        + "                \"brother\": \"F\",\n"
+        + "                \"sister\": \"D\"\n"
+        + "            },\n"
+        + "            \"bug\": {\n"
+        + "                \"helper\": \"1\"\n"
+        + "            },\n"
+        + "            \"list\": [\n"
+        + "                \"1\",\n"
+        + "                \"2\"\n"
+        + "            ]\n"
+        + "        },\n"
+        + "        {\n"
+        + "            \"id\": \"2\",\n"
+        + "            \"subject\": {\n"
+        + "                \"mother\": \"A\",\n"
+        + "                \"father\": \"F\",\n"
+        + "                \"brother\": \"C\",\n"
+        + "                \"sister\": \"E\"\n"
+        + "            },\n"
+        + "            \"bug\": {\n"
+        + "                \"helper\": \"2\"\n"
+        + "            },\n"
+        + "            \"list\": [\n"
+        + "                \"1\",\n"
+        + "                \"2\"\n"
+        + "            ]\n"
+        + "        }\n"
+        + "    ]\n"
+        + "}";
+
+    String str2 = "{\n"
+        + "    \"alist\": [\n"
+        + "        {\n"
+        + "            \"aid\": {\n"
+        + "                \"id\": \"arex_a2\"\n"
+        + "            },\n"
+        + "            \"test\": [\n"
+        + "                {\n"
+        + "                    \"subject\": \"2\"\n"
+        + "                }\n"
+        + "            ],\n"
+        + "            \"addtion\": \"ad\"\n"
+        + "        },\n"
+        + "        {\n"
+        + "            \"aid\": {\n"
+        + "                \"id\": \"a1\"\n"
+        + "            },\n"
+        + "            \"test\": [\n"
+        + "                {\n"
+        + "                    \"subject\": \"1\"\n"
+        + "                }\n"
+        + "            ]\n"
+        + "        }\n"
+        + "    ],\n"
+        + "    \"family\": [\n"
+        + "        {\n"
+        + "            \"id\": \"a1\",\n"
+        + "            \"subject\": {\n"
+        + "                \"mother\": \"B\",\n"
+        + "                \"father\": \"A\",\n"
+        + "                \"brother\": \"F\",\n"
+        + "                \"sister\": \"D\"\n"
+        + "            },\n"
+        + "            \"bug\": {\n"
+        + "                \"helper\": \"1\"\n"
+        + "            },\n"
+        + "            \"list\": [\n"
+        + "                \"1\",\n"
+        + "                \"2\"\n"
+        + "            ]\n"
+        + "        },\n"
+        + "        {\n"
+        + "            \"id\": \"arex_a2\",\n"
+        + "            \"subject\": {\n"
+        + "                \"mother\": \"A\",\n"
+        + "                \"father\": \"F\",\n"
+        + "                \"brother\": \"C\",\n"
+        + "                \"sister\": \"E\"\n"
+        + "            },\n"
+        + "            \"bug\": {\n"
+        + "                \"helper\": \"2\"\n"
+        + "            },\n"
+        + "            \"list\": [\n"
+        + "                \"1\",\n"
+        + "                \"2\"\n"
+        + "            ]\n"
+        + "        }\n"
+        + "    ]\n"
+        + "}";
+
+    CompareOptions compareOptions = CompareOptions.options()
+        .putReferenceConfig(Arrays.asList("alist", "aid", "id"), Arrays.asList("family", "id"))
+        .putListSortConfig(new HashMap<List<String>, List<List<String>>>() {
+          {
+            put(Arrays.asList("family"), Arrays.asList(Arrays.asList("subject", "mother"),
+                Arrays.asList("subject", "father")));
+            put(Arrays.asList("alist"), Arrays.asList(Arrays.asList("aid", "id")));
+          }
+        });
+
+    CompareResult result = sdk.compare(str1, str2, compareOptions);
+    Assertions.assertEquals(7, result.getLogs().size());
+  }
+
 }

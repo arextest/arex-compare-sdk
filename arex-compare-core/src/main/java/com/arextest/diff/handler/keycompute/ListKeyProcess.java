@@ -8,6 +8,7 @@ import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.utils.JacksonHelperUtil;
 import com.arextest.diff.utils.ListUti;
+import com.arextest.diff.utils.StringUtil;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
@@ -236,7 +237,7 @@ public class ListKeyProcess {
         }
         result = sb.toString();
       }
-      return result;
+      return replaceArexPrefix(result);
     }
 
     if (obj instanceof ObjectNode) {
@@ -361,7 +362,7 @@ public class ListKeyProcess {
           Object listElement = listObj.get(i);
 
           Object refObj = getObject(listElement, referenceNodeRelativePath);
-          String refValue = refObj == null ? null : refObj.toString();
+          String refValue = refObj == null ? null : StringUtil.objectToString(refObj);
 
           if (keys == null || keys.isEmpty()) {
             throw new RuntimeException("ref list node don't have listkey!");
@@ -507,6 +508,16 @@ public class ListKeyProcess {
       }
     }
     return null;
+  }
+
+  private String replaceArexPrefix(String key) {
+    if (StringUtil.isEmpty(key)) {
+      return key;
+    }
+    for (String prefix : Constant.PREFIX_SET) {
+      key = key.replace(prefix, "");
+    }
+    return key;
   }
 
 }
