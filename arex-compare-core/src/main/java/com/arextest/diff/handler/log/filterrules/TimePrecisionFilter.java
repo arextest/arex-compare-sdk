@@ -17,16 +17,23 @@ import java.util.function.Predicate;
  */
 public class TimePrecisionFilter implements Predicate<LogEntity> {
 
+
+  private static final int MIN_TIME_LENGTH = 8;
+
+  private static final int MAX_TIME_LENGTH = 29;
+
   private static AbstractDataProcessor dataProcessor;
   private static DateTimeFormatter parseFormat1 = new DateTimeFormatterBuilder()
       .appendPattern("yyyy-MM-dd")
       .optionalStart().appendLiteral(' ').optionalEnd()
       .appendOptional(DateTimeFormatter.ofPattern("HH:mm:ss.SSSSSS"))
       .appendOptional(DateTimeFormatter.ofPattern("HH:mm:ss.SSS"))
+      .appendOptional(DateTimeFormatter.ofPattern("HH:mm:ss"))
       .toFormatter();
   private static DateTimeFormatter parseFormat2 = new DateTimeFormatterBuilder()
       .appendOptional(DateTimeFormatter.ofPattern("HH:mm:ss.SSSSSS"))
       .appendOptional(DateTimeFormatter.ofPattern("HH:mm:ss.SSS"))
+      .appendOptional(DateTimeFormatter.ofPattern("HH:mm:ss"))
       .toFormatter();
   private static DateTimeFormatter parseFormat3 = new DateTimeFormatterBuilder()
       .appendPattern("yyyy-MM-dd")
@@ -69,8 +76,8 @@ public class TimePrecisionFilter implements Predicate<LogEntity> {
 
     int baseStrLen = baseStr.length();
     int testStrLen = testStr.length();
-    if (baseStrLen < 12 || baseStrLen > 29
-        || testStrLen < 12 || testStrLen > 29) {
+    if (baseStrLen < MIN_TIME_LENGTH || baseStrLen > MAX_TIME_LENGTH
+        || testStrLen < MIN_TIME_LENGTH || testStrLen > MAX_TIME_LENGTH) {
       return true;
     }
 
@@ -91,7 +98,7 @@ public class TimePrecisionFilter implements Predicate<LogEntity> {
   }
 
   public Instant identifyTime(String data) {
-    if (data == null || data.length() < 12 || data.length() > 29) {
+    if (data == null || data.length() < MIN_TIME_LENGTH || data.length() > MAX_TIME_LENGTH) {
       return null;
     }
 

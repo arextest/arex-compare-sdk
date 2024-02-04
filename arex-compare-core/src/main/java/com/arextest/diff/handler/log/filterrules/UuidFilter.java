@@ -10,7 +10,8 @@ import java.util.regex.Pattern;
  */
 public class UuidFilter implements Predicate<LogEntity> {
 
-  private static final String UUID_PATTERN = "[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}";
+  private static final String LOWER_CASE_UUID_PATTERN = "[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}";
+  private static final String UPPER_CASE_UUID_PATTERN = "[0-9A-F]{8}(-[0-9A-F]{4}){3}-[0-9A-F]{12}";
 
   public static boolean isUuid(String baseStr, String testStr) {
 
@@ -18,7 +19,15 @@ public class UuidFilter implements Predicate<LogEntity> {
       return false;
     }
 
-    return Pattern.matches(UUID_PATTERN, baseStr) && Pattern.matches(UUID_PATTERN, testStr);
+    if (Pattern.matches(LOWER_CASE_UUID_PATTERN, baseStr) && Pattern.matches(LOWER_CASE_UUID_PATTERN, testStr)){
+      return true;
+    }
+
+    if (Pattern.matches(UPPER_CASE_UUID_PATTERN, baseStr) && Pattern.matches(UPPER_CASE_UUID_PATTERN, testStr)){
+      return true;
+    }
+
+    return false;
   }
 
   @Override
