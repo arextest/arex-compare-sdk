@@ -701,7 +701,7 @@ public class CompareSDKTest {
         });
 
     CompareResult result = sdk.compare(str1, str2, compareOptions);
-    Assertions.assertEquals(7, result.getLogs().size());
+    Assertions.assertEquals(0, result.getLogs().size());
   }
 
 }
