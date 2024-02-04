@@ -352,13 +352,26 @@ public class CompareSDKTest {
   }
 
   @Test
-  public void testGlobalOptionsUuidIgnore() {
+  public void testGlobalOptionsLowerUuidIgnore() {
 
     CompareSDK sdk = new CompareSDK();
     sdk.getGlobalOptions().putUuidIgnore(true);
 
     String str1 = "{\"uuid\":\"5a6798c4-e57c-481d-b6b7-00f5866350c0\"}";
     String str2 = "{\"uuid\":\"41cd4916-9ff5-413e-812a-5f620e2ae589\"}";
+
+    CompareResult result = sdk.compare(str1, str2);
+    Assertions.assertEquals(0, result.getCode());
+  }
+
+  @Test
+  public void testGlobalOptionsUpperUuidIgnore() {
+
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions().putUuidIgnore(true);
+
+    String str1 = "{\"uuid\":\"5A6798C4-E57C-481D-B6B7-00F5866350C0\"}";
+    String str2 = "{\"uuid\":\"41CD4916-9FF5-413E-812A-5F620E2AE589\"}";
 
     CompareResult result = sdk.compare(str1, str2);
     Assertions.assertEquals(0, result.getCode());

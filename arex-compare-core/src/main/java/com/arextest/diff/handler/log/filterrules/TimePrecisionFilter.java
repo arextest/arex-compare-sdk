@@ -36,6 +36,12 @@ public class TimePrecisionFilter implements Predicate<LogEntity> {
       .appendOptional(DateTimeFormatter.ofPattern("HH:mm:ss.SSSZ"))
       .toFormatter();
 
+  private static DateTimeFormatter parseFormat4 = new DateTimeFormatterBuilder()
+      .appendPattern("yyyy-MM-dd")
+      .optionalStart().appendLiteral(' ').optionalEnd()
+      .appendOptional(DateTimeFormatter.ofPattern("HH:mm:ss"))
+      .toFormatter();
+
   static {
     parseFormat1 = parseFormat1.withZone(ZoneId.of("UTC"));
 
@@ -43,6 +49,7 @@ public class TimePrecisionFilter implements Predicate<LogEntity> {
         .addProcessor(new FirstDataProcessor())
         .addProcessor(new SecondDataProcessor())
         .addProcessor(new ThirdDataProcessor())
+        .addProcessor(new ForthDataProcessor())
         .build();
   }
 
@@ -167,6 +174,20 @@ public class TimePrecisionFilter implements Predicate<LogEntity> {
       Instant instant = null;
       try {
         ZonedDateTime zdt = ZonedDateTime.parse(data, parseFormat3);
+        instant = zdt.toInstant();
+      } catch (Exception e) {
+      }
+      return instant;
+    }
+  }
+
+  private static class ForthDataProcessor extends AbstractDataProcessor {
+
+    @Override
+    protected Instant processData(String data) {
+      Instant instant = null;
+      try {
+        ZonedDateTime zdt = ZonedDateTime.parse(data, parseFormat4);
         instant = zdt.toInstant();
       } catch (Exception e) {
       }
