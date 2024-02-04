@@ -1,25 +1,14 @@
 package com.arextest.diff.utils;
 
-import java.util.HashSet;
+import com.arextest.diff.model.enumeration.Constant;
 import java.util.Objects;
-import java.util.Set;
 
 public class ArexStringEqualsUtil {
 
-  private static final Set<String> PREFIX_SET = new HashSet<String>() {
-    {
-      add("arex.");
-      add("arex_");
-      add("_arex");
-      add("AREX.");
-      add("AREX_");
-      add("_AREX");
-    }
-  };
-
   /**
-   * The agent will add a prefix to the email or URL.
-   * compare two string if the string is not equal, then compare without prefix
+   * The agent will add a prefix to the email or URL. compare two string if the string is not equal,
+   * then compare without prefix
+   *
    * @param baseStr
    * @param testStr
    * @return
@@ -86,7 +75,7 @@ public class ArexStringEqualsUtil {
     }
 
     String substring = testValue.substring(testIndex, testIndex + 5);
-    return PREFIX_SET.contains(substring);
+    return Constant.PREFIX_SET.contains(substring);
   }
 
 }
