@@ -7,7 +7,7 @@
     <groupId>com.arextest</groupId>
     <artifactId>arex-compare-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.2.8</version>
+    <version>0.2.9</version>
     <modules>
         <module>arex-compare-extension</module>
         <module>arex-compare-core</module>
@@ -158,6 +158,28 @@
                                 </goals>
                             </execution>
                         </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.jacoco</groupId>
+                        <artifactId>jacoco-maven-plugin</artifactId>
+                        <version>0.8.11</version>
+                        <executions>
+                            <execution>
+                                <goals>
+                                    <goal>prepare-agent</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>report</id>
+                                <phase>test</phase>
+                                <goals>
+                                    <goal>report</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                        <configuration>
+                            <excludes>**/*.jar</excludes>
+                        </configuration>
                     </plugin>
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>

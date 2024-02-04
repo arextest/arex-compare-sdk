@@ -130,6 +130,24 @@ public class CompareSDKTest {
   }
 
   @Test
+  public void testTimePrecisionFilter2() {
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions()
+        .putNameToLower(true)
+        .putNullEqualsEmpty(true)
+        .putIgnoredTimePrecision(2000);
+
+    String str1 = "{\"time\":\"15:35:37\"}";
+
+    String str2 = "{\"time\":\"15:35:39\"}";
+
+    CompareOptions compareOptions = CompareOptions.options();
+
+    CompareResult result = sdk.compare(str1, str2, compareOptions);
+    Assertions.assertEquals(0, result.getLogs().size());
+  }
+
+  @Test
   public void testNullAndNotExist() {
     CompareSDK sdk = new CompareSDK();
     sdk.getGlobalOptions()
