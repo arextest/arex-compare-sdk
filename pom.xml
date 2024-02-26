@@ -7,7 +7,7 @@
     <groupId>com.arextest</groupId>
     <artifactId>arex-compare-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.2.11</version>
+    <version>0.2.12</version>
     <modules>
         <module>arex-compare-extension</module>
         <module>arex-compare-core</module>

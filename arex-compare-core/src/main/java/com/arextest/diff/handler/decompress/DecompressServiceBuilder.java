@@ -6,8 +6,6 @@ import com.arextest.diff.utils.RemoteJarLoaderUtils;
 import com.arextest.diff.utils.StringUtil;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.RemovalCause;
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -22,27 +20,39 @@ import org.slf4j.LoggerFactory;
 public class DecompressServiceBuilder {
 
   private static final Logger LOGGER = LoggerFactory.getLogger(DecompressServiceBuilder.class);
+  private static PluginDecompressServiceSummary systemDecompressServiceMap =
+      new PluginDecompressServiceSummary(null, Collections.emptyMap());
 
-  private static Map<String, DecompressService> systemDecompressServiceMap = new HashMap<>();
-
-  // use caffeine to expire the decompressService of application
-  private static Cache<String, Map<String, DecompressService>> decompressServiceCache =
-      Caffeine.newBuilder().maximumSize(10_000).removalListener(((key, value, cause) -> {
-        if (cause.equals(RemovalCause.SIZE)) {
-          LOGGER.warn("DecompressServiceCache is too large, key : {}, cause : {}", key, cause);
+  /**
+   * use caffeine to expire the decompressService of application key: pluginUrl value:
+   * Map<beanName,DecompressService>
+   */
+  private static Cache<String, PluginDecompressServiceSummary> decompressServiceCache =
+      Caffeine.newBuilder().maximumSize(100).removalListener(((key, value, cause) -> {
+        LOGGER.info("DecompressServiceCache expire, key : {}, cause : {}", key, cause);
+        try {
+          if (value instanceof PluginDecompressServiceSummary) {
+            RemoteJarClassLoader serviceClassLoader = ((PluginDecompressServiceSummary) value)
+                .getServiceClassLoader();
+            if (serviceClassLoader != null) {
+              serviceClassLoader.close();
+            }
+          }
+        } catch (Exception e) {
+          LOGGER.warn("close serviceClassLoader error, jar url : {}", key, e);
         }
       })).expireAfterWrite(2, TimeUnit.HOURS).build();
 
   public static DecompressService getDecompressService(String pluginUrl, String beanName) {
     if (StringUtil.isEmpty(pluginUrl)) {
-      return systemDecompressServiceMap.get(beanName);
+      return systemDecompressServiceMap.getDecompressServiceMap().get(beanName);
     }
-    Map<String, DecompressService> decompressServiceMap = loadApplicationDecompressService(
-        pluginUrl);
+    Map<String, DecompressService> decompressServiceMap =
+        loadApplicationDecompressService(pluginUrl).getDecompressServiceMap();
     DecompressService decompressService =
         decompressServiceMap == null ? null : decompressServiceMap.get(beanName);
     if (decompressService == null) {
-      decompressService = systemDecompressServiceMap.get(beanName);
+      decompressService = systemDecompressServiceMap.getDecompressServiceMap().get(beanName);
     }
     return decompressService;
   }
@@ -51,16 +61,15 @@ public class DecompressServiceBuilder {
     if (StringUtil.isEmpty(decompressJarUrl)) {
       return;
     }
-    Map<String, DecompressService> tempMap = buildDecompressServicesFromURL(decompressJarUrl);
-    systemDecompressServiceMap.putAll(tempMap);
+    systemDecompressServiceMap = buildDecompressServicesFromURL(decompressJarUrl);
   }
 
-  private static Map<String, DecompressService> loadApplicationDecompressService(
+  private static PluginDecompressServiceSummary loadApplicationDecompressService(
       String decompressJarUrl) {
     if (StringUtil.isEmpty(decompressJarUrl)) {
-      return null;
+      return new PluginDecompressServiceSummary(null, null);
     }
-    Map<String, DecompressService> decompressServiceMap = decompressServiceCache.getIfPresent(
+    PluginDecompressServiceSummary decompressServiceMap = decompressServiceCache.getIfPresent(
         decompressJarUrl);
     if (decompressServiceMap == null) {
       decompressServiceMap = buildDecompressServicesFromURL(decompressJarUrl);
@@ -69,7 +78,7 @@ public class DecompressServiceBuilder {
     return decompressServiceMap;
   }
 
-  private static Map<String, DecompressService> buildDecompressServicesFromURL(
+  private static PluginDecompressServiceSummary buildDecompressServicesFromURL(
       String decompressJarUrl) {
 
     Map<String, DecompressService> result = new HashMap<>();
@@ -88,16 +97,40 @@ public class DecompressServiceBuilder {
 
     } catch (Throwable e) {
       LOGGER.warn("load decompress service error, jar url : {}", decompressJarUrl, e);
-      return Collections.emptyMap();
+      return new PluginDecompressServiceSummary(null, Collections.emptyMap());
     }
-    try {
-      serviceClassLoader.close();
-    } catch (IOException e) {
-      LOGGER.warn("close serviceClassLoader error, jar url : {}", decompressJarUrl, e);
+    LOGGER.info("load decompress service success, serviceSet:{}", result.keySet());
+    return new PluginDecompressServiceSummary(serviceClassLoader, result);
+  }
+
+  private static class PluginDecompressServiceSummary {
+
+    private RemoteJarClassLoader serviceClassLoader;
+    private Map<String, DecompressService> decompressServiceMap;
+
+    public PluginDecompressServiceSummary(RemoteJarClassLoader serviceClassLoader,
+        Map<String, DecompressService> decompressServiceMap) {
+      this.serviceClassLoader = serviceClassLoader;
+      this.decompressServiceMap = decompressServiceMap;
     }
 
-    LOGGER.info("load decompress service success, serviceSet:{}", result.keySet());
-    return result;
+    public RemoteJarClassLoader getServiceClassLoader() {
+      return serviceClassLoader;
+    }
+
+    public void setServiceClassLoader(
+        RemoteJarClassLoader serviceClassLoader) {
+      this.serviceClassLoader = serviceClassLoader;
+    }
+
+    public Map<String, DecompressService> getDecompressServiceMap() {
+      return decompressServiceMap;
+    }
+
+    public void setDecompressServiceMap(
+        Map<String, DecompressService> decompressServiceMap) {
+      this.decompressServiceMap = decompressServiceMap;
+    }
   }
 
 }
