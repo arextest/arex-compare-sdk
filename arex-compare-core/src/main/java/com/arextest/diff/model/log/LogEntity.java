@@ -17,15 +17,17 @@ public class LogEntity implements Serializable {
    */
   private Object baseValue;
   private Object testValue;
+  // log information
   private String logInfo;
+  // error path information
   private UnmatchedPairEntity pathPair;
+  // reference function, upper primary key path of basic msg
   private String addRefPkNodePathLeft;
+  // reference function, upper primary key path of test msg
   private String addRefPkNodePathRight;
+  // the additional information about error node
   private LogTag logTag = new LogTag();
   private int warn;
-  // private String path;
-  // private String leftPath;
-  // private String rightPath;
 
   public LogEntity(String logInfo) {
     this.logInfo = logInfo;
@@ -42,7 +44,6 @@ public class LogEntity implements Serializable {
     this.testValue = valueToString(testValue);
     this.pathPair = pathPair;
     processLogInfo(this.baseValue, this.testValue, pathPair.getUnmatchedType());
-    // processPath();
   }
 
   static String getNodeName(List<NodeEntity> unmatchedPath) {

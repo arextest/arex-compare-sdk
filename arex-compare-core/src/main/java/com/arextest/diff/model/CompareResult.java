@@ -16,18 +16,20 @@ public class CompareResult {
   // status information
   private String message;
 
+  // flag indicating whether the comparison message is lost
   private MsgInfo msgInfo;
 
-  // inconsistent record
+  // inconsistent message node records
   private List<LogEntity> logs;
 
+  // processed basic messages, such as: decompression/json expansion/sql parsing
   private String processedBaseMsg;
-
+  // processed test messages, such as: decompression/json expansion/sql parsing
   private String processedTestMsg;
 
-  // parsed node path and original value
+  // K:parsed node path, V:original value
   private Map<String, List<String>> parseNodePaths;
-
+  // metric indicator
   private MetricIndicator metricIndicator;
 
   public CompareResult() {

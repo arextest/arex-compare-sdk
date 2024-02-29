@@ -4,6 +4,9 @@ import java.io.Serializable;
 
 public class LogTag implements Serializable {
 
+  /**
+   * {@link com.arextest.diff.model.enumeration.ErrorType}
+   */
   private int errorType = 0;
 
   public LogTag() {
