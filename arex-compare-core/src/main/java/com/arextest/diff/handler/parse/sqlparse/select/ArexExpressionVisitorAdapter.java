@@ -1,6 +1,7 @@
 package com.arextest.diff.handler.parse.sqlparse.select;
 
 import com.arextest.diff.handler.parse.sqlparse.constants.DbParseConstants;
+import com.arextest.diff.handler.parse.sqlparse.select.utils.ExpressionExtractor;
 import com.arextest.diff.utils.JacksonHelperUtil;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -110,103 +111,104 @@ public class ArexExpressionVisitorAdapter implements ExpressionVisitor {
   // scores >> 4
   @Override
   public void visit(BitwiseRightShift aThis) {
-    columnsObj.put(aThis.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(aThis), DbParseConstants.EMPTY);
   }
 
   // scores << 4
   @Override
   public void visit(BitwiseLeftShift aThis) {
-    columnsObj.put(aThis.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(aThis), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(NullValue nullValue) {
-    columnsObj.put(nullValue.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(nullValue),
+        DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(Function function) {
-    columnsObj.put(function.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(function), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(SignedExpression signedExpression) {
-    columnsObj.put(signedExpression.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(signedExpression), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(JdbcParameter jdbcParameter) {
-    columnsObj.put(jdbcParameter.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(jdbcParameter), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(JdbcNamedParameter jdbcNamedParameter) {
-    columnsObj.put(jdbcNamedParameter.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(jdbcNamedParameter), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(DoubleValue doubleValue) {
-    columnsObj.put(doubleValue.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(doubleValue), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(LongValue longValue) {
-    columnsObj.put(longValue.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(longValue), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(HexValue hexValue) {
-    columnsObj.put(hexValue.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(hexValue), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(DateValue dateValue) {
-    columnsObj.put(dateValue.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(dateValue), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(TimeValue timeValue) {
-    columnsObj.put(timeValue.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(timeValue), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(TimestampValue timestampValue) {
-    columnsObj.put(timestampValue.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(timestampValue), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(Parenthesis parenthesis) {
-    columnsObj.put(parenthesis.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(parenthesis), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(StringValue stringValue) {
-    columnsObj.put(stringValue.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(stringValue), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(Addition addition) {
-    columnsObj.put(addition.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(addition), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(Division division) {
-    columnsObj.put(division.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(division), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(IntegerDivision division) {
-    columnsObj.put(division.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(division), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(Multiplication multiplication) {
-    columnsObj.put(multiplication.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(multiplication), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(Subtraction subtraction) {
-    columnsObj.put(subtraction.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(subtraction), DbParseConstants.EMPTY);
   }
 
   @Override
@@ -244,13 +246,13 @@ public class ArexExpressionVisitorAdapter implements ExpressionVisitor {
 
   @Override
   public void visit(Between between) {
-    columnsObj.put(between.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(between), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(EqualsTo equalsTo) {
-    String leftExpression = equalsTo.getLeftExpression().toString();
-    String rightExpression = equalsTo.getRightExpression().toString();
+    String leftExpression = ExpressionExtractor.extract(equalsTo.getLeftExpression());
+    String rightExpression = ExpressionExtractor.extract(equalsTo.getRightExpression());
     ObjectNode fieldObj = JacksonHelperUtil.getObjectNode();
     fieldObj.put(DbParseConstants.OPERATOR, equalsTo.getStringExpression());
     fieldObj.put(DbParseConstants.RIGHT, rightExpression);
@@ -259,8 +261,8 @@ public class ArexExpressionVisitorAdapter implements ExpressionVisitor {
 
   @Override
   public void visit(GreaterThan greaterThan) {
-    String leftExpression = greaterThan.getLeftExpression().toString();
-    String rightExpression = greaterThan.getRightExpression().toString();
+    String leftExpression = ExpressionExtractor.extract(greaterThan.getLeftExpression());
+    String rightExpression = ExpressionExtractor.extract(greaterThan.getRightExpression());
     ObjectNode fieldObj = JacksonHelperUtil.getObjectNode();
     fieldObj.put(DbParseConstants.OPERATOR, greaterThan.getStringExpression());
     fieldObj.put(DbParseConstants.RIGHT, rightExpression);
@@ -269,8 +271,8 @@ public class ArexExpressionVisitorAdapter implements ExpressionVisitor {
 
   @Override
   public void visit(GreaterThanEquals greaterThanEquals) {
-    String leftExpression = greaterThanEquals.getLeftExpression().toString();
-    String rightExpression = greaterThanEquals.getRightExpression().toString();
+    String leftExpression = ExpressionExtractor.extract(greaterThanEquals.getLeftExpression());
+    String rightExpression = ExpressionExtractor.extract(greaterThanEquals.getRightExpression());
     ObjectNode fieldObj = JacksonHelperUtil.getObjectNode();
     fieldObj.put(DbParseConstants.OPERATOR, greaterThanEquals.getStringExpression());
     fieldObj.put(DbParseConstants.RIGHT, rightExpression);
@@ -279,33 +281,33 @@ public class ArexExpressionVisitorAdapter implements ExpressionVisitor {
 
   @Override
   public void visit(InExpression inExpression) {
-    columnsObj.put(inExpression.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(inExpression), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(FullTextSearch fullTextSearch) {
-    columnsObj.put(fullTextSearch.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(fullTextSearch), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(IsNullExpression isNullExpression) {
-    columnsObj.put(isNullExpression.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(isNullExpression), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(IsBooleanExpression isBooleanExpression) {
-    columnsObj.put(isBooleanExpression.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(isBooleanExpression), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(LikeExpression likeExpression) {
-    columnsObj.put(likeExpression.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(likeExpression), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(MinorThan minorThan) {
-    String leftExpression = minorThan.getLeftExpression().toString();
-    String rightExpression = minorThan.getRightExpression().toString();
+    String leftExpression = ExpressionExtractor.extract(minorThan.getLeftExpression());
+    String rightExpression = ExpressionExtractor.extract(minorThan.getRightExpression());
     ObjectNode fieldObj = JacksonHelperUtil.getObjectNode();
     fieldObj.put(DbParseConstants.OPERATOR, minorThan.getStringExpression());
     fieldObj.put(DbParseConstants.RIGHT, rightExpression);
@@ -314,8 +316,8 @@ public class ArexExpressionVisitorAdapter implements ExpressionVisitor {
 
   @Override
   public void visit(MinorThanEquals minorThanEquals) {
-    String leftExpression = minorThanEquals.getLeftExpression().toString();
-    String rightExpression = minorThanEquals.getRightExpression().toString();
+    String leftExpression = ExpressionExtractor.extract(minorThanEquals.getLeftExpression());
+    String rightExpression = ExpressionExtractor.extract(minorThanEquals.getRightExpression());
     ObjectNode fieldObj = JacksonHelperUtil.getObjectNode();
     fieldObj.put(DbParseConstants.OPERATOR, minorThanEquals.getStringExpression());
     fieldObj.put(DbParseConstants.RIGHT, rightExpression);
@@ -324,8 +326,8 @@ public class ArexExpressionVisitorAdapter implements ExpressionVisitor {
 
   @Override
   public void visit(NotEqualsTo notEqualsTo) {
-    String leftExpression = notEqualsTo.getLeftExpression().toString();
-    String rightExpression = notEqualsTo.getRightExpression().toString();
+    String leftExpression = ExpressionExtractor.extract(notEqualsTo.getLeftExpression());
+    String rightExpression = ExpressionExtractor.extract(notEqualsTo.getRightExpression());
     ObjectNode fieldObj = JacksonHelperUtil.getObjectNode();
     fieldObj.put(DbParseConstants.OPERATOR, notEqualsTo.getStringExpression());
     fieldObj.put(DbParseConstants.RIGHT, rightExpression);
@@ -334,251 +336,251 @@ public class ArexExpressionVisitorAdapter implements ExpressionVisitor {
 
   @Override
   public void visit(Column tableColumn) {
-    columnsObj.put(tableColumn.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(tableColumn), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(SubSelect subSelect) {
-    columnsObj.put(subSelect.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(subSelect), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(CaseExpression caseExpression) {
-    columnsObj.put(caseExpression.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(caseExpression), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(WhenClause whenClause) {
-    columnsObj.put(whenClause.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(whenClause), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(ExistsExpression existsExpression) {
-    columnsObj.put(existsExpression.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(existsExpression), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(AnyComparisonExpression anyComparisonExpression) {
-    columnsObj.put(anyComparisonExpression.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(anyComparisonExpression), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(Concat concat) {
-    columnsObj.put(concat.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(concat), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(Matches matches) {
-    columnsObj.put(matches.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(matches), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(BitwiseAnd bitwiseAnd) {
-    columnsObj.put(bitwiseAnd.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(bitwiseAnd), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(BitwiseOr bitwiseOr) {
-    columnsObj.put(bitwiseOr.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(bitwiseOr), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(BitwiseXor bitwiseXor) {
-    columnsObj.put(bitwiseXor.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(bitwiseXor), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(CastExpression cast) {
-    columnsObj.put(cast.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(cast), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(TryCastExpression cast) {
-    columnsObj.put(cast.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(cast), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(Modulo modulo) {
-    columnsObj.put(modulo.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(modulo), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(AnalyticExpression aexpr) {
-    columnsObj.put(aexpr.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(aexpr), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(ExtractExpression eexpr) {
-    columnsObj.put(eexpr.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(eexpr), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(IntervalExpression iexpr) {
-    columnsObj.put(iexpr.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(iexpr), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(OracleHierarchicalExpression oexpr) {
-    columnsObj.put(oexpr.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(oexpr), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(RegExpMatchOperator rexpr) {
-    columnsObj.put(rexpr.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(rexpr), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(JsonExpression jsonExpr) {
-    columnsObj.put(jsonExpr.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(jsonExpr), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(JsonOperator jsonExpr) {
-    columnsObj.put(jsonExpr.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(jsonExpr), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(RegExpMySQLOperator regExpMySQLOperator) {
-    columnsObj.put(regExpMySQLOperator.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(regExpMySQLOperator), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(UserVariable var) {
-    columnsObj.put(var.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(var), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(NumericBind bind) {
-    columnsObj.put(bind.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(bind), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(KeepExpression aexpr) {
-    columnsObj.put(aexpr.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(aexpr), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(MySQLGroupConcat groupConcat) {
-    columnsObj.put(groupConcat.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(groupConcat), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(ValueListExpression valueList) {
-    columnsObj.put(valueList.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(valueList), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(RowConstructor rowConstructor) {
-    columnsObj.put(rowConstructor.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(rowConstructor), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(RowGetExpression rowGetExpression) {
-    columnsObj.put(rowGetExpression.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(rowGetExpression), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(OracleHint hint) {
-    columnsObj.put(hint.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(hint), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(TimeKeyExpression timeKeyExpression) {
-    columnsObj.put(timeKeyExpression.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(timeKeyExpression), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(DateTimeLiteralExpression literal) {
-    columnsObj.put(literal.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(literal), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(NotExpression aThis) {
-    columnsObj.put(aThis.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(aThis), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(NextValExpression aThis) {
-    columnsObj.put(aThis.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(aThis), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(CollateExpression aThis) {
-    columnsObj.put(aThis.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(aThis), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(SimilarToExpression aThis) {
-    columnsObj.put(aThis.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(aThis), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(ArrayExpression aThis) {
-    columnsObj.put(aThis.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(aThis), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(ArrayConstructor aThis) {
-    columnsObj.put(aThis.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(aThis), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(VariableAssignment aThis) {
-    columnsObj.put(aThis.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(aThis), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(XMLSerializeExpr aThis) {
-    columnsObj.put(aThis.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(aThis), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(TimezoneExpression aThis) {
-    columnsObj.put(aThis.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(aThis), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(JsonAggregateFunction aThis) {
-    columnsObj.put(aThis.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(aThis), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(JsonFunction aThis) {
-    columnsObj.put(aThis.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(aThis), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(ConnectByRootOperator aThis) {
-    columnsObj.put(aThis.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(aThis), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(OracleNamedFunctionParameter aThis) {
-    columnsObj.put(aThis.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(aThis), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(AllColumns allColumns) {
-    columnsObj.put(allColumns.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(allColumns), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(AllTableColumns allTableColumns) {
-    columnsObj.put(allTableColumns.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(allTableColumns), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(AllValue allValue) {
-    columnsObj.put(allValue.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(allValue), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(IsDistinctExpression isDistinctExpression) {
-    columnsObj.put(isDistinctExpression.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(isDistinctExpression), DbParseConstants.EMPTY);
   }
 
   @Override
   public void visit(GeometryDistance geometryDistance) {
-    columnsObj.put(geometryDistance.toString(), DbParseConstants.EMPTY);
+    columnsObj.put(ExpressionExtractor.extract(geometryDistance), DbParseConstants.EMPTY);
   }
 }

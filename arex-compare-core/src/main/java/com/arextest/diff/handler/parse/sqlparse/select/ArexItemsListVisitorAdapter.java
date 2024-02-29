@@ -1,11 +1,11 @@
 package com.arextest.diff.handler.parse.sqlparse.select;
 
+import com.arextest.diff.handler.parse.sqlparse.select.utils.ExpressionExtractor;
 import com.arextest.diff.utils.JacksonHelperUtil;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import java.util.List;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.RowConstructor;
-import net.sf.jsqlparser.expression.StringValue;
 import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
 import net.sf.jsqlparser.expression.operators.relational.ItemsListVisitor;
 import net.sf.jsqlparser.expression.operators.relational.MultiExpressionList;
@@ -31,19 +31,19 @@ public class ArexItemsListVisitorAdapter implements ItemsListVisitor {
   @Override
   public void visit(ExpressionList expressionList) {
     List<Expression> expressions = expressionList.getExpressions();
-    if (expressions.size() > 0 && expressions.get(0) instanceof RowConstructor) {
+    if (!expressions.isEmpty() && expressions.get(0) instanceof RowConstructor) {
       for (Expression expression : expressions) {
         ExpressionList exprList = ((RowConstructor) expression).getExprList();
         ArrayNode arrayNode = JacksonHelperUtil.getArrayNode();
         for (Expression expressionItem : exprList.getExpressions()) {
-          arrayNode.add(expressionToString(expressionItem));
+          arrayNode.add(ExpressionExtractor.extract((expressionItem)));
         }
         sqlArr.add(arrayNode);
       }
     } else {
       ArrayNode arrayNode = JacksonHelperUtil.getArrayNode();
       for (Expression expression : expressions) {
-        arrayNode.add(expressionToString(expression));
+        arrayNode.add(ExpressionExtractor.extract((expression)));
       }
       sqlArr.add(arrayNode);
     }
@@ -61,17 +61,9 @@ public class ArexItemsListVisitorAdapter implements ItemsListVisitor {
       ArrayNode arrayNode = JacksonHelperUtil.getArrayNode();
       List<Expression> expressions = expressionList.getExpressions();
       for (Expression expression : expressions) {
-        arrayNode.add(expressionToString(expression));
+        arrayNode.add(ExpressionExtractor.extract((expression)));
       }
       sqlArr.add(arrayNode);
-    }
-  }
-
-  private String expressionToString(Expression expression) {
-    if (expression instanceof StringValue) {
-      return ((StringValue) expression).getValue();
-    } else {
-      return expression.toString();
     }
   }
 }

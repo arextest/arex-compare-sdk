@@ -13,9 +13,14 @@ public class UnmatchedPairEntity implements Serializable {
    * {@link UnmatchedType}
    */
   private int unmatchedType;
+  // left unmatched path, the path from the root node to the leaf node
+  // if the nodeName is null, the index is the array index
   private List<NodeEntity> leftUnmatchedPath;
   private List<NodeEntity> rightUnmatchedPath;
+  // the passed array node, the basis for selecting the node
+  // "Index:[0]" indicates that the element of the array is selected by the index
   private List<String> listKeys;
+  // Reference jumps up and down, a collection of paths passed by the reference function
   private Trace trace;
 
   public UnmatchedPairEntity() {
