@@ -1,6 +1,6 @@
 package com.arextest.diff.utils;
 
-import com.arextest.diff.handler.decompress.DecompressServiceBuilder;
+import com.arextest.diff.handler.decompress.TransformServiceBuilder;
 import com.arextest.diff.model.TransformConfig.TransformMethod;
 import com.arextest.diff.service.DecompressService;
 import java.util.List;
@@ -24,7 +24,7 @@ public class TransformUtil {
 
   private static String transform(String fieldValue, String pluginJarUrl, String methodName,
       String methodArgs) {
-    DecompressService decompressService = DecompressServiceBuilder.getDecompressService(
+    DecompressService decompressService = TransformServiceBuilder.getDecompressService(
         pluginJarUrl, methodName);
     if (decompressService == null) {
       throw new RuntimeException("decompressService not exist");

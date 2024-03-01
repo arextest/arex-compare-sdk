@@ -17,9 +17,9 @@ import org.slf4j.LoggerFactory;
 /**
  * Created by rchen9 on 2023/4/26.
  */
-public class DecompressServiceBuilder {
+public class TransformServiceBuilder {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(DecompressServiceBuilder.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(TransformServiceBuilder.class);
   private static PluginDecompressServiceSummary systemDecompressServiceMap =
       new PluginDecompressServiceSummary(null, Collections.emptyMap());
 
