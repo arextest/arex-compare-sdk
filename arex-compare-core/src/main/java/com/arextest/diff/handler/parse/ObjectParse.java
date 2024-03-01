@@ -47,7 +47,6 @@ public class ObjectParse {
     Object obj = null;
     // process the msg
     String pluginJarUrl = rulesConfig.getPluginJarUrl();
-//    Map<List<String>, DecompressConfig> decompressConfigMap = rulesConfig.getDecompressConfigMap();
     Map<List<String>, List<TransformMethod>> transformConfigMap = rulesConfig.getTransformConfigMap();
     if (transformConfigMap != null && transformConfigMap.containsKey(Constant.ROOT_PATH)) {
       try {

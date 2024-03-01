@@ -33,8 +33,6 @@ public class StringAndCompressParse {
   private boolean nameToLower;
 
   private String pluginJarUrl;
-
-  //  private Map<List<String>, DecompressConfig> decompressConfig;
   private Map<List<String>, List<TransformMethod>> transFormConfigMap;
 
   public Map<List<NodeEntity>, String> getOriginal() {
@@ -44,10 +42,6 @@ public class StringAndCompressParse {
   public void setNameToLower(boolean nameToLower) {
     this.nameToLower = nameToLower;
   }
-
-//  public void setDecompressConfig(Map<List<String>, DecompressConfig> decompressConfig) {
-//    this.decompressConfig = decompressConfig;
-//  }
 
   public void setTransFormConfigMap(
       Map<List<String>, List<TransformMethod>> transFormConfigMap) {
