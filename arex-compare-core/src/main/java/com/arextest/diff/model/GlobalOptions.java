@@ -1,6 +1,6 @@
 package com.arextest.diff.model;
 
-import com.arextest.diff.handler.decompress.DecompressServiceBuilder;
+import com.arextest.diff.handler.decompress.TransformServiceBuilder;
 import com.arextest.diff.utils.StringUtil;
 import java.util.Set;
 
@@ -73,7 +73,7 @@ public class GlobalOptions {
       return this;
     }
     this.pluginJarUrl = pluginJarUrl;
-    DecompressServiceBuilder.loadSystemDecompressService(pluginJarUrl);
+    TransformServiceBuilder.loadSystemDecompressService(pluginJarUrl);
     return this;
   }
 

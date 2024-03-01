@@ -5,6 +5,8 @@ import com.arextest.diff.model.DecompressConfig;
 import com.arextest.diff.model.GlobalOptions;
 import com.arextest.diff.model.RulesConfig;
 import com.arextest.diff.model.SystemConfig;
+import com.arextest.diff.model.TransformConfig;
+import com.arextest.diff.model.TransformConfig.TransformMethod;
 import com.arextest.diff.model.key.ListSortEntity;
 import com.arextest.diff.model.key.ReferenceEntity;
 import java.util.ArrayList;
@@ -37,8 +39,8 @@ public class OptionsToRulesConvert {
     rulesConfig.setExpressionExclusions(
         FieldToLowerUtil.expressionNodeListToLower(rulesConfig.getExpressionExclusions()));
     rulesConfig.setIgnoreNodeSet(FieldToLowerUtil.setToLower(rulesConfig.getIgnoreNodeSet()));
-    rulesConfig.setDecompressConfigMap(
-        FieldToLowerUtil.mapKeyToLower(rulesConfig.getDecompressConfigMap()));
+    rulesConfig.setTransformConfigMap(
+        FieldToLowerUtil.mapKeyToLower(rulesConfig.getTransformConfigMap()));
     FieldToLowerUtil.referenceToLower(rulesConfig.getReferenceEntities());
     FieldToLowerUtil.keyConfigToLower(rulesConfig.getListSortEntities());
   }
@@ -85,8 +87,9 @@ public class OptionsToRulesConvert {
     }
     rulesConfig.setCategoryType(compareOptions.getCategoryType());
     rulesConfig.setPluginJarUrl(compareOptions.getPluginJarUrl());
-    rulesConfig.setDecompressConfigMap(
-        decompressConfigConvert(compareOptions.getDecompressConfigList()));
+    rulesConfig.setTransformConfigMap(
+        decompressAndTransformConvert(compareOptions.getDecompressConfigList(),
+            compareOptions.getTransFormConfigList()));
     rulesConfig.setInclusions(compareOptions.getInclusions() == null ? null
         : new ArrayList<>(compareOptions.getInclusions()));
     rulesConfig.setExpressionExclusions(
@@ -124,22 +127,39 @@ public class OptionsToRulesConvert {
     }
   }
 
-  private static Map<List<String>, DecompressConfig> decompressConfigConvert(
-      List<DecompressConfig> decompressConfigList) {
-    if (decompressConfigList == null || decompressConfigList.isEmpty()) {
-      return Collections.emptyMap();
-    }
-    Map<List<String>, DecompressConfig> result = new HashMap<>();
-    for (DecompressConfig decompressConfig : decompressConfigList) {
-      List<List<String>> nodePathList = decompressConfig.getNodePath();
-      if (nodePathList == null) {
-        continue;
-      }
-      for (List<String> nodePath : nodePathList) {
-        if (nodePath == null || nodePath.isEmpty()) {
+  private static Map<List<String>, List<TransformMethod>> decompressAndTransformConvert(
+      List<DecompressConfig> decompressConfigList, List<TransformConfig> transformConfigList) {
+
+    Map<List<String>, List<TransformMethod>> result = new HashMap<>();
+    if (!ListUti.isEmpty(decompressConfigList)) {
+      for (DecompressConfig decompressConfig : decompressConfigList) {
+        List<List<String>> nodePathList = decompressConfig.getNodePath();
+        if (nodePathList == null) {
           continue;
         }
-        result.put(nodePath, decompressConfig);
+        for (List<String> nodePath : nodePathList) {
+          if (nodePath == null || nodePath.isEmpty()) {
+            continue;
+          }
+          TransformMethod transFormMethod = new TransformMethod(decompressConfig.getName(),
+              decompressConfig.getArgs());
+          result.put(nodePath, Collections.singletonList(transFormMethod));
+        }
+      }
+    }
+
+    if (!ListUti.isEmpty(transformConfigList)) {
+      for (TransformConfig transFormConfig : transformConfigList) {
+        List<List<String>> nodePathList = transFormConfig.getNodePath();
+        if (nodePathList == null) {
+          continue;
+        }
+        for (List<String> nodePath : nodePathList) {
+          if (nodePath == null || nodePath.isEmpty()) {
+            continue;
+          }
+          result.put(nodePath, transFormConfig.getTransformMethods());
+        }
       }
     }
     return result;

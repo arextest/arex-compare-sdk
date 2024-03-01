@@ -21,5 +21,4 @@ public class TaskThreadFactory {
       new NamedThreadFactory("structureHandler"),
       new CallerRunsPolicyWithReport("structureHandler"));
 
-
 }

@@ -1,11 +1,11 @@
 package com.arextest.diff.handler.parse;
 
 import com.arextest.diff.factory.TaskThreadFactory;
-import com.arextest.diff.model.DecompressConfig;
 import com.arextest.diff.model.RulesConfig;
+import com.arextest.diff.model.TransformConfig.TransformMethod;
 import com.arextest.diff.model.enumeration.Constant;
 import com.arextest.diff.model.parse.MsgObjCombination;
-import com.arextest.diff.utils.DecompressUtil;
+import com.arextest.diff.utils.TransformUtil;
 import com.arextest.diff.utils.JacksonHelperUtil;
 import com.arextest.diff.utils.StringUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -47,11 +47,11 @@ public class ObjectParse {
     Object obj = null;
     // process the msg
     String pluginJarUrl = rulesConfig.getPluginJarUrl();
-    Map<List<String>, DecompressConfig> decompressConfigMap = rulesConfig.getDecompressConfigMap();
-    if (decompressConfigMap != null && decompressConfigMap.containsKey(Constant.ROOT_PATH)) {
+    Map<List<String>, List<TransformMethod>> transformConfigMap = rulesConfig.getTransformConfigMap();
+    if (transformConfigMap != null && transformConfigMap.containsKey(Constant.ROOT_PATH)) {
       try {
-        String decompressMsg = DecompressUtil.decompressPlugin(pluginJarUrl,
-            decompressConfigMap.get(Constant.ROOT_PATH), msg);
+        String decompressMsg = TransformUtil.transformPlugin(pluginJarUrl,
+            transformConfigMap.get(Constant.ROOT_PATH), msg);
         if (!StringUtil.isEmpty(decompressMsg)) {
           msg = decompressMsg;
         } else {

@@ -1,6 +1,7 @@
 package com.arextest.diff.model;
 
 import com.arextest.diff.model.enumeration.CategoryType;
+import com.arextest.diff.utils.ListUti;
 import com.arextest.diff.utils.StringUtil;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -39,6 +40,13 @@ public class CompareOptions {
    * decompress
    */
   private List<DecompressConfig> decompressConfigList;
+
+  /**
+   * the config to transform the message key：The bean name of the transform method which is
+   * implement the DecompressService interface, you can use an alias value：the collection of the
+   * node path need to transform
+   */
+  private List<TransformConfig> transformConfigList;
 
   /**
    * reference config key：the node path which is foreign key path For the list node which is alike
@@ -176,11 +184,32 @@ public class CompareOptions {
     if (this.decompressConfigList == null) {
       this.decompressConfigList = new ArrayList<>();
     }
-    for (DecompressConfig decompressConfig : decompressConfigList) {
-      this.putDecompressConfig(decompressConfig);
-    }
+    this.decompressConfigList.addAll(decompressConfigList);
     return this;
   }
+
+  public CompareOptions putTransformConfig(TransformConfig transFormConfig) {
+    if (transFormConfig == null || ListUti.isEmpty(transFormConfig.getNodePath())) {
+      return this;
+    }
+    if (this.transformConfigList == null) {
+      this.transformConfigList = new ArrayList<>();
+    }
+    this.transformConfigList.add(transFormConfig);
+    return this;
+  }
+
+  public CompareOptions putTransformConfig(Collection<TransformConfig> transformConfigList) {
+    if (transformConfigList == null || transformConfigList.isEmpty()) {
+      return this;
+    }
+    if (this.transformConfigList == null) {
+      this.transformConfigList = new ArrayList<>();
+    }
+    this.transformConfigList.addAll(transformConfigList);
+    return this;
+  }
+
 
   public CompareOptions putReferenceConfig(List<String> fkNodePath, List<String> pkNodePath) {
     if (this.referenceConfig == null) {
@@ -278,6 +307,10 @@ public class CompareOptions {
 
   public List<DecompressConfig> getDecompressConfigList() {
     return decompressConfigList;
+  }
+
+  public List<TransformConfig> getTransFormConfigList() {
+    return transformConfigList;
   }
 
   public Map<List<String>, List<String>> getReferenceConfig() {

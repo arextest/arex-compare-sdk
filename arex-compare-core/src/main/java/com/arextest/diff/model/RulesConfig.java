@@ -1,5 +1,6 @@
 package com.arextest.diff.model;
 
+import com.arextest.diff.model.TransformConfig.TransformMethod;
 import com.arextest.diff.model.enumeration.CategoryType;
 import com.arextest.diff.model.key.ListSortEntity;
 import com.arextest.diff.model.key.ReferenceEntity;
@@ -27,7 +28,7 @@ public class RulesConfig {
    */
   private String pluginJarUrl;
 
-  private Map<List<String>, DecompressConfig> decompressConfigMap;
+  private Map<List<String>, List<TransformMethod>> transformConfigMap;
 
   private List<List<String>> inclusions;
   private List<List<ExpressionNodeEntity>> exclusions;
@@ -127,13 +128,13 @@ public class RulesConfig {
     this.ignoreNodeSet = ignoreNodeSet;
   }
 
-
-  public Map<List<String>, DecompressConfig> getDecompressConfigMap() {
-    return decompressConfigMap;
+  public Map<List<String>, List<TransformMethod>> getTransformConfigMap() {
+    return transformConfigMap;
   }
 
-  public void setDecompressConfigMap(Map<List<String>, DecompressConfig> decompressConfigMap) {
-    this.decompressConfigMap = decompressConfigMap;
+  public void setTransformConfigMap(
+      Map<List<String>, List<TransformMethod>> transformConfigMap) {
+    this.transformConfigMap = transformConfigMap;
   }
 
   public List<ReferenceEntity> getReferenceEntities() {

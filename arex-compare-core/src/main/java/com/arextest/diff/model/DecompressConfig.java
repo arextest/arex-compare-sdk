@@ -5,6 +5,7 @@ import java.util.List;
 /**
  * Created by rchen9 on 2023/4/26.
  */
+@Deprecated
 public class DecompressConfig {
 
   /**

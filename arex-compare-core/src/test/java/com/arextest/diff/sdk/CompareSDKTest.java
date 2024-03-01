@@ -3,6 +3,8 @@ package com.arextest.diff.sdk;
 import com.arextest.diff.model.CompareOptions;
 import com.arextest.diff.model.CompareResult;
 import com.arextest.diff.model.DecompressConfig;
+import com.arextest.diff.model.TransformConfig;
+import com.arextest.diff.model.TransformConfig.TransformMethod;
 import com.arextest.diff.model.enumeration.CategoryType;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -57,6 +59,7 @@ public class CompareSDKTest {
     CompareSDK sdk = new CompareSDK();
     sdk.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true);
 
+    //region json msg
     String str1 = "{\n" +
         "    \"database\": \"htlgroupproductdb_dalcluster\",\n" +
         "    \"parameters\": [\n" +
@@ -100,6 +103,7 @@ public class CompareSDKTest {
         "    \"body\": \"UPDATE `hotelpicture` SET `hotelid`=?, `title`=?, `smallpicurl`=?, `largepicurl`=?, `description`=?, `sort`=?, `newpicurl`=?, `pictype`=?, `position`=?, `typeid1`=?, `sharpness`=? WHERE `id`=?\"\n"
         +
         "}";
+    //endregion
 
     CompareOptions compareOptions = CompareOptions.options();
     compareOptions.putExclusions(Arrays.asList("body"));
@@ -404,6 +408,7 @@ public class CompareSDKTest {
         .putNameToLower(true)
         .putNullEqualsEmpty(true);
 
+    //region json msg
     String str1 = "{\n"
         + "    \"response\": {\n"
         + "        \"students\": [\n"
@@ -443,6 +448,7 @@ public class CompareSDKTest {
         + "        ]\n"
         + "    }\n"
         + "}";
+    //endregion
 
     CompareOptions compareOptions = CompareOptions.options()
         .putInclusions(
@@ -461,6 +467,7 @@ public class CompareSDKTest {
         .putNameToLower(true)
         .putNullEqualsEmpty(true);
 
+    //region json msg
     String str1 = "{\n"
         + "    \"response\": {\n"
         + "        \"students\": [\n"
@@ -500,6 +507,7 @@ public class CompareSDKTest {
         + "        \"region\": \"beijing\"\n"
         + "    }\n"
         + "}";
+    //endregion
 
     CompareOptions compareOptions = CompareOptions.options()
         .putExclusions(
@@ -601,6 +609,7 @@ public class CompareSDKTest {
         .putNameToLower(true)
         .putNullEqualsEmpty(true);
 
+    //region json msg
     String str1 = "{\n"
         + "    \"alist\": [\n"
         + "        {\n"
@@ -720,6 +729,7 @@ public class CompareSDKTest {
         + "        }\n"
         + "    ]\n"
         + "}";
+    //endregion
 
     CompareOptions compareOptions = CompareOptions.options()
         .putReferenceConfig(Arrays.asList("alist", "aid", "id"), Arrays.asList("family", "id"))
@@ -734,5 +744,34 @@ public class CompareSDKTest {
     CompareResult result = sdk.compare(str1, str2, compareOptions);
     Assertions.assertEquals(0, result.getLogs().size());
   }
+
+  @Test
+  public void testTransFormConfigTest() {
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions()
+        .putNameToLower(true)
+        .putNullEqualsEmpty(true)
+        .putPluginJarUrl("./lib/arex-compare-sdk-plugin-0.1.0-jar-with-dependencies.jar");
+
+    String str1 = "{\n"
+        + "    \"subObj\": \"SDRzSUFBQUFBQUFBQUt0V3lzM1BLOGxRc2xJeVZkSlJxa3hOTEFJeWpReU1ESUc4bE1SS0lNZlFYS2tXQU1hdnI4QW1BQUFB\"\n"
+        + "}";
+
+    String str2 = "{\n"
+        + "    \"subObj\": \"SDRzSUFBQUFBQUFBQUt0V3lzM1BLOGxRc2xJeVZkSlJxa3hOTEFJeWpReU1ESUc4bE1SS0lNZlFRcWtXQVB2bzg4c21BQUFB\"\n"
+        + "}";
+
+    TransformMethod transformMethodZstd = new TransformMethod("Base64", "");
+    TransformMethod transformMethodGzip = new TransformMethod("Gzip", null);
+
+    CompareOptions compareOptions = CompareOptions.options();
+
+    compareOptions.putTransformConfig(new TransformConfig(Arrays.asList(Arrays.asList("subObj")),
+        Arrays.asList(transformMethodZstd, transformMethodGzip)));
+
+    CompareResult result = sdk.compare(str1, str2, compareOptions);
+    Assertions.assertEquals(1, result.getLogs().size());
+  }
+
 
 }
