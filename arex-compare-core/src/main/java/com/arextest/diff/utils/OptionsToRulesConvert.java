@@ -39,8 +39,6 @@ public class OptionsToRulesConvert {
     rulesConfig.setExpressionExclusions(
         FieldToLowerUtil.expressionNodeListToLower(rulesConfig.getExpressionExclusions()));
     rulesConfig.setIgnoreNodeSet(FieldToLowerUtil.setToLower(rulesConfig.getIgnoreNodeSet()));
-//    rulesConfig.setDecompressConfigMap(
-//        FieldToLowerUtil.mapKeyToLower(rulesConfig.getDecompressConfigMap()));
     rulesConfig.setTransformConfigMap(
         FieldToLowerUtil.mapKeyToLower(rulesConfig.getTransformConfigMap()));
     FieldToLowerUtil.referenceToLower(rulesConfig.getReferenceEntities());
@@ -89,8 +87,6 @@ public class OptionsToRulesConvert {
     }
     rulesConfig.setCategoryType(compareOptions.getCategoryType());
     rulesConfig.setPluginJarUrl(compareOptions.getPluginJarUrl());
-//    rulesConfig.setDecompressConfigMap(
-//        decompressConfigConvert(compareOptions.getDecompressConfigList()));
     rulesConfig.setTransformConfigMap(
         decompressAndTransformConvert(compareOptions.getDecompressConfigList(),
             compareOptions.getTransFormConfigList()));
@@ -130,27 +126,6 @@ public class OptionsToRulesConvert {
       rulesConfig.setIpIgnore(compareOptions.getIpIgnore());
     }
   }
-
-//  private static Map<List<String>, DecompressConfig> decompressConfigConvert(
-//      List<DecompressConfig> decompressConfigList) {
-//    if (decompressConfigList == null || decompressConfigList.isEmpty()) {
-//      return Collections.emptyMap();
-//    }
-//    Map<List<String>, DecompressConfig> result = new HashMap<>();
-//    for (DecompressConfig decompressConfig : decompressConfigList) {
-//      List<List<String>> nodePathList = decompressConfig.getNodePath();
-//      if (nodePathList == null) {
-//        continue;
-//      }
-//      for (List<String> nodePath : nodePathList) {
-//        if (nodePath == null || nodePath.isEmpty()) {
-//          continue;
-//        }
-//        result.put(nodePath, decompressConfig);
-//      }
-//    }
-//    return result;
-//  }
 
   private static Map<List<String>, List<TransformMethod>> decompressAndTransformConvert(
       List<DecompressConfig> decompressConfigList, List<TransformConfig> transformConfigList) {

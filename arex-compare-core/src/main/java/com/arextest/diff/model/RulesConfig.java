@@ -28,8 +28,6 @@ public class RulesConfig {
    */
   private String pluginJarUrl;
 
-//  private Map<List<String>, DecompressConfig> decompressConfigMap;
-
   private Map<List<String>, List<TransformMethod>> transformConfigMap;
 
   private List<List<String>> inclusions;
@@ -129,16 +127,6 @@ public class RulesConfig {
   public void setIgnoreNodeSet(Set<String> ignoreNodeSet) {
     this.ignoreNodeSet = ignoreNodeSet;
   }
-
-
-//  public Map<List<String>, DecompressConfig> getDecompressConfigMap() {
-//    return decompressConfigMap;
-//  }
-//
-//  public void setDecompressConfigMap(Map<List<String>, DecompressConfig> decompressConfigMap) {
-//    this.decompressConfigMap = decompressConfigMap;
-//  }
-
 
   public Map<List<String>, List<TransformMethod>> getTransformConfigMap() {
     return transformConfigMap;
