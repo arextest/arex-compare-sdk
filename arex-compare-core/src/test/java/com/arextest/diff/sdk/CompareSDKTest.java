@@ -499,7 +499,7 @@ public class CompareSDKTest {
         + "            },\n"
         + "            {\n"
         + "                \"info\": {\n"
-        + "                    \"name\": \"apple\"\n"
+        + "                    \"name\": \"tiktok\"\n"
         + "                },\n"
         + "                \"age\": 20\n"
         + "            }\n"
@@ -768,6 +768,42 @@ public class CompareSDKTest {
 
     compareOptions.putTransformConfig(new TransformConfig(Arrays.asList(Arrays.asList("subObj")),
         Arrays.asList(transformMethodZstd, transformMethodGzip)));
+
+    CompareResult result = sdk.compare(str1, str2, compareOptions);
+    Assertions.assertEquals(1, result.getLogs().size());
+  }
+
+  @Test
+  public void testParmeter() {
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions().putOnlyCompareCoincidentColumn(true);
+
+    String str1 = "{\n"
+        + "  \"parameters\": {\n"
+        + "    \"parammap\": \"{\\\"link_type\\\":1,\\\"token\\\":\\\"1\\\"}\",\n"
+        + "    \"tablename\": \"table\"\n"
+        + "  },\n"
+        + "  \"body\": \"insert into log (table_name, param_map) values (?, ?)\",\n"
+        + "  \"dbname\": \"\"\n"
+        + "    }\n"
+        + "  ]\n"
+        + "}";
+
+    String str2 = "{\n"
+        + "  \"parameters\": {\n"
+        + "    \"parammap\": \"{\\\"link_type\\\":1}\",\n"
+        + "    \"tablename\": \"table\"\n"
+        + "  },\n"
+        + "  \"body\": \"insert into log (table_name, param_map) values (?, ?)\",\n"
+        + "  \"dbname\": \"\"\n"
+        + "    }\n"
+        + "  ]\n"
+        + "}";
+
+    CompareOptions compareOptions = CompareOptions.options();
+    compareOptions.putExclusions(Arrays.asList("body"));
+    compareOptions.putCategoryType(CategoryType.DATABASE);
+    compareOptions.putOnlyCompareCoincidentColumn(true);
 
     CompareResult result = sdk.compare(str1, str2, compareOptions);
     Assertions.assertEquals(1, result.getLogs().size());
