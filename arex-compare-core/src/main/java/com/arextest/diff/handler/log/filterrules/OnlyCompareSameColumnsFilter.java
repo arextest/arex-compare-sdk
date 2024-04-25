@@ -47,7 +47,8 @@ public class OnlyCompareSameColumnsFilter implements Predicate<LogEntity> {
       int fuzzyPathSize = fuzzyPath.size();
       int ignorePathSize = ignoreNodePath.size();
 
-      if (ignorePathSize < fuzzyPathSize) {
+      // such as parameters/parammap vs parameters
+      if (fuzzyPathSize - ignorePathSize == 1) {
         boolean flag = true;
         for (int i = 0; i < ignorePathSize; i++) {
           if (!Objects.equals(ignoreNodePath.get(i), fuzzyPath.get(i))) {
