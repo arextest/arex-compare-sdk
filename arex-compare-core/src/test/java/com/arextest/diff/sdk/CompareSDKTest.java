@@ -809,5 +809,53 @@ public class CompareSDKTest {
     Assertions.assertEquals(1, result.getLogs().size());
   }
 
+  @Test
+  public void testOnlyCompareExistListElements() {
+    CompareSDK sdk = new CompareSDK();
+//    sdk.getGlobalOptions().putOnlyCompareExistListElements(true);
+
+    String str1 = "{\n"
+        + "    \"resultList\": [\n"
+        + "        {\n"
+        + "            \"student\": \"stuA\",\n"
+        + "            \"age\": 18\n"
+        + "        },\n"
+        + "        {\n"
+        + "            \"student\": \"stuB\",\n"
+        + "            \"age\": 19,\n"
+        + "            \"sex\": 0\n"
+        + "        }\n"
+        + "    ]\n"
+        + "}";
+
+    String str2 = "{\n"
+        + "    \"resultList\": [\n"
+        + "        {\n"
+        + "            \"student\": \"stuA\",\n"
+        + "            \"age\": 18\n"
+        + "        }\n"
+        + "    ]\n"
+        + "}";
+
+    CompareOptions compareOptions = CompareOptions.options().putOnlyCompareExistListElements(true);
+    CompareResult result = sdk.compare(str1, str2, compareOptions);
+    Assertions.assertEquals(0, result.getLogs().size());
+  }
+
+  @Test
+  public void testNullEqualsNotExist() {
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions().putNullEqualsNotExist(true);
+
+    CompareResult result1 = sdk.compare("{\"name\":null}", "{}");
+    Assertions.assertEquals(0, result1.getLogs().size());
+
+    CompareResult result2 = sdk.compare("{\"name\":null}", "{\"name\":\"\"}");
+    Assertions.assertEquals(0, result2.getLogs().size());
+
+    CompareResult result3 = sdk.compare("{}", "{\"name\":\"\"}");
+    Assertions.assertEquals(0, result3.getLogs().size());
+  }
+
 
 }

@@ -55,6 +55,8 @@ public class RulesConfig {
 
   private boolean ipIgnore;
 
+  private boolean onlyCompareExistListElements;
+
   //region: inner processed class
   private List<List<ExpressionNodeEntity>> expressionExclusions;
 
@@ -215,6 +217,14 @@ public class RulesConfig {
 
   public void setIpIgnore(boolean ipIgnore) {
     this.ipIgnore = ipIgnore;
+  }
+
+  public boolean isOnlyCompareExistListElements() {
+    return onlyCompareExistListElements;
+  }
+
+  public void setOnlyCompareExistListElements(boolean onlyCompareExistListElements) {
+    this.onlyCompareExistListElements = onlyCompareExistListElements;
   }
 
   public List<List<ExpressionNodeEntity>> getExpressionExclusions() {

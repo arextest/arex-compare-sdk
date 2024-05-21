@@ -105,6 +105,11 @@ public class CompareOptions {
    */
   private Boolean ipIgnore;
 
+  /**
+   * This option is true, only compare the list elements which are existed in the baseMsg and testMsg
+   */
+  private Boolean onlyCompareExistListElements;
+
   public CompareOptions() {
   }
 
@@ -289,6 +294,11 @@ public class CompareOptions {
     return this;
   }
 
+  public CompareOptions putOnlyCompareExistListElements(Boolean onlyCompareExistListElements) {
+    this.onlyCompareExistListElements = onlyCompareExistListElements;
+    return this;
+  }
+
   public String getCategoryType() {
     return categoryType;
   }
@@ -351,5 +361,9 @@ public class CompareOptions {
 
   public Boolean getIpIgnore() {
     return ipIgnore;
+  }
+
+  public Boolean getOnlyCompareExistListElements() {
+    return onlyCompareExistListElements;
   }
 }

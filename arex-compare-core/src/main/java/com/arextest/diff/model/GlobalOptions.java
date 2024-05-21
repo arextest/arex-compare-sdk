@@ -63,6 +63,11 @@ public class GlobalOptions {
    */
   private Boolean ipIgnore;
 
+  /**
+   * This option is true, only compare the list elements which are existed in the baseMsg and testMsg
+   */
+  private Boolean onlyCompareExistListElements;
+
   public GlobalOptions() {
     this.nameToLower = false;
     this.nullEqualsEmpty = false;
@@ -122,6 +127,11 @@ public class GlobalOptions {
     return this;
   }
 
+  public GlobalOptions putOnlyCompareExistListElements(Boolean onlyCompareExistListElements) {
+    this.onlyCompareExistListElements = onlyCompareExistListElements;
+    return this;
+  }
+
   public String getPluginJarUrl() {
     return pluginJarUrl;
   }
@@ -160,6 +170,10 @@ public class GlobalOptions {
 
   public Boolean getIpIgnore() {
     return ipIgnore;
+  }
+
+  public Boolean getOnlyCompareExistListElements() {
+    return onlyCompareExistListElements;
   }
 
 }

@@ -19,7 +19,7 @@ public class LogRegisterCondition {
         || accordingNullEqualsNotExist(obj1, obj2, logMarker, compareContext);
   }
 
-  public static boolean accordingNullEqualsEmpty(Object obj1, Object obj2, LogMarker logMarker,
+  private static boolean accordingNullEqualsEmpty(Object obj1, Object obj2, LogMarker logMarker,
       CompareContext compareContext) {
 
     if (!compareContext.notDistinguishNullAndEmpty) {
@@ -38,7 +38,7 @@ public class LogRegisterCondition {
     }
   }
 
-  public static boolean accordingNullEqualsNotExist(Object obj1, Object obj2, LogMarker logMarker,
+  private static boolean accordingNullEqualsNotExist(Object obj1, Object obj2, LogMarker logMarker,
       CompareContext compareContext) {
 
     if (!compareContext.nullEqualsNotExist) {
@@ -48,7 +48,8 @@ public class LogRegisterCondition {
     switch (logMarker) {
       case RIGHT_OBJECT_MISSING:
       case LEFT_OBJECT_MISSING:
-        return judgeNullAndNotExist(obj1) && judgeNullAndNotExist(obj2);
+      case NULL_CHECK:
+        return judgeNullAndNotExistAndEmptyString(obj1) && judgeNullAndNotExistAndEmptyString(obj2);
       default:
         return false;
     }
@@ -73,9 +74,11 @@ public class LogRegisterCondition {
     }
   }
 
-  private static boolean judgeNullAndNotExist(Object o) {
+  private static boolean judgeNullAndNotExistAndEmptyString(Object o) {
     if (o == null || o instanceof NullNode) {
       return true;
+    } else if (o instanceof TextNode) {
+      return Objects.equals(((TextNode) o).asText(), "");
     }
     return false;
   }
