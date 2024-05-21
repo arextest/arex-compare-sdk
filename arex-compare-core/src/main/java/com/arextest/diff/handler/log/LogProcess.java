@@ -1,7 +1,11 @@
 package com.arextest.diff.handler.log;
 
 import com.arextest.diff.factory.PluginServiceFactory;
+import com.arextest.diff.handler.log.filterrules.IPFilter;
+import com.arextest.diff.handler.log.filterrules.OnlyCompareSameColumnsFilter;
+import com.arextest.diff.handler.log.filterrules.OnlyExistListElementFilter;
 import com.arextest.diff.handler.log.filterrules.UnmatchedTypeFilter;
+import com.arextest.diff.handler.log.filterrules.UuidFilter;
 import com.arextest.diff.model.RulesConfig;
 import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.plugin.LogEntityFilter;
@@ -36,6 +40,24 @@ public class LogProcess {
       this.filterRules = new ArrayList<>();
     }
     this.filterRules.addAll(rules);
+  }
+
+  public void appendOtherFilterRules(RulesConfig rulesConfig) {
+    if (this.filterRules == null) {
+      this.filterRules = new ArrayList<>();
+    }
+    if (rulesConfig.isUuidIgnore()) {
+      this.filterRules.add(new UuidFilter());
+    }
+    if (rulesConfig.isIpIgnore()) {
+      this.filterRules.add(new IPFilter());
+    }
+    if (rulesConfig.isOnlyCompareCoincidentColumn()) {
+      this.filterRules.add(new OnlyCompareSameColumnsFilter());
+    }
+    if (rulesConfig.isOnlyCompareExistListElements()) {
+      this.filterRules.add(new OnlyExistListElementFilter());
+    }
   }
 
   public boolean process(List<LogEntity> logEntities) {

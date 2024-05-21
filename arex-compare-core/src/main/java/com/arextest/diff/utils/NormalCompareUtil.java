@@ -6,9 +6,7 @@ import com.arextest.diff.handler.WhitelistHandler;
 import com.arextest.diff.handler.keycompute.KeyCompute;
 import com.arextest.diff.handler.log.LogProcess;
 import com.arextest.diff.handler.log.filterrules.ArexPrefixFilter;
-import com.arextest.diff.handler.log.filterrules.IPFilter;
 import com.arextest.diff.handler.log.filterrules.TimePrecisionFilter;
-import com.arextest.diff.handler.log.filterrules.UuidFilter;
 import com.arextest.diff.handler.metric.TimeConsumerWatch;
 import com.arextest.diff.handler.metric.TimeMetricLabel;
 import com.arextest.diff.handler.parse.JSONParse;
@@ -25,7 +23,6 @@ import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.model.parse.MsgObjCombination;
 import com.arextest.diff.model.parse.MsgStructure;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
@@ -137,12 +134,7 @@ public class NormalCompareUtil {
       logProcess.appendFilterRules(
           Arrays.asList(new TimePrecisionFilter(rulesConfig.getIgnoredTimePrecision()),
               new ArexPrefixFilter()));
-      if (rulesConfig.isUuidIgnore()) {
-        logProcess.appendFilterRules(Collections.singletonList(new UuidFilter()));
-      }
-      if (rulesConfig.isIpIgnore()) {
-        logProcess.appendFilterRules(Collections.singletonList(new IPFilter()));
-      }
+      logProcess.appendOtherFilterRules(rulesConfig);
       logs = compareHandler.doHandler(rulesConfig, keyComputeResponse, msgStructureFuture,
           msgWhiteObj.getBaseObj(), msgWhiteObj.getTestObj(), logProcess);
       timeConsumerWatch.end(TimeMetricLabel.COMPARE_HANDLER);

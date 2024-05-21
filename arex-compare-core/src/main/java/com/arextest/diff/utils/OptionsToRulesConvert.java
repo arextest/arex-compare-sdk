@@ -79,6 +79,9 @@ public class OptionsToRulesConvert {
     if (globalOptions.getIpIgnore() != null) {
       rulesConfig.setIpIgnore(globalOptions.getIpIgnore());
     }
+    if (globalOptions.getOnlyCompareExistListElements() != null) {
+      rulesConfig.setOnlyCompareExistListElements(globalOptions.getOnlyCompareExistListElements());
+    }
   }
 
   private static void optionsToRules(CompareOptions compareOptions, RulesConfig rulesConfig) {
@@ -124,6 +127,9 @@ public class OptionsToRulesConvert {
     }
     if (compareOptions.getIpIgnore() != null) {
       rulesConfig.setIpIgnore(compareOptions.getIpIgnore());
+    }
+    if (compareOptions.getOnlyCompareExistListElements() != null) {
+      rulesConfig.setOnlyCompareExistListElements(compareOptions.getOnlyCompareExistListElements());
     }
   }
 
