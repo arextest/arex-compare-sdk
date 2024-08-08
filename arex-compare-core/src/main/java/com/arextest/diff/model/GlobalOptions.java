@@ -64,9 +64,16 @@ public class GlobalOptions {
   private Boolean ipIgnore;
 
   /**
-   * This option is true, only compare the list elements which are existed in the baseMsg and testMsg
+   * This option is true, only compare the list elements which are existed in the baseMsg and
+   * testMsg
    */
   private Boolean onlyCompareExistListElements;
+
+  /**
+   * This option is true, the log entity message is simplified
+   * The baseMsg and testMsg are only output when leaf nodes
+   */
+  private Boolean simplifyLogEntity;
 
   public GlobalOptions() {
     this.nameToLower = false;
@@ -132,6 +139,11 @@ public class GlobalOptions {
     return this;
   }
 
+  public GlobalOptions putSimplifyLogEntity(Boolean simplifyLogEntity) {
+    this.simplifyLogEntity = simplifyLogEntity;
+    return this;
+  }
+
   public String getPluginJarUrl() {
     return pluginJarUrl;
   }
@@ -174,6 +186,10 @@ public class GlobalOptions {
 
   public Boolean getOnlyCompareExistListElements() {
     return onlyCompareExistListElements;
+  }
+
+  public Boolean getSimplifyLogEntity() {
+    return simplifyLogEntity;
   }
 
 }

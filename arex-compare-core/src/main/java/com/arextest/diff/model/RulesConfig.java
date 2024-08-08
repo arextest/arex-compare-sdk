@@ -57,6 +57,8 @@ public class RulesConfig {
 
   private boolean onlyCompareExistListElements;
 
+  private boolean simplifyLogEntity;
+
   //region: inner processed class
   private List<List<ExpressionNodeEntity>> expressionExclusions;
 
@@ -225,6 +227,14 @@ public class RulesConfig {
 
   public void setOnlyCompareExistListElements(boolean onlyCompareExistListElements) {
     this.onlyCompareExistListElements = onlyCompareExistListElements;
+  }
+
+  public boolean isSimplifyLogEntity() {
+    return simplifyLogEntity;
+  }
+
+  public void setSimplifyLogEntity(boolean simplifyLogEntity) {
+    this.simplifyLogEntity = simplifyLogEntity;
   }
 
   public List<List<ExpressionNodeEntity>> getExpressionExclusions() {

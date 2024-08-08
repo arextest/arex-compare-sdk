@@ -82,6 +82,9 @@ public class OptionsToRulesConvert {
     if (globalOptions.getOnlyCompareExistListElements() != null) {
       rulesConfig.setOnlyCompareExistListElements(globalOptions.getOnlyCompareExistListElements());
     }
+    if (globalOptions.getSimplifyLogEntity() != null) {
+      rulesConfig.setSimplifyLogEntity(globalOptions.getSimplifyLogEntity());
+    }
   }
 
   private static void optionsToRules(CompareOptions compareOptions, RulesConfig rulesConfig) {
@@ -130,6 +133,9 @@ public class OptionsToRulesConvert {
     }
     if (compareOptions.getOnlyCompareExistListElements() != null) {
       rulesConfig.setOnlyCompareExistListElements(compareOptions.getOnlyCompareExistListElements());
+    }
+    if (compareOptions.getSimplifyLogEntity() != null) {
+      rulesConfig.setSimplifyLogEntity(compareOptions.getSimplifyLogEntity());
     }
   }
 

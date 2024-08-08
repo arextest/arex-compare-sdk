@@ -40,8 +40,8 @@ public class LogEntity implements Serializable {
   }
 
   public LogEntity(Object baseValue, Object testValue, UnmatchedPairEntity pathPair) {
-    this.baseValue = valueToString(baseValue);
-    this.testValue = valueToString(testValue);
+    this.baseValue = baseValue;
+    this.testValue = testValue;
     this.pathPair = pathPair;
     processLogInfo(this.baseValue, this.testValue, pathPair.getUnmatchedType());
   }
@@ -111,30 +111,6 @@ public class LogEntity implements Serializable {
     this.addRefPkNodePathRight = addRefPkNodePathRight;
   }
 
-  // public String getPath() {
-  //     return path;
-  // }
-  //
-  // public void setPath(String path) {
-  //     this.path = path;
-  // }
-  //
-  // public String getLeftPath() {
-  //     return leftPath;
-  // }
-  //
-  // public void setLeftPath(String leftPath) {
-  //     this.leftPath = leftPath;
-  // }
-  //
-  // public String getRightPath() {
-  //     return rightPath;
-  // }
-  //
-  // public void setRightPath(String rightPath) {
-  //     this.rightPath = rightPath;
-  // }
-
   public int getWarn() {
     return warn;
   }
@@ -151,29 +127,22 @@ public class LogEntity implements Serializable {
     this.logTag = logTag;
   }
 
-  // private void processPath() {
-  //     if (this.pathPair != null) {
-  //         if (this.pathPair.getLeftUnmatchedPath().size() >= this.pathPair.getRightUnmatchedPath().size()) {
-  //             this.path = ListUti.convertPathToStringForShow(this.pathPair.getLeftUnmatchedPath());
-  //         } else {
-  //             this.path = ListUti.convertPathToStringForShow(this.pathPair.getRightUnmatchedPath());
-  //         }
-  //         this.leftPath = ListUti.convertPathToStringForShow(this.pathPair.getLeftUnmatchedPath());
-  //         this.rightPath = ListUti.convertPathToStringForShow(this.pathPair.getRightUnmatchedPath());
-  //     }
-  // }
+//  private String valueToString(Object value) {
+//    if (value instanceof NullNode || value == null) {
+//      return null;
+//    }
+//    if (value instanceof ObjectNode || value instanceof ArrayNode) {
+//      return null;
+//    }
+//    if (value instanceof JsonNode) {
+//      return ((JsonNode) value).asText();
+//    }
+//    return value.toString();
+//  }
 
-  private String valueToString(Object value) {
-    if (value instanceof NullNode || value == null) {
-      return null;
-    }
-    if (value instanceof ObjectNode || value instanceof ArrayNode) {
-      return null;
-    }
-    if (value instanceof JsonNode) {
-      return ((JsonNode) value).asText();
-    }
-    return value.toString();
+  public void simplifyLogMsg(boolean simplifyLogEntity) {
+    this.baseValue = valueToString(baseValue, simplifyLogEntity);
+    this.testValue = valueToString(testValue, simplifyLogEntity);
   }
 
   private void processLogInfo(Object baseValue, Object testValue, int unmatchedType) {
@@ -230,6 +199,21 @@ public class LogEntity implements Serializable {
         break;
     }
   }
+
+  private static String valueToString(Object value, boolean simplifyLogEntity) {
+    if (value instanceof NullNode || value == null) {
+      return null;
+    }
+    if (value instanceof ObjectNode || value instanceof ArrayNode) {
+      return simplifyLogEntity ? null : value.toString();
+    }
+    if (value instanceof JsonNode) {
+      return ((JsonNode) value).asText();
+    }
+    return value.toString();
+  }
+
+
 
   @Override
   public String toString() {

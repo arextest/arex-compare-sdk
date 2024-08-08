@@ -9,6 +9,7 @@ import com.arextest.diff.model.enumeration.CategoryType;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import org.apache.commons.lang3.StringUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -855,6 +856,43 @@ public class CompareSDKTest {
 
     CompareResult result3 = sdk.compare("{}", "{\"name\":\"\"}");
     Assertions.assertEquals(0, result3.getLogs().size());
+  }
+
+  @Test
+  public void testSimplifyLogEntityMsg() {
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions().putSimplifyLogEntity(false);
+
+    String baseMsg = "{\n"
+        + "    \"studentName\": \"xiaoming\",\n"
+        + "    \"classInfo\": {\n"
+        + "        \"name\": \"classA\",\n"
+        + "        \"location\": \"floor_A\"\n"
+        + "    }\n"
+        + "}";
+    String testMsg = "{\n"
+        + "    \"studentName\": \"xiaoming\"\n"
+        + "}";
+
+    CompareResult compare = sdk.compare(baseMsg, testMsg);
+    boolean notEmpty = StringUtils.isNotEmpty(compare.getLogs().get(0).getBaseValue().toString());
+    Assertions.assertNotEquals(null, notEmpty);
+  }
+
+  @Test
+  public void testOutPutErrorValueType() {
+    CompareSDK sdk = new CompareSDK();
+    sdk.getGlobalOptions().putSimplifyLogEntity(false);
+
+    String baseMsg = "{\n"
+        + "    \"score\": \"18\""
+        + "}";
+    String testMsg = "{\n"
+        + "    \"score\": 18\n"
+        + "}";
+
+    CompareResult compare = sdk.compare(baseMsg, testMsg);
+    Assertions.assertNotEquals(null, "");
   }
 
 
