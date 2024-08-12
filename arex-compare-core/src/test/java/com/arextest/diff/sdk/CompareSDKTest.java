@@ -876,7 +876,7 @@ public class CompareSDKTest {
 
     CompareResult compare = sdk.compare(baseMsg, testMsg);
     boolean notEmpty = StringUtils.isNotEmpty(compare.getLogs().get(0).getBaseValue().toString());
-    Assertions.assertNotEquals(null, notEmpty);
+    Assertions.assertNotEquals(false, notEmpty);
   }
 
   @Test

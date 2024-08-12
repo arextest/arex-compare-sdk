@@ -9,7 +9,6 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.Serializable;
 import java.util.List;
-import java.util.Optional;
 
 public class LogEntity implements Serializable {
 
@@ -215,8 +214,7 @@ public class LogEntity implements Serializable {
       return "null";
     }
     String simpleName = value.getClass().getSimpleName();
-    String type = convertJsonNodeToString(simpleName);
-    return Optional.ofNullable(type).orElse(simpleName);
+    return convertJsonNodeToString(simpleName);
   }
 
   private String convertJsonNodeToString(String simpleClassName) {
@@ -244,7 +242,7 @@ public class LogEntity implements Serializable {
       case "BooleanNode":
         return "boolean";
       default:
-        return null;
+        return simpleClassName;
     }
   }
 
