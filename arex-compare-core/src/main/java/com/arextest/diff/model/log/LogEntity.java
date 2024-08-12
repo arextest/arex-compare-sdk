@@ -1,6 +1,7 @@
 package com.arextest.diff.model.log;
 
 import com.arextest.diff.model.enumeration.UnmatchedType;
+import com.arextest.diff.model.log.LogTag.NodeErrorType;
 import com.arextest.diff.utils.ListUti;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -8,6 +9,7 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.io.Serializable;
 import java.util.List;
+import java.util.Optional;
 
 public class LogEntity implements Serializable {
 
@@ -43,6 +45,7 @@ public class LogEntity implements Serializable {
     this.baseValue = baseValue;
     this.testValue = testValue;
     this.pathPair = pathPair;
+    addNodeErrorType();
     processLogInfo(this.baseValue, this.testValue, pathPair.getUnmatchedType());
   }
 
@@ -127,19 +130,6 @@ public class LogEntity implements Serializable {
     this.logTag = logTag;
   }
 
-//  private String valueToString(Object value) {
-//    if (value instanceof NullNode || value == null) {
-//      return null;
-//    }
-//    if (value instanceof ObjectNode || value instanceof ArrayNode) {
-//      return null;
-//    }
-//    if (value instanceof JsonNode) {
-//      return ((JsonNode) value).asText();
-//    }
-//    return value.toString();
-//  }
-
   public void simplifyLogMsg(boolean simplifyLogEntity) {
     this.baseValue = valueToString(baseValue, simplifyLogEntity);
     this.testValue = valueToString(testValue, simplifyLogEntity);
@@ -200,7 +190,7 @@ public class LogEntity implements Serializable {
     }
   }
 
-  private static String valueToString(Object value, boolean simplifyLogEntity) {
+  private String valueToString(Object value, boolean simplifyLogEntity) {
     if (value instanceof NullNode || value == null) {
       return null;
     }
@@ -213,6 +203,50 @@ public class LogEntity implements Serializable {
     return value.toString();
   }
 
+  private void addNodeErrorType() {
+    NodeErrorType nodeErrorType = new NodeErrorType();
+    nodeErrorType.setBaseNodeType(judgeNodeErrorType(baseValue));
+    nodeErrorType.setTestNodeType(judgeNodeErrorType(testValue));
+    logTag.setNodeErrorType(nodeErrorType);
+  }
+
+  private String judgeNodeErrorType(Object value) {
+    if (value == null) {
+      return "null";
+    }
+    String simpleName = value.getClass().getSimpleName();
+    String type = convertJsonNodeToString(simpleName);
+    return Optional.ofNullable(type).orElse(simpleName);
+  }
+
+  private String convertJsonNodeToString(String simpleClassName) {
+    switch (simpleClassName) {
+      case "ObjectNode":
+        return "object";
+      case "ArrayNode":
+        return "array";
+      case "NullNode":
+        return "null";
+      case "TextNode":
+        return "string";
+      case "IntNode":
+        return "int";
+      case "LongNode":
+        return "long";
+      case "DoubleNode":
+        return "double";
+      case "FloatNode":
+        return "float";
+      case "BigIntegerNode":
+        return "bigInteger";
+      case "BigDecimalNode":
+        return "bigDecimal";
+      case "BooleanNode":
+        return "boolean";
+      default:
+        return null;
+    }
+  }
 
 
   @Override

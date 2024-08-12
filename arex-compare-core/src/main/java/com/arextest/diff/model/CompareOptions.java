@@ -111,7 +111,7 @@ public class CompareOptions {
    */
   private Boolean onlyCompareExistListElements;
 
-  /*
+  /**
    * This option is true, the log entity message is simplified
    * The baseMsg and testMsg are only output when leaf nodes
    */
