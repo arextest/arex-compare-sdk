@@ -62,8 +62,6 @@ public class CompareContext {
 
   public byte ignoreReferenceNotFound = 0;
 
-  public boolean simplifyLogEntity = false;
-
   public CompareContext() {
     this.currentTraceLeft = new ArrayList<>();
     this.currentTraceRight = new ArrayList<>();

@@ -111,12 +111,6 @@ public class CompareOptions {
    */
   private Boolean onlyCompareExistListElements;
 
-  /**
-   * This option is true, the log entity message is simplified
-   * The baseMsg and testMsg are only output when leaf nodes
-   */
-  private Boolean simplifyLogEntity;
-
   public CompareOptions() {
   }
 
@@ -306,11 +300,6 @@ public class CompareOptions {
     return this;
   }
 
-  public CompareOptions putSimplifyLogEntity(Boolean simplifyLogEntity) {
-    this.simplifyLogEntity = simplifyLogEntity;
-    return this;
-  }
-
   public String getCategoryType() {
     return categoryType;
   }
@@ -377,10 +366,6 @@ public class CompareOptions {
 
   public Boolean getOnlyCompareExistListElements() {
     return onlyCompareExistListElements;
-  }
-
-  public Boolean getSimplifyLogEntity() {
-    return simplifyLogEntity;
   }
 
 }

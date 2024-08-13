@@ -185,7 +185,7 @@ public class LogRegister {
     LogEntity log =
         new LogEntity(obj1, obj2,
             getUnmatchedPair(unmatchedType, compareContext).buildListKeys(currentListKeys));
-    log.simplifyLogMsg(compareContext.simplifyLogEntity);
+    log.simplifyLogMsg();
     log.getLogTag().setErrorType(errorType);
     return log;
   }

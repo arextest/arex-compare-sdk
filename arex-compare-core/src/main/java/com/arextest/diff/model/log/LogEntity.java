@@ -129,9 +129,9 @@ public class LogEntity implements Serializable {
     this.logTag = logTag;
   }
 
-  public void simplifyLogMsg(boolean simplifyLogEntity) {
-    this.baseValue = valueToString(baseValue, simplifyLogEntity);
-    this.testValue = valueToString(testValue, simplifyLogEntity);
+  public void simplifyLogMsg() {
+    this.baseValue = valueToString(baseValue);
+    this.testValue = valueToString(testValue);
   }
 
   private void processLogInfo(Object baseValue, Object testValue, int unmatchedType) {
@@ -189,12 +189,15 @@ public class LogEntity implements Serializable {
     }
   }
 
-  private String valueToString(Object value, boolean simplifyLogEntity) {
+  private String valueToString(Object value) {
     if (value instanceof NullNode || value == null) {
       return null;
     }
-    if (value instanceof ObjectNode || value instanceof ArrayNode) {
-      return simplifyLogEntity ? null : value.toString();
+    if (value instanceof ObjectNode) {
+      return "[Object]";
+    }
+    if (value instanceof ArrayNode) {
+      return "[List]";
     }
     if (value instanceof JsonNode) {
       return ((JsonNode) value).asText();
