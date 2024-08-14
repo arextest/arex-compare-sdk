@@ -857,5 +857,38 @@ public class CompareSDKTest {
     Assertions.assertEquals(0, result3.getLogs().size());
   }
 
+  @Test
+  public void testSimplifyLogEntityMsg() {
+    CompareSDK sdk = new CompareSDK();
+
+    String baseMsg = "{\n"
+        + "    \"studentName\": \"xiaoming\",\n"
+        + "    \"classInfo\": {\n"
+        + "        \"name\": \"classA\",\n"
+        + "        \"location\": \"floor_A\"\n"
+        + "    }\n"
+        + "}";
+    String testMsg = "{\n"
+        + "    \"studentName\": \"xiaoming\"\n"
+        + "}";
+
+    CompareResult compare = sdk.compare(baseMsg, testMsg);
+    Assertions.assertEquals("[Object]", compare.getLogs().get(0).getBaseValue());
+  }
+
+  @Test
+  public void testOutPutErrorValueType() {
+    CompareSDK sdk = new CompareSDK();
+
+    String baseMsg = "{\n"
+        + "    \"score\": \"18\""
+        + "}";
+    String testMsg = "{\n"
+        + "    \"score\": 19\n"
+        + "}";
+
+    CompareResult compare = sdk.compare(baseMsg, testMsg);
+    Assertions.assertEquals("18", compare.getLogs().get(0).getBaseValue());
+  }
 
 }

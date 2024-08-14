@@ -64,7 +64,8 @@ public class GlobalOptions {
   private Boolean ipIgnore;
 
   /**
-   * This option is true, only compare the list elements which are existed in the baseMsg and testMsg
+   * This option is true, only compare the list elements which are existed in the baseMsg and
+   * testMsg
    */
   private Boolean onlyCompareExistListElements;
 

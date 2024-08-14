@@ -1,6 +1,7 @@
 package com.arextest.diff.model.log;
 
 import com.arextest.diff.model.enumeration.UnmatchedType;
+import com.arextest.diff.model.log.LogTag.NodeErrorType;
 import com.arextest.diff.utils.ListUti;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -40,9 +41,10 @@ public class LogEntity implements Serializable {
   }
 
   public LogEntity(Object baseValue, Object testValue, UnmatchedPairEntity pathPair) {
-    this.baseValue = valueToString(baseValue);
-    this.testValue = valueToString(testValue);
+    this.baseValue = baseValue;
+    this.testValue = testValue;
     this.pathPair = pathPair;
+    addNodeErrorType();
     processLogInfo(this.baseValue, this.testValue, pathPair.getUnmatchedType());
   }
 
@@ -111,30 +113,6 @@ public class LogEntity implements Serializable {
     this.addRefPkNodePathRight = addRefPkNodePathRight;
   }
 
-  // public String getPath() {
-  //     return path;
-  // }
-  //
-  // public void setPath(String path) {
-  //     this.path = path;
-  // }
-  //
-  // public String getLeftPath() {
-  //     return leftPath;
-  // }
-  //
-  // public void setLeftPath(String leftPath) {
-  //     this.leftPath = leftPath;
-  // }
-  //
-  // public String getRightPath() {
-  //     return rightPath;
-  // }
-  //
-  // public void setRightPath(String rightPath) {
-  //     this.rightPath = rightPath;
-  // }
-
   public int getWarn() {
     return warn;
   }
@@ -151,29 +129,9 @@ public class LogEntity implements Serializable {
     this.logTag = logTag;
   }
 
-  // private void processPath() {
-  //     if (this.pathPair != null) {
-  //         if (this.pathPair.getLeftUnmatchedPath().size() >= this.pathPair.getRightUnmatchedPath().size()) {
-  //             this.path = ListUti.convertPathToStringForShow(this.pathPair.getLeftUnmatchedPath());
-  //         } else {
-  //             this.path = ListUti.convertPathToStringForShow(this.pathPair.getRightUnmatchedPath());
-  //         }
-  //         this.leftPath = ListUti.convertPathToStringForShow(this.pathPair.getLeftUnmatchedPath());
-  //         this.rightPath = ListUti.convertPathToStringForShow(this.pathPair.getRightUnmatchedPath());
-  //     }
-  // }
-
-  private String valueToString(Object value) {
-    if (value instanceof NullNode || value == null) {
-      return null;
-    }
-    if (value instanceof ObjectNode || value instanceof ArrayNode) {
-      return null;
-    }
-    if (value instanceof JsonNode) {
-      return ((JsonNode) value).asText();
-    }
-    return value.toString();
+  public void simplifyLogMsg() {
+    this.baseValue = valueToString(baseValue);
+    this.testValue = valueToString(testValue);
   }
 
   private void processLogInfo(Object baseValue, Object testValue, int unmatchedType) {
@@ -230,6 +188,67 @@ public class LogEntity implements Serializable {
         break;
     }
   }
+
+  private String valueToString(Object value) {
+    if (value instanceof NullNode || value == null) {
+      return null;
+    }
+    if (value instanceof ObjectNode) {
+      return "[Object]";
+    }
+    if (value instanceof ArrayNode) {
+      return "[List]";
+    }
+    if (value instanceof JsonNode) {
+      return ((JsonNode) value).asText();
+    }
+    return value.toString();
+  }
+
+  private void addNodeErrorType() {
+    NodeErrorType nodeErrorType = new NodeErrorType();
+    nodeErrorType.setBaseNodeType(judgeNodeErrorType(baseValue));
+    nodeErrorType.setTestNodeType(judgeNodeErrorType(testValue));
+    logTag.setNodeErrorType(nodeErrorType);
+  }
+
+  private String judgeNodeErrorType(Object value) {
+    if (value == null) {
+      return "null";
+    }
+    String simpleName = value.getClass().getSimpleName();
+    return convertJsonNodeToString(simpleName);
+  }
+
+  private String convertJsonNodeToString(String simpleClassName) {
+    switch (simpleClassName) {
+      case "ObjectNode":
+        return "object";
+      case "ArrayNode":
+        return "array";
+      case "NullNode":
+        return "null";
+      case "TextNode":
+        return "string";
+      case "IntNode":
+        return "int";
+      case "LongNode":
+        return "long";
+      case "DoubleNode":
+        return "double";
+      case "FloatNode":
+        return "float";
+      case "BigIntegerNode":
+        return "bigInteger";
+      case "BigDecimalNode":
+        return "bigDecimal";
+      case "BooleanNode":
+        return "boolean";
+      default:
+        return simpleClassName;
+    }
+  }
+
 
   @Override
   public String toString() {
