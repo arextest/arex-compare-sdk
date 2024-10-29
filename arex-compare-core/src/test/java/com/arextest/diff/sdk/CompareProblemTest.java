@@ -729,5 +729,19 @@ public class CompareProblemTest {
     Assertions.assertEquals(0, result.getCode());
   }
 
+  @Test
+  public void testArexPrefix() {
+    CompareSDK compareSDK = new CompareSDK();
+    String baseMsg = "{\n"
+        + "    \"time\": \"2024-10-18 14:32:26\"\n"
+        + "}";
+
+    String testMsg = "{\n"
+        + "    \"time\": \"2024-10-18 14:32:26xxxxx\"\n"
+        + "}";
+    CompareResult result = compareSDK.compare(baseMsg, testMsg);
+    Assertions.assertEquals(1, result.getCode());
+  }
+
 
 }

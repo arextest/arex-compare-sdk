@@ -50,10 +50,13 @@ public class ArexStringEqualsUtil {
       }
       return true;
     } else {
-      while (baseIndex < baseValueLen && testIndex < testValueLen) {
+      while (testIndex < testValueLen) {
         if (isPrefix(testIndex, testStr)) {
           testIndex = testIndex + 5;
           continue;
+        }
+        if (baseIndex >= baseValueLen) {
+          return false;
         }
         if (baseStr.charAt(baseIndex) != testStr.charAt(testIndex)) {
           return false;
