@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -15,11 +14,8 @@ public class JacksonHelperUtil {
   public static ObjectMapper objectMapper = new ObjectMapper();
 
   public static List<String> getNames(ObjectNode objectNode) {
-    List<String> result = new ArrayList<>();
-    Iterator<String> stringIterator = objectNode.fieldNames();
-    while (stringIterator.hasNext()) {
-      result.add(stringIterator.next());
-    }
+    List<String> result = new ArrayList<>(objectNode.size());
+    objectNode.fieldNames().forEachRemaining(result::add);
     return result;
   }
 

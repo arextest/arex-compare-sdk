@@ -9,9 +9,10 @@ import com.arextest.diff.model.compare.IndexPair;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.utils.ListUti;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Created by rchen9 on 2022/7/25.
@@ -29,8 +30,8 @@ public class ArrayCompare {
           compareContext);
     }
 
-    List<Integer> leftComparedIndexes = new ArrayList<>();
-    List<Integer> rightComparedIndexes = new ArrayList<>();
+    Set<Integer> leftComparedIndexes = new HashSet<>();
+    Set<Integer> rightComparedIndexes = new HashSet<>();
 
     // decide to use which indexSelector
     IndexSelector indexSelector = IndexSelectorFactory.getIndexSelector(

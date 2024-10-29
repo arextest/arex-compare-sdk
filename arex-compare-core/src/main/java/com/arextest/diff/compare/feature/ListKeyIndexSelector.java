@@ -4,8 +4,8 @@ import com.arextest.diff.handler.log.LogMarker;
 import com.arextest.diff.handler.log.register.LogRegister;
 import com.arextest.diff.model.compare.CompareContext;
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class ListKeyIndexSelector implements IndexSelector {
 
@@ -24,7 +24,7 @@ public class ListKeyIndexSelector implements IndexSelector {
   }
 
   @Override
-  public int findCorrespondLeftIndex(int curRightIndex, List<Integer> leftComparedIndexes,
+  public int findCorrespondLeftIndex(int curRightIndex, Set<Integer> leftComparedIndexes,
       ArrayNode obj1Array, ArrayNode obj2Array) throws Exception {
     int correspondLeftIndex = -1;
     if (indexKeysRight != null) {
@@ -33,11 +33,12 @@ public class ListKeyIndexSelector implements IndexSelector {
       int cnt = 0;
       boolean alreadyFind = false;
       if (indexKeysLeft != null) {
-        for (Integer index : indexKeysLeft.keySet()) {
-          if (rightKey.equals(indexKeysLeft.get(index))) {
+        for (Map.Entry<Integer, String> entry : indexKeysLeft.entrySet()) {
+          if (rightKey.equals(entry.getValue())) {
             cnt++;
-            if (correspondLeftIndex == -1 && !leftComparedIndexes.contains(index) && !alreadyFind) {
-              correspondLeftIndex = index;
+            if (correspondLeftIndex == -1 && !leftComparedIndexes.contains(entry.getKey())
+                && !alreadyFind) {
+              correspondLeftIndex = entry.getKey();
               alreadyFind = true;
             }
           }
@@ -54,7 +55,7 @@ public class ListKeyIndexSelector implements IndexSelector {
   }
 
   @Override
-  public int findCorrespondRightIndex(int curLeftIndex, List<Integer> rightComparedIndexes,
+  public int findCorrespondRightIndex(int curLeftIndex, Set<Integer> rightComparedIndexes,
       ArrayNode obj1Array, ArrayNode obj2Array) throws Exception {
     // when indexKeyLef is null, obj1Array must be empty. but the indexKeyLeft also judge null;
     int correspondRightIndex = -1;
@@ -64,16 +65,18 @@ public class ListKeyIndexSelector implements IndexSelector {
       int cnt = 0;
       boolean alreadyFind = false;
       if (indexKeysRight != null) {
-        for (Integer index : indexKeysRight.keySet()) {
-          if (leftKey.equals(indexKeysRight.get(index))) {
+        for (Map.Entry<Integer, String> entry : indexKeysRight.entrySet()) {
+          if (leftKey.equals(entry.getValue())) {
             cnt++;
-            if (correspondRightIndex == -1 && !rightComparedIndexes.contains(index)
+            if (correspondRightIndex == -1 && !rightComparedIndexes.contains(entry.getKey())
                 && !alreadyFind) {
-              correspondRightIndex = index;
+              correspondRightIndex = entry.getKey();
               alreadyFind = true;
             }
           }
         }
+
+
       }
 
       if (cnt > 1) {

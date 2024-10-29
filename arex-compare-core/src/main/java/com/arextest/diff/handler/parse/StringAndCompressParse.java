@@ -2,10 +2,10 @@ package com.arextest.diff.handler.parse;
 
 import com.arextest.diff.model.TransformConfig.TransformMethod;
 import com.arextest.diff.model.log.NodeEntity;
-import com.arextest.diff.utils.TransformUtil;
 import com.arextest.diff.utils.JacksonHelperUtil;
 import com.arextest.diff.utils.ListUti;
 import com.arextest.diff.utils.StringUtil;
+import com.arextest.diff.utils.TransformUtil;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.tuple.MutablePair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +60,7 @@ public class StringAndCompressParse {
       ObjectNode jsonObject = (ObjectNode) obj;
       List<String> names = JacksonHelperUtil.getNames(jsonObject);
       for (String fieldName : names) {
-        currentNode.add(new NodeEntity(fieldName, 0));
+        currentNode.add(new NodeEntity(nameToLower ? fieldName.toLowerCase() : fieldName, 0));
         Object objFieldValue = jsonObject.get(fieldName);
         getJSONParse(objFieldValue, obj);
         ListUti.removeLast(currentNode);
@@ -78,16 +77,19 @@ public class StringAndCompressParse {
     } else {
 
       String value = ((JsonNode) obj).asText();
-      // TODO: 2022/9/20 improve the method to speed up
-      List<String> nodePath = nameToLower ? ListUti.convertToStringList(currentNode).stream()
-          .map(String::toLowerCase).collect(Collectors.toList())
-          : ListUti.convertToStringList(currentNode);
+
       MutablePair<JsonNode, Boolean> objectBooleanPair = null;
-      if (transFormConfigMap != null && transFormConfigMap.containsKey(nodePath)) {
-        List<TransformMethod> transformMethodList = this.transFormConfigMap.get(nodePath);
-        objectBooleanPair = processCompress(value, this.pluginJarUrl, transformMethodList, preObj);
-      } else {
+      if (transFormConfigMap == null || transFormConfigMap.isEmpty()) {
         objectBooleanPair = processStringParse(value, preObj);
+      } else {
+        List<String> nodePath = ListUti.convertToStringList(currentNode);
+        if (transFormConfigMap.containsKey(nodePath)) {
+          List<TransformMethod> transformMethodList = this.transFormConfigMap.get(nodePath);
+          objectBooleanPair = processCompress(value, this.pluginJarUrl, transformMethodList,
+              preObj);
+        } else {
+          objectBooleanPair = processStringParse(value, preObj);
+        }
       }
 
       if (objectBooleanPair.getKey() == null) {
