@@ -76,6 +76,9 @@ public class SqlParse {
       return new ParsedResult(null, false);
     }
 
+    // additional: Handling multiple selections
+    databaseBody = processMultipleSelect(databaseBody);
+
     boolean successParse = true;
     ArrayNode parsedSql = JacksonHelperUtil.getArrayNode();
     List<Boolean> isSelect = new ArrayList<>();
@@ -244,6 +247,41 @@ public class SqlParse {
     parsedSql.add(backUpObj);
     objectNode.set(DbParseConstants.PARSED_SQL, parsedSql);
   }
+
+  private JsonNode processMultipleSelect(JsonNode databaseBody) {
+    JsonNode result = databaseBody;
+    if (databaseBody instanceof TextNode) {
+      String sql = databaseBody.asText();
+      if (sql.contains(";")) {
+        String[] sqls = sql.split(";");
+        ArrayNode arrayNode = JacksonHelperUtil.getArrayNode();
+        for (String s : sqls) {
+          if (!startsWithSelect(s)) {
+            break;
+          }
+          arrayNode.add(s);
+        }
+        result = arrayNode;
+      }
+
+    }
+    return result;
+  }
+
+  public static boolean startsWithSelect(String str) {
+    if (str == null) {
+      return false;
+    }
+    int len = str.length();
+    int i = 0;
+    // Skip leading whitespace
+    while (i < len && Character.isWhitespace(str.charAt(i))) {
+      i++;
+    }
+    // Check if the remaining string starts with "select" or "SELECT"
+    return str.regionMatches(true, i, "select", 0, 6);
+  }
+
 
   private static class ParsedResult {
 
