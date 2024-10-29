@@ -649,5 +649,85 @@ public class CompareProblemTest {
     return sb.toString();
   }
 
+  @Test
+  public void testArexPrefixFilter() {
+    CompareSDK sdk = new CompareSDK();
+    CompareOptions compareOptions = CompareOptions.options();
+    String baseMsg = "{\n"
+        + "    \"time\": \"2024-10-18 14:32:26\"\n"
+        + "}";
+    String testMsg = "{\n"
+        + "    \"time\": \"2024-10-18 14:32:26xxxxx\"\n"
+        + "}";
+    CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
+    Assertions.assertEquals(0, result.getCode());
+  }
+
+
+  @Test
+  public void testArrayListMissingExpressMissing() {
+    CompareSDK sdk = new CompareSDK();
+    String baseMsg = "{\n"
+        + "    \"students\": [\n"
+        + "        {\n"
+        + "            \"key\": \"xiaoming\",\n"
+        + "            \"value\": \"18\"\n"
+        + "        },\n"
+        + "        {\n"
+        + "            \"key\": \"xiaomei\",\n"
+        + "            \"value\": \"19\"\n"
+        + "        }\n"
+        + "    ]\n"
+        + "}";
+    String testMsg = "{\n"
+        + "    \"students\": [\n"
+        + "        {\n"
+        + "            \"key\": \"xiaomei\",\n"
+        + "            \"value\": \"18\"\n"
+        + "        }\n"
+        + "    ]\n"
+        + "}";
+
+    CompareOptions compareOptions = CompareOptions.options()
+        .putListSortConfig(Arrays.asList("students"), Arrays.asList(Arrays.asList("key")))
+        .putExclusions(Arrays.asList("students", "[key=xiaoming]"))
+//        .putExclusions(Arrays.asList("students","[index=0]"));
+        ;
+    CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
+    Assertions.assertEquals(1, result.getLogs().size());
+  }
+
+
+  @Test
+  public void testConditionIgnore() {
+    CompareSDK sdk = new CompareSDK();
+    String baseMsg = "{\n"
+        + "    \"students\": [\n"
+        + "        {\n"
+        + "            \"key\": \"xiaoming\",\n"
+        + "            \"value\": \"18\"\n"
+        + "        },\n"
+        + "        {\n"
+        + "            \"key\": \"xiaomei\",\n"
+        + "            \"value\": \"19\"\n"
+        + "        }\n"
+        + "    ]\n"
+        + "}";
+    String testMsg = "{\n"
+        + "    \"students\": [\n"
+        + "        {\n"
+        + "            \"key\": \"xiaomei\",\n"
+        + "            \"value\": \"18\"\n"
+        + "        }\n"
+        + "    ]\n"
+        + "}";
+
+    CompareOptions compareOptions = CompareOptions.options()
+        .putListSortConfig(Arrays.asList("students"), Arrays.asList(Arrays.asList("key")))
+        .putExclusions(Arrays.asList("students", "[key=xiaoming]"));
+    CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
+    Assertions.assertEquals(0, result.getCode());
+  }
+
 
 }

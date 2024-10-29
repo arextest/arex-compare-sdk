@@ -3,6 +3,7 @@ package com.arextest.diff.compare;
 import com.arextest.diff.handler.log.LogMarker;
 import com.arextest.diff.handler.log.register.LogRegister;
 import com.arextest.diff.model.compare.CompareContext;
+import com.arextest.diff.model.enumeration.ParentNodeType;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.utils.IgnoreUtil;
 import com.arextest.diff.utils.ListUti;
@@ -10,6 +11,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
+import java.util.Objects;
 
 public class GenericCompare {
 
@@ -34,8 +36,9 @@ public class GenericCompare {
     }
 
     // not compare by exclusions
-    if (IgnoreUtil.ignoreProcessor(fuzzyPath, currentNode, compareContext.exclusions,
-        compareContext.expressionExclusions, compareContext.ignoreNodeSet)) {
+    if (IgnoreUtil.ignoreProcessor(fuzzyPath, compareContext.currentNodeLeft,
+        compareContext.currentNodeRight, compareContext.exclusions,
+        compareContext.conditionExclusions, compareContext.ignoreNodeSet)) {
       return;
     }
 
@@ -43,10 +46,16 @@ public class GenericCompare {
     if (obj1 == null && obj2 == null) {
       return;
     } else if (obj1 == null) {
-      LogRegister.register(obj1, obj2, LogMarker.LEFT_OBJECT_MISSING, compareContext);
+      LogRegister.register(obj1, obj2,
+          Objects.equals(compareContext.parentNodeType, ParentNodeType.OBJECT)
+              ? LogMarker.LEFT_OBJECT_MISSING
+              : LogMarker.LEFT_ARRAY_MISSING, compareContext);
       return;
     } else if (obj2 == null) {
-      LogRegister.register(obj1, obj2, LogMarker.RIGHT_OBJECT_MISSING, compareContext);
+      LogRegister.register(obj1, obj2,
+          Objects.equals(compareContext.parentNodeType, ParentNodeType.OBJECT)
+              ? LogMarker.LEFT_OBJECT_MISSING
+              : LogMarker.RIGHT_ARRAY_MISSING, compareContext);
       return;
     }
 
