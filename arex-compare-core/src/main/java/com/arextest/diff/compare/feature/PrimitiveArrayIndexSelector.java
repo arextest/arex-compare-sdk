@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 public class PrimitiveArrayIndexSelector implements IndexSelector {
 
@@ -22,7 +23,7 @@ public class PrimitiveArrayIndexSelector implements IndexSelector {
   }
 
   @Override
-  public int findCorrespondLeftIndex(int curRightIndex, List<Integer> leftComparedIndex,
+  public int findCorrespondLeftIndex(int curRightIndex, Set<Integer> leftComparedIndex,
       ArrayNode obj1Array, ArrayNode obj2Array) {
     JsonNode jsonNode = obj2Array.get(curRightIndex);
     if (leftIndexKeys.containsKey(jsonNode)) {
@@ -37,7 +38,7 @@ public class PrimitiveArrayIndexSelector implements IndexSelector {
   }
 
   @Override
-  public int findCorrespondRightIndex(int curLeftIndex, List<Integer> rightComparedIndex,
+  public int findCorrespondRightIndex(int curLeftIndex, Set<Integer> rightComparedIndex,
       ArrayNode obj1Array, ArrayNode obj2Array) {
     JsonNode jsonNode = obj1Array.get(curLeftIndex);
     if (rightIndexKeys.containsKey(jsonNode)) {

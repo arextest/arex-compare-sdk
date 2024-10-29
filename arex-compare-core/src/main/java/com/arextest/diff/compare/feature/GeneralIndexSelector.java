@@ -1,12 +1,12 @@
 package com.arextest.diff.compare.feature;
 
 import com.fasterxml.jackson.databind.node.ArrayNode;
-import java.util.List;
+import java.util.Set;
 
 public class GeneralIndexSelector implements IndexSelector {
 
   @Override
-  public int findCorrespondLeftIndex(int curRightIndex, List<Integer> leftComparedIndex,
+  public int findCorrespondLeftIndex(int curRightIndex, Set<Integer> leftComparedIndex,
       ArrayNode obj1Array, ArrayNode obj2Array) {
     if (obj1Array == null || obj1Array.isEmpty()) {
       return -1;
@@ -18,7 +18,7 @@ public class GeneralIndexSelector implements IndexSelector {
   }
 
   @Override
-  public int findCorrespondRightIndex(int curLeftIndex, List<Integer> rightComparedIndex,
+  public int findCorrespondRightIndex(int curLeftIndex, Set<Integer> rightComparedIndex,
       ArrayNode obj1Array, ArrayNode obj2Array) {
     if (obj2Array == null || obj2Array.isEmpty()) {
       return -1;

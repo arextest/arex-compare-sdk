@@ -33,7 +33,7 @@ public class PrimitiveArrayIndexSelectorUnitTest {
     ArrayNode obj2 = objectMapper.readValue("[3,1,2]", ArrayNode.class);
 
     int correspondLeftIndex = primitiveArrayIndexSelector.findCorrespondLeftIndex(0,
-        Collections.emptyList(), obj1, obj2);
+        Collections.emptySet(), obj1, obj2);
     Assertions.assertEquals(2, correspondLeftIndex);
   }
 
@@ -44,7 +44,7 @@ public class PrimitiveArrayIndexSelectorUnitTest {
     ArrayNode obj2 = objectMapper.readValue("[3,1,2]", ArrayNode.class);
 
     int correspondRightIndex = primitiveArrayIndexSelector.findCorrespondRightIndex(0,
-        Collections.emptyList(), obj1, obj2);
+        Collections.emptySet(), obj1, obj2);
     Assertions.assertEquals(1, correspondRightIndex);
   }
 

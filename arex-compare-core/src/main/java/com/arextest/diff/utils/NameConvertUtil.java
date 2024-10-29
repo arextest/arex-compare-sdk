@@ -19,13 +19,12 @@ public class NameConvertUtil {
 
       for (String fieldName : names) {
         JsonNode obj1FieldValue = jsonObj1.get(fieldName);
-        jsonObj1.set(fieldName.toLowerCase(), obj1FieldValue);
-        nameConvert(obj1FieldValue);
-      }
-      for (String fieldName : names) {
-        if (containsUpper(fieldName)) {
+        String lowerCase = fieldName.toLowerCase();
+        jsonObj1.set(lowerCase, obj1FieldValue);
+        if (fieldName != lowerCase) {
           jsonObj1.remove(fieldName);
         }
+        nameConvert(obj1FieldValue);
       }
     } else if (object instanceof ArrayNode) {
       ArrayNode obj1Array = (ArrayNode) object;
@@ -35,12 +34,5 @@ public class NameConvertUtil {
         nameConvert(element);
       }
     }
-
-  }
-
-  public static boolean containsUpper(String name) {
-    return name.chars().anyMatch(
-        (int ch) -> Character.isUpperCase((char) ch)
-    );
   }
 }

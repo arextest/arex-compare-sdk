@@ -5,8 +5,12 @@ import com.arextest.diff.model.CompareResult;
 import com.arextest.diff.model.DecompressConfig;
 import com.arextest.diff.model.enumeration.CategoryType;
 import com.arextest.diff.model.enumeration.DiffResultCode;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.Collections;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 /**
@@ -611,6 +615,38 @@ public class CompareProblemTest {
     String testMsg = "aHR0cHM6Ly9hcmV4LmJhaWR1LmNvbQ==";
     CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
     Assertions.assertEquals(0, result.getCode());
+  }
+
+  @Disabled
+  @Test
+  public void testCpuUsed() throws IOException {
+    CompareSDK compareSDK = new CompareSDK();
+    compareSDK.getGlobalOptions().putNameToLower(true).putNullEqualsEmpty(true).putIgnoreNodeSet(
+        Collections.singleton("timestamp"));
+
+    CompareOptions compareOptions = CompareOptions.options().putListSortConfig(
+        Arrays.asList("fareinfolist"),
+        Arrays.asList(Arrays.asList("id"))
+    );
+
+    String baseMsg = readStringFromFile("./baseDecompress.txt");
+    String testMsg = readStringFromFile("./testDecompress.txt");
+    CompareResult result = compareSDK.compare(baseMsg, testMsg, compareOptions);
+    Assertions.assertEquals(0, result.getCode());
+
+  }
+
+  // reading a string from a file
+  public static String readStringFromFile(String filePath) throws IOException {
+    FileInputStream fis = new FileInputStream(filePath);
+    byte[] buffer = new byte[1024];
+    StringBuilder sb = new StringBuilder();
+    int bytesRead;
+    while ((bytesRead = fis.read(buffer)) != -1) {
+      sb.append(new String(buffer, 0, bytesRead));
+    }
+    fis.close();
+    return sb.toString();
   }
 
 
