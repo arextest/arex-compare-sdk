@@ -383,4 +383,11 @@ public class SelectExampleTest {
     Statement parse = CCJSqlParserUtil.parse(sql);
     System.out.println();
   }
+
+  @Test
+  public void testSelectList() throws JSQLParserException {
+    String sql = " SELECT st_id from students union select st_id from student_skill;";
+    Statement statement = CCJSqlParserUtil.parse(sql);
+    testSqlParse(statement);
+  }
 }

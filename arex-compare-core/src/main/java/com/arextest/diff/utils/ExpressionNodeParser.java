@@ -69,7 +69,11 @@ public class ExpressionNodeParser {
         String substring = item.substring(1, item.length() - 1);
         String[] split = substring.split(EQUAL_SYMBOL, 2);
         if (split.length != 2) {
-          result.add(new ExpressionNodeEntity(split[0], ExpressionNodeType.INDEX_NODE));
+          Integer index = toInteger(split[0]);
+          if (index == null) {
+            return null;
+          }
+          result.add(new ExpressionNodeEntity(index, ExpressionNodeType.INDEX_NODE));
         } else {
           String path = split[0];
           List<String> stringPath = new ArrayList<>(
@@ -84,6 +88,14 @@ public class ExpressionNodeParser {
       }
     }
     return new MutablePair<>(result, isExpression);
+  }
+
+  private static Integer toInteger(String str) {
+    try {
+      return Integer.parseInt(str);
+    } catch (NumberFormatException e) {
+      return null;
+    }
   }
 
 }

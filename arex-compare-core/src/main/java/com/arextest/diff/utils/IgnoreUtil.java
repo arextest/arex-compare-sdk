@@ -4,7 +4,9 @@ import com.arextest.diff.model.enumeration.Constant;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.model.pathparse.ExpressionNodeEntity;
 import com.arextest.diff.model.pathparse.ExpressionNodeType;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -13,8 +15,37 @@ import java.util.Set;
  */
 public class IgnoreUtil {
 
+  public static boolean ignoreProcessor(List<String> fuzzyNodePath,
+      List<NodeEntity> baseNodePath, List<NodeEntity> testNodePath,
+      List<List<ExpressionNodeEntity>> exclusions,
+      Map<LinkedList<LinkedList<ExpressionNodeEntity>>, LinkedList<LinkedList<ExpressionNodeEntity>>> conditionExclusions,
+      Set<String> ignoreNodeSet) {
+    if (ignoreNodeProcessor(fuzzyNodePath, ignoreNodeSet)) {
+      return true;
+    }
 
-  public static boolean ignoreProcessor(List<String> fuzzyNodePath, List<NodeEntity> nodePath,
+    if (exclusions != null && !exclusions.isEmpty()) {
+      for (List<ExpressionNodeEntity> ignoreNodePath : exclusions) {
+        if (ignoreMatch(fuzzyNodePath, ignoreNodePath)) {
+          return true;
+        }
+      }
+    }
+
+    if (conditionExclusions != null && !conditionExclusions.isEmpty()) {
+      for (Map.Entry<LinkedList<LinkedList<ExpressionNodeEntity>>, LinkedList<LinkedList<ExpressionNodeEntity>>> entry : conditionExclusions.entrySet()) {
+        LinkedList<LinkedList<ExpressionNodeEntity>> key = entry.getKey();
+        LinkedList<LinkedList<ExpressionNodeEntity>> value = entry.getValue();
+        if (multiIgnoreExpressionMatch(baseNodePath, key) && multiIgnoreExpressionMatch(
+            testNodePath, value)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  public static boolean ignoreProcessorEngine(List<String> fuzzyNodePath, List<NodeEntity> nodePath,
       List<List<ExpressionNodeEntity>> exclusions,
       List<List<ExpressionNodeEntity>> expressionExclusions,
       Set<String> ignoreNodeSet) {
@@ -75,6 +106,23 @@ public class IgnoreUtil {
       }
     }
     return false;
+  }
+
+  private static boolean multiIgnoreExpressionMatch(List<NodeEntity> nodePath,
+      LinkedList<LinkedList<ExpressionNodeEntity>> expressionNodeEntityListNodePath) {
+
+    boolean result = false;
+    if (expressionNodeEntityListNodePath == null) {
+      result = true;
+    } else {
+      for (LinkedList<ExpressionNodeEntity> expressionNodeEntityList : expressionNodeEntityListNodePath) {
+        if (ignoreExpressionMatch(nodePath, expressionNodeEntityList)) {
+          result = true;
+          break;
+        }
+      }
+    }
+    return result;
   }
 
   private static boolean ignoreExpressionMatch(List<NodeEntity> nodePath,

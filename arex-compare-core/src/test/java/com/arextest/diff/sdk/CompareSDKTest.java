@@ -891,4 +891,29 @@ public class CompareSDKTest {
     Assertions.assertEquals("18", compare.getLogs().get(0).getBaseValue());
   }
 
+  @Test
+  public void testMultiCompare() {
+    String baseMsg = "{\n"
+        + "    \"parameters\": [\n"
+        + "        {}\n"
+        + "    ],\n"
+        + "    \"body\": \"select * from table where ID = 1;select * from table where ID = 2;\",\n"
+        + "    \"dbname\": \"db\"\n"
+        + "}";
+    String testMsg = "{\n"
+        + "    \"parameters\": [\n"
+        + "        {}\n"
+        + "    ],\n"
+        + "    \"body\": \"select * from table where ID = 2;select * from table where ID = 1;\",\n"
+        + "    \"dbname\": \"db\"\n"
+        + "}";
+    CompareSDK sdk = new CompareSDK();
+    CompareOptions compareOptions = CompareOptions.options()
+        .putCategoryType(CategoryType.DATABASE)
+        .putSelectIgnoreCompare(true);
+
+    CompareResult compare = sdk.compare(baseMsg, testMsg, compareOptions);
+    Assertions.assertEquals(0, compare.getCode());
+  }
+
 }

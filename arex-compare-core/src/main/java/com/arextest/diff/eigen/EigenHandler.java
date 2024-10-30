@@ -10,9 +10,10 @@ import com.arextest.diff.model.enumeration.CategoryType;
 import com.arextest.diff.model.pathparse.ExpressionNodeEntity;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 public class EigenHandler {
@@ -41,13 +42,13 @@ public class EigenHandler {
       obj = null;
     }
 
-    LinkedList<LinkedList<ExpressionNodeEntity>> expressionExclusions =
-        jsonPathExpressionHandler.doMultiExpressionParse(rulesConfig.getExpressionExclusions(),
+    List<List<ExpressionNodeEntity>> expressionExclusions = new LinkedList<>();
+    Map<List<ExpressionNodeEntity>, LinkedList<LinkedList<ExpressionNodeEntity>>> listLinkedListMap =
+        jsonPathExpressionHandler.doMultiExpressionParse(
+            rulesConfig.getExpressionExclusions(),
             obj);
-    if (expressionExclusions != null) {
-      rulesConfig.setExpressionExclusions(new ArrayList<>(expressionExclusions));
-    }
-
+    listLinkedListMap.values().forEach(expressionExclusions::addAll);
+    rulesConfig.setExpressionExclusions(expressionExclusions);
     return eigenMapCalculate.doCalculate(obj, rulesConfig, new HashMap<>());
   }
 

@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -54,7 +53,8 @@ public class EigenMapCalculate {
       Map<Integer, Long> eigenMap) {
 
     // ignore by node name and node path
-    if (IgnoreUtil.ignoreProcessor(calculateContext.nodePath, calculateContext.currentNodeEntity,
+    if (IgnoreUtil.ignoreProcessorEngine(calculateContext.nodePath,
+        calculateContext.currentNodeEntity,
         calculateContext.exclusions, calculateContext.expressionExclusions,
         calculateContext.ignoreNodeSet)) {
       return;

@@ -9,6 +9,7 @@ import com.arextest.diff.model.pathparse.ExpressionNodeEntity;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -24,7 +25,7 @@ public class CompareContext {
   public Object currentTestObj;
 
   public List<List<ExpressionNodeEntity>> exclusions;
-  public List<List<ExpressionNodeEntity>> expressionExclusions;
+  public Map<LinkedList<LinkedList<ExpressionNodeEntity>>, LinkedList<LinkedList<ExpressionNodeEntity>>> conditionExclusions;
   public Set<String> ignoreNodeSet;
   public boolean notDistinguishNullAndEmpty = false;
   public boolean nullEqualsNotExist = false;
@@ -61,6 +62,9 @@ public class CompareContext {
   public MsgStructure testMsgStructure;
 
   public byte ignoreReferenceNotFound = 0;
+
+  // 0：object 1：array
+  public int parentNodeType;
 
   public CompareContext() {
     this.currentTraceLeft = new ArrayList<>();

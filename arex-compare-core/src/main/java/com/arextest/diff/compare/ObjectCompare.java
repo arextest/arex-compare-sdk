@@ -1,6 +1,7 @@
 package com.arextest.diff.compare;
 
 import com.arextest.diff.model.compare.CompareContext;
+import com.arextest.diff.model.enumeration.ParentNodeType;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.utils.JacksonHelperUtil;
 import com.arextest.diff.utils.ListUti;
@@ -34,6 +35,7 @@ public class ObjectCompare {
         compareContext.currentNodeRight.add(new NodeEntity(fieldName, 0));
       }
 
+      compareContext.parentNodeType = ParentNodeType.OBJECT;
       GenericCompare.jsonCompare(obj1FieldValue, obj2FieldValue, compareContext);
 
       ListUti.removeLast(compareContext.currentNodeLeft);
@@ -57,6 +59,7 @@ public class ObjectCompare {
         compareContext.currentNodeLeft.add(new NodeEntity(fieldName, 0));
       }
 
+      compareContext.parentNodeType = ParentNodeType.OBJECT;
       GenericCompare.jsonCompare(obj1FieldValue, obj2FieldValue, compareContext);
 
       if (leftExist) {

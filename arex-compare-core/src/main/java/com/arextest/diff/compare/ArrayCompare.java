@@ -6,6 +6,7 @@ import com.arextest.diff.handler.log.LogMarker;
 import com.arextest.diff.handler.log.register.LogRegister;
 import com.arextest.diff.model.compare.CompareContext;
 import com.arextest.diff.model.compare.IndexPair;
+import com.arextest.diff.model.enumeration.ParentNodeType;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.utils.ListUti;
 import com.fasterxml.jackson.databind.node.ArrayNode;
@@ -55,7 +56,8 @@ public class ArrayCompare {
       boolean rightExist = false;
 
       if (correspondRightIndex == -1) {
-        LogRegister.register(element1, element2, LogMarker.RIGHT_ARRAY_MISSING_KEY, compareContext);
+        compareContext.parentNodeType = ParentNodeType.ARRAY;
+        GenericCompare.jsonCompare(element1, element2, compareContext);
       } else {
         element2 = obj2Array.get(correspondRightIndex);
         rightExist = true;
@@ -70,6 +72,7 @@ public class ArrayCompare {
             compareContext.pkListIndexPair,
             compareContext.currentNodeLeft);
         if (needCompare && element1 != null && element2 != null) {
+          compareContext.parentNodeType = ParentNodeType.ARRAY;
           GenericCompare.jsonCompare(element1, element2, compareContext);
         }
       }
@@ -98,7 +101,8 @@ public class ArrayCompare {
       Object element2 = obj2Array.get(i);
       boolean leftExist = false;
       if (correspondLeftIndex == -1) {
-        LogRegister.register(element1, element2, LogMarker.LEFT_ARRAY_MISSING_KEY, compareContext);
+        compareContext.parentNodeType = ParentNodeType.ARRAY;
+        GenericCompare.jsonCompare(element1, element2, compareContext);
       } else {
         element1 = obj1Array.get(correspondLeftIndex);
         leftExist = true;
@@ -111,6 +115,7 @@ public class ArrayCompare {
             compareContext.pkListIndexPair,
             compareContext.currentNodeRight);
         if (needCompare && element1 != null && element2 != null) {
+          compareContext.parentNodeType = ParentNodeType.ARRAY;
           GenericCompare.jsonCompare(element1, element2, compareContext);
         }
       }

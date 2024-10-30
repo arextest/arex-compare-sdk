@@ -40,29 +40,21 @@ public class ArexStringEqualsUtil {
     int baseIndex = 0;
     int testIndex = 0;
 
-    if (baseValueLen == 0) {
-      while (testIndex < testValueLen) {
-        if (isPrefix(testIndex, testStr)) {
-          testIndex = testIndex + 5;
-        } else {
-          return false;
-        }
+    while (testIndex < testValueLen) {
+      if (isPrefix(testIndex, testStr)) {
+        testIndex = testIndex + 5;
+        continue;
       }
-      return true;
-    } else {
-      while (baseIndex < baseValueLen && testIndex < testValueLen) {
-        if (isPrefix(testIndex, testStr)) {
-          testIndex = testIndex + 5;
-          continue;
-        }
-        if (baseStr.charAt(baseIndex) != testStr.charAt(testIndex)) {
-          return false;
-        }
-        baseIndex++;
-        testIndex++;
+      if (baseIndex >= baseValueLen) {
+        return false;
       }
-      return true;
+      if (baseStr.charAt(baseIndex) != testStr.charAt(testIndex)) {
+        return false;
+      }
+      baseIndex++;
+      testIndex++;
     }
+    return true;
   }
 
   private static boolean isPrefix(int testIndex, String testValue) {

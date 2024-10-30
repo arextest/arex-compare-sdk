@@ -29,7 +29,7 @@ public class CompareHandler {
     compareContext.setResponseReferences(keyComputeResponse.getAllReferenceEntities());
 
     compareContext.exclusions = rulesConfig.getExclusions();
-    compareContext.expressionExclusions = rulesConfig.getExpressionExclusions();
+    compareContext.conditionExclusions = rulesConfig.getConditionExclusions();
     compareContext.ignoreNodeSet = rulesConfig.getIgnoreNodeSet();
 
     compareContext.notDistinguishNullAndEmpty = rulesConfig.isNullEqualsEmpty();

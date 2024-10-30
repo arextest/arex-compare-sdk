@@ -6,9 +6,11 @@ import com.arextest.diff.model.key.ListSortEntity;
 import com.arextest.diff.model.key.ReferenceEntity;
 import com.arextest.diff.model.pathparse.ExpressionNodeEntity;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.apache.commons.lang3.tuple.Pair;
 
 public class RulesConfig {
 
@@ -59,6 +61,8 @@ public class RulesConfig {
 
   //region: inner processed class
   private List<List<ExpressionNodeEntity>> expressionExclusions;
+
+  private Map<LinkedList<LinkedList<ExpressionNodeEntity>>, LinkedList<LinkedList<ExpressionNodeEntity>>> conditionExclusions;
 
   //endregion
 
@@ -231,8 +235,16 @@ public class RulesConfig {
     return expressionExclusions;
   }
 
-  public void setExpressionExclusions(
-      List<List<ExpressionNodeEntity>> expressionExclusions) {
+  public void setExpressionExclusions(List<List<ExpressionNodeEntity>> expressionExclusions) {
     this.expressionExclusions = expressionExclusions;
+  }
+
+  public Map<LinkedList<LinkedList<ExpressionNodeEntity>>, LinkedList<LinkedList<ExpressionNodeEntity>>> getConditionExclusions() {
+    return conditionExclusions;
+  }
+
+  public void setConditionExclusions(
+      Map<LinkedList<LinkedList<ExpressionNodeEntity>>, LinkedList<LinkedList<ExpressionNodeEntity>>> conditionExclusions) {
+    this.conditionExclusions = conditionExclusions;
   }
 }

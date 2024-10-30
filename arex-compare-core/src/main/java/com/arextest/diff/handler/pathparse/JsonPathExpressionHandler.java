@@ -11,9 +11,12 @@ import com.arextest.diff.utils.ListUti;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
@@ -29,16 +32,20 @@ public class JsonPathExpressionHandler {
   public void doExpressionParse(RulesConfig rulesConfig,
       Object baseObj, Object testObj) throws ExecutionException, InterruptedException {
 
-    Set<List<ExpressionNodeEntity>> result = new HashSet<>();
+    Map<LinkedList<LinkedList<ExpressionNodeEntity>>, LinkedList<LinkedList<ExpressionNodeEntity>>>
+        conditionExclusions = null;
+
     try {
       List<List<ExpressionNodeEntity>> expressionExclusions = rulesConfig.getExpressionExclusions();
 
-      CompletableFuture<LinkedList<LinkedList<ExpressionNodeEntity>>> future1 = CompletableFuture.supplyAsync(
+      CompletableFuture<Map<List<ExpressionNodeEntity>, LinkedList<LinkedList<ExpressionNodeEntity>>>>
+          future1 = CompletableFuture.supplyAsync(
           () -> doMultiExpressionParse(expressionExclusions, baseObj),
           TaskThreadFactory.jsonObjectThreadPool
       );
 
-      CompletableFuture<LinkedList<LinkedList<ExpressionNodeEntity>>> future2 = CompletableFuture.supplyAsync(
+      CompletableFuture<Map<List<ExpressionNodeEntity>, LinkedList<LinkedList<ExpressionNodeEntity>>>>
+          future2 = CompletableFuture.supplyAsync(
           () -> doMultiExpressionParse(expressionExclusions, testObj),
           TaskThreadFactory.jsonObjectThreadPool
       );
@@ -46,19 +53,20 @@ public class JsonPathExpressionHandler {
       CompletableFuture<Void> voidCompletableFuture = CompletableFuture.allOf(future1, future2);
       voidCompletableFuture.get(Constant.JSON_PATH_PARSE_MINUTES_TIME, TimeUnit.MINUTES);
 
-      result.addAll(future1.get());
-      result.addAll(future2.get());
+      Map<List<ExpressionNodeEntity>, LinkedList<LinkedList<ExpressionNodeEntity>>> baseExpression = future1.get();
+      Map<List<ExpressionNodeEntity>, LinkedList<LinkedList<ExpressionNodeEntity>>> testExpression = future2.get();
+      conditionExclusions = mergeExpression(baseExpression, testExpression);
 
     } catch (RuntimeException | TimeoutException e) {
       LOGGER.warning("doExpressionParse error: " + e.getMessage());
     }
-    rulesConfig.setExpressionExclusions(new LinkedList<>(result));
+    rulesConfig.setConditionExclusions(conditionExclusions);
   }
 
-  public LinkedList<LinkedList<ExpressionNodeEntity>> doMultiExpressionParse(
+  public Map<List<ExpressionNodeEntity>, LinkedList<LinkedList<ExpressionNodeEntity>>> doMultiExpressionParse(
       List<List<ExpressionNodeEntity>> expressionExclusions, Object object) {
-
-    LinkedList<LinkedList<ExpressionNodeEntity>> result = new LinkedList<>();
+    Map<List<ExpressionNodeEntity>, LinkedList<LinkedList<ExpressionNodeEntity>>> result =
+        new HashMap<>();
 
     try {
       if (ListUti.isEmpty(expressionExclusions)) {
@@ -69,7 +77,7 @@ public class JsonPathExpressionHandler {
         LinkedList<LinkedList<ExpressionNodeEntity>> linkedLists = doSinglePathExpressionParse(
             expressionNodeEntityList, 0, expressionNodeEntityList.size(), object, false);
         if (linkedLists != null) {
-          result.addAll(linkedLists);
+          result.put(expressionNodeEntityList, linkedLists);
         }
       }
     } catch (RuntimeException exception) {
@@ -277,6 +285,41 @@ public class JsonPathExpressionHandler {
     } catch (RuntimeException e) {
     }
     return null;
+  }
+
+
+  private Map<LinkedList<LinkedList<ExpressionNodeEntity>>, LinkedList<LinkedList<ExpressionNodeEntity>>> mergeExpression(
+      Map<List<ExpressionNodeEntity>, LinkedList<LinkedList<ExpressionNodeEntity>>> baseExpression,
+      Map<List<ExpressionNodeEntity>, LinkedList<LinkedList<ExpressionNodeEntity>>> testExpression) {
+
+    Map<LinkedList<LinkedList<ExpressionNodeEntity>>, LinkedList<LinkedList<ExpressionNodeEntity>>> result = new HashMap<>();
+
+    Set<List<ExpressionNodeEntity>> baseExpressionKeySet = baseExpression.keySet();
+    Set<List<ExpressionNodeEntity>> testExpresssionKeyset = testExpression.keySet();
+
+    // get the intersection of the two sets
+    Set<List<ExpressionNodeEntity>> temp = new HashSet<>(baseExpressionKeySet);
+    temp.retainAll(testExpresssionKeyset);
+
+    for (Entry<List<ExpressionNodeEntity>, LinkedList<LinkedList<ExpressionNodeEntity>>> entry : baseExpression.entrySet()) {
+      List<ExpressionNodeEntity> key = entry.getKey();
+      LinkedList<LinkedList<ExpressionNodeEntity>> baseValue = entry.getValue();
+      if (temp.contains(key)) {
+        LinkedList<LinkedList<ExpressionNodeEntity>> testValue = testExpression.get(key);
+        result.put(baseValue, testValue);
+      } else {
+        result.put(baseValue, null);
+      }
+    }
+
+    for (Entry<List<ExpressionNodeEntity>, LinkedList<LinkedList<ExpressionNodeEntity>>> entry : testExpression.entrySet()) {
+      List<ExpressionNodeEntity> key = entry.getKey();
+      LinkedList<LinkedList<ExpressionNodeEntity>> testValue = entry.getValue();
+      if (!temp.contains(key)) {
+        result.put(null, testValue);
+      }
+    }
+    return result;
   }
 
 }
