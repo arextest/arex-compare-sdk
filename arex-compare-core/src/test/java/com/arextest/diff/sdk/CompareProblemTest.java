@@ -660,7 +660,7 @@ public class CompareProblemTest {
         + "    \"time\": \"2024-10-18 14:32:26xxxxx\"\n"
         + "}";
     CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
-    Assertions.assertEquals(0, result.getCode());
+    Assertions.assertEquals(1, result.getCode());
   }
 
 
@@ -726,7 +726,7 @@ public class CompareProblemTest {
         .putListSortConfig(Arrays.asList("students"), Arrays.asList(Arrays.asList("key")))
         .putExclusions(Arrays.asList("students", "[key=xiaoming]"));
     CompareResult result = sdk.compare(baseMsg, testMsg, compareOptions);
-    Assertions.assertEquals(0, result.getCode());
+    Assertions.assertEquals(1, result.getLogs().size());
   }
 
   @Test
