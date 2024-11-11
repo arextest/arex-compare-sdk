@@ -61,6 +61,9 @@ public class UnmatchedPairEntity implements Serializable {
   }
 
   public UnmatchedPairEntity buildListKeys(List<String> listKeys) {
+    if (listKeys == null) {
+      return this;
+    }
     this.listKeys = new ArrayList<>(listKeys);
     return this;
   }

@@ -7,7 +7,7 @@
     <groupId>com.arextest</groupId>
     <artifactId>arex-compare-parent</artifactId>
     <packaging>pom</packaging>
-    <version>0.2.17</version>
+    <version>0.2.18</version>
     <modules>
         <module>arex-compare-extension</module>
         <module>arex-compare-core</module>
@@ -89,6 +89,11 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>slf4j-api</artifactId>
                 <version>1.7.21</version>
+            </dependency>
+            <dependency>
+                <groupId>org.javadelight</groupId>
+                <artifactId>delight-nashorn-sandbox</artifactId>
+                <version>0.5.0</version>
             </dependency>
             <dependency>
                 <groupId>org.junit.jupiter</groupId>

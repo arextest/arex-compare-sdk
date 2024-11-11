@@ -1,10 +1,15 @@
 package com.arextest.diff.model;
 
 import com.arextest.diff.handler.decompress.TransformServiceBuilder;
+import com.arextest.diff.model.script.ScriptContentInfo;
+import com.arextest.diff.model.script.ScriptSandbox;
 import com.arextest.diff.utils.StringUtil;
+import java.util.Collection;
 import java.util.Set;
 
 public class GlobalOptions {
+
+  private ScriptSandbox scriptSandbox = new ScriptSandbox();
 
   /**
    * The url address of the plug-in jar which is specified by the interface http or absolute path.
@@ -177,4 +182,39 @@ public class GlobalOptions {
     return onlyCompareExistListElements;
   }
 
+  // region scriptSandbox
+  public GlobalOptions putCompareScript(ScriptContentInfo scriptContentInfo) {
+    scriptSandbox.putCompareScript(scriptContentInfo);
+    return this;
+  }
+
+  public GlobalOptions putCompareScript(Collection<ScriptContentInfo> scriptContentInfo) {
+    if (scriptContentInfo == null || scriptContentInfo.isEmpty()) {
+      return this;
+    }
+    for (ScriptContentInfo script : scriptContentInfo) {
+      scriptSandbox.putCompareScript(script);
+    }
+    return this;
+  }
+
+  public GlobalOptions putScriptMaxCPUTime(long maxCPUTime) {
+    scriptSandbox.getSandbox().setMaxCPUTime(maxCPUTime);
+    return this;
+  }
+
+  public GlobalOptions putScriptMaxMemory(long maxMemory) {
+    scriptSandbox.getSandbox().setMaxMemory(maxMemory);
+    return this;
+  }
+
+  public GlobalOptions putScriptMaxPreparedStatements(int maxPreparedStatements) {
+    scriptSandbox.getSandbox().setMaxPreparedStatements(maxPreparedStatements);
+    return this;
+  }
+
+  public ScriptSandbox getScriptSandbox() {
+    return scriptSandbox;
+  }
+  // endregion
 }

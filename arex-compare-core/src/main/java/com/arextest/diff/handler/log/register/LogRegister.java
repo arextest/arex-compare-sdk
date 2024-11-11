@@ -32,6 +32,10 @@ public class LogRegister {
     }
     LogEntity log = null;
     switch (logMarker) {
+      case UNKNOWN:
+        log = produceLog(obj1, obj2, UnmatchedType.UNMATCHED, ErrorType.NA,
+            compareContext.currentListKeysLeft, compareContext);
+        break;
       case NULL_CHECK:
         log = nullCheck(obj1, obj2, logMarker, compareContext);
         break;

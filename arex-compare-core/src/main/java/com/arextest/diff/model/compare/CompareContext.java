@@ -6,6 +6,8 @@ import com.arextest.diff.model.log.LogEntity;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.model.parse.MsgStructure;
 import com.arextest.diff.model.pathparse.ExpressionNodeEntity;
+import com.arextest.diff.model.script.ScriptCompareConfig.ScriptMethod;
+import com.arextest.diff.model.script.ScriptSandbox;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -60,6 +62,10 @@ public class CompareContext {
 
   public MsgStructure baseMsgStructure;
   public MsgStructure testMsgStructure;
+
+  public ScriptSandbox scriptSandbox;
+
+  public Map<List<String>, ScriptMethod> scriptCompareConfigMap;
 
   public byte ignoreReferenceNotFound = 0;
 

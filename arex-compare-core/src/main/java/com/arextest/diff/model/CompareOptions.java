@@ -1,6 +1,7 @@
 package com.arextest.diff.model;
 
 import com.arextest.diff.model.enumeration.CategoryType;
+import com.arextest.diff.model.script.ScriptCompareConfig;
 import com.arextest.diff.utils.ListUti;
 import com.arextest.diff.utils.StringUtil;
 import java.util.ArrayList;
@@ -23,7 +24,6 @@ public class CompareOptions {
    * The decompressService which is loaded from this pluginJarUrl is the level of each compare.
    */
   private String pluginJarUrl;
-
   /**
    * the collection of the node path chosen to compare
    */
@@ -59,6 +59,9 @@ public class CompareOptions {
    * nodes under the list
    */
   private Map<List<String>, List<List<String>>> listSortConfig;
+
+
+  private List<ScriptCompareConfig> scriptCompareConfigList;
 
   /**
    * change the message and configuration to lowercase, for the inconsistency between the actual
@@ -255,6 +258,28 @@ public class CompareOptions {
     return this;
   }
 
+  public CompareOptions putScriptCompareConfig(ScriptCompareConfig scriptCompareConfig) {
+    if (scriptCompareConfig == null || ListUti.isEmpty(scriptCompareConfig.getNodePath())) {
+      return this;
+    }
+    if (this.scriptCompareConfigList == null) {
+      this.scriptCompareConfigList = new ArrayList<>();
+    }
+    this.scriptCompareConfigList.add(scriptCompareConfig);
+    return this;
+  }
+
+  public CompareOptions putScriptCompareConfig(Collection<ScriptCompareConfig> scriptCompareConfigList) {
+    if (scriptCompareConfigList == null || scriptCompareConfigList.isEmpty()) {
+      return this;
+    }
+    if (this.scriptCompareConfigList == null) {
+      this.scriptCompareConfigList = new ArrayList<>();
+    }
+    this.scriptCompareConfigList.addAll(scriptCompareConfigList);
+    return this;
+  }
+
   public CompareOptions putNameToLower(Boolean nameToLower) {
     this.nameToLower = nameToLower;
     return this;
@@ -330,6 +355,10 @@ public class CompareOptions {
 
   public Map<List<String>, List<List<String>>> getListSortConfig() {
     return listSortConfig;
+  }
+
+  public List<ScriptCompareConfig> getScriptCompareConfigList() {
+    return scriptCompareConfigList;
   }
 
   public Boolean getNameToLower() {
