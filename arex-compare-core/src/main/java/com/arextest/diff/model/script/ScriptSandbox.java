@@ -27,9 +27,6 @@ public class ScriptSandbox {
   }
 
   public void putCompareScript(ScriptContentInfo scriptContentInfo) {
-    if (scriptContentInfo.getAliasName() != null && !scriptContentInfo.getAliasName().isEmpty()) {
-      compareScripts.put(scriptContentInfo.getAliasName(), scriptContentInfo);
-    }
     if (scriptContentInfo.getFunctionName() != null && !scriptContentInfo.getFunctionName()
         .isEmpty()) {
       compareScripts.put(scriptContentInfo.getFunctionName(), scriptContentInfo);
@@ -40,20 +37,19 @@ public class ScriptSandbox {
       ScriptMethod scriptMethod)
       throws ScriptException, NoSuchMethodException {
 
-    String methodName = scriptMethod.getMethodName();
-    String methodArgs = scriptMethod.getMethodArgs();
-    if (!loadedScripts.contains(methodName)) {
-      ScriptContentInfo contentInfo = compareScripts.get(methodName);
+    String functionName = scriptMethod.getFunctionName();
+    String functionArgs = scriptMethod.getFunctionArgs();
+    if (!loadedScripts.contains(functionName)) {
+      ScriptContentInfo contentInfo = compareScripts.get(functionName);
       if (contentInfo == null || contentInfo.getScriptContent() == null
           || contentInfo.getScriptContent().isEmpty()) {
-        throw new IllegalArgumentException("Script content is empty for method: " + methodName);
+        throw new IllegalArgumentException("Script content is empty for method: " + functionName);
       }
       sandbox.eval(contentInfo.getScriptContent());
-      loadedScripts.add(methodName);
+      loadedScripts.add(functionName);
     }
-    String functionName = compareScripts.get(methodName).getFunctionName();
     Invocable invocable = sandbox.getSandboxedInvocable();
-    Object result = invocable.invokeFunction(functionName, context, obj1, obj2, methodArgs);
+    Object result = invocable.invokeFunction(functionName, context, obj1, obj2, functionArgs);
     if (result instanceof Boolean) {
       return (Boolean) result;
     }

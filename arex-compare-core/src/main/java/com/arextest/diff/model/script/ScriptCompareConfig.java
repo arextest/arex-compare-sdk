@@ -34,31 +34,31 @@ public class ScriptCompareConfig {
 
   public static class ScriptMethod {
 
-    private String methodName;
-    private String methodArgs;
+    private String functionName;
+    private String functionArgs;
 
     public ScriptMethod() {
     }
 
-    public ScriptMethod(String methodName, String methodArgs) {
-      this.methodName = methodName;
-      this.methodArgs = methodArgs;
+    public ScriptMethod(String functionName, String functionArgs) {
+      this.functionName = functionName;
+      this.functionArgs = functionArgs;
     }
 
-    public String getMethodName() {
-      return methodName;
+    public String getFunctionName() {
+      return functionName;
     }
 
-    public void setMethodName(String methodName) {
-      this.methodName = methodName;
+    public void setFunctionName(String functionName) {
+      this.functionName = functionName;
     }
 
-    public String getMethodArgs() {
-      return methodArgs;
+    public String getFunctionArgs() {
+      return functionArgs;
     }
 
-    public void setMethodArgs(String methodArgs) {
-      this.methodArgs = methodArgs;
+    public void setFunctionArgs(String functionArgs) {
+      this.functionArgs = functionArgs;
     }
   }
 

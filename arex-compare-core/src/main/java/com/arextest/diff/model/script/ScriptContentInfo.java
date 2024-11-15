@@ -2,8 +2,6 @@ package com.arextest.diff.model.script;
 
 public class ScriptContentInfo {
 
-  private String aliasName;
-
   private String functionName;
 
   private String scriptContent;
@@ -12,18 +10,9 @@ public class ScriptContentInfo {
   public ScriptContentInfo() {
   }
 
-  public ScriptContentInfo(String aliasName, String functionName, String scriptContent) {
-    this.aliasName = aliasName;
+  public ScriptContentInfo(String functionName, String scriptContent) {
     this.functionName = functionName;
     this.scriptContent = scriptContent;
-  }
-
-  public String getAliasName() {
-    return aliasName;
-  }
-
-  public void setAliasName(String aliasName) {
-    this.aliasName = aliasName;
   }
 
   public String getFunctionName() {

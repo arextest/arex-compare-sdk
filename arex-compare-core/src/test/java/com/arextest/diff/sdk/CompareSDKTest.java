@@ -926,7 +926,6 @@ public class CompareSDKTest {
     compareSDK.getGlobalOptions().putCompareScript(
         Arrays.asList(
             new ScriptContentInfo(
-                "test",
                 "tolerance",
                 "function tolerance(context, baseValue, testValue, arg) {\n"
                     + "    if(Math.abs(baseValue - testValue) <= 3) {\n"
@@ -941,7 +940,7 @@ public class CompareSDKTest {
 
     CompareOptions compareOptions = new CompareOptions();
     compareOptions.putScriptCompareConfig(
-        new ScriptCompareConfig(Arrays.asList("score"), new ScriptMethod("test", ""))
+        new ScriptCompareConfig(Arrays.asList("score"), new ScriptMethod("tolerance", ""))
     );
 
     String baseMsg = "{\n"
@@ -961,7 +960,6 @@ public class CompareSDKTest {
     compareSDK.getGlobalOptions().putCompareScript(
         Arrays.asList(
             new ScriptContentInfo(
-                "",
                 "equals",
                 "function equals(context, baseValue, testValue, arg) {\n"
                     + "    if(baseValue === null && testValue !== null) {\n"
@@ -1019,7 +1017,6 @@ public class CompareSDKTest {
     compareSDK.getGlobalOptions().putCompareScript(
         Arrays.asList(
             new ScriptContentInfo(
-                "test",
                 "func_67356dbc7ac2aa763be9f8af",
                 "function func_67356dbc7ac2aa763be9f8af(context, baseValue, testValue, arg) {return true;}"
             )
@@ -1028,7 +1025,7 @@ public class CompareSDKTest {
 
     CompareOptions compareOptions = new CompareOptions();
     compareOptions.putScriptCompareConfig(
-        new ScriptCompareConfig(Arrays.asList("score"), new ScriptMethod("test", ""))
+        new ScriptCompareConfig(Arrays.asList("score"), new ScriptMethod("func_67356dbc7ac2aa763be9f8af", ""))
     );
 
     String baseMsg = "{\n"
@@ -1048,7 +1045,6 @@ public class CompareSDKTest {
     compareSDK.getGlobalOptions().putCompareScript(
         Arrays.asList(
             new ScriptContentInfo(
-                "",
                 "equals",
                 "function equals(context, baseValue, testValue, arg) {\n"
                     + "    if(baseValue === null && testValue !== null) {\n"
