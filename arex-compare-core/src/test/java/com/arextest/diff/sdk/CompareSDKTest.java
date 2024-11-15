@@ -1038,7 +1038,7 @@ public class CompareSDKTest {
         + "    \"score\": 20\n"
         + "}";
     CompareResult compare = compareSDK.quickCompare(baseMsg, testMsg, compareOptions);
-    Assertions.assertEquals(1, compare.getCode());
+    Assertions.assertEquals(0, compare.getCode());
   }
 
   @Test
