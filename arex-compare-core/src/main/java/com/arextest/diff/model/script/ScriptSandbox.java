@@ -36,7 +36,7 @@ public class ScriptSandbox {
     }
   }
 
-  public int invoke(ScriptMethodContext context, Object obj1, Object obj2,
+  public Boolean invoke(ScriptMethodContext context, Object obj1, Object obj2,
       ScriptMethod scriptMethod)
       throws ScriptException, NoSuchMethodException {
 
@@ -53,7 +53,11 @@ public class ScriptSandbox {
     }
     String functionName = compareScripts.get(methodName).getFunctionName();
     Invocable invocable = sandbox.getSandboxedInvocable();
-    return (Integer) invocable.invokeFunction(functionName, context, obj1, obj2, methodArgs);
+    Object result = invocable.invokeFunction(functionName, context, obj1, obj2, methodArgs);
+    if (result instanceof Boolean) {
+      return (Boolean) result;
+    }
+    return false;
   }
 
   private NashornSandbox createSandbox() {

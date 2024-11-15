@@ -930,9 +930,9 @@ public class CompareSDKTest {
                 "tolerance",
                 "function tolerance(context, baseValue, testValue, arg) {\n"
                     + "    if(Math.abs(baseValue - testValue) <= 3) {\n"
-                    + "        return 1;\n"
+                    + "        return true;\n"
                     + "    }else{\n"
-                    + "        return 2;\n"
+                    + "        return false;\n"
                     + "    }\n"
                     + "}"
             )
@@ -965,15 +965,15 @@ public class CompareSDKTest {
                 "equals",
                 "function equals(context, baseValue, testValue, arg) {\n"
                     + "    if(baseValue === null && testValue !== null) {\n"
-                    + "        return 3;\n"
+                    + "        return false;\n"
                     + "    }\n"
                     + "    if(baseValue !== null && testValue === null) {\n"
-                    + "        return 4;\n"
+                    + "        return false;\n"
                     + "    }\n"
                     + "    if(baseValue !== testValue) {\n"
-                    + "        return 2;\n"
+                    + "        return false;\n"
                     + "    }\n"
-                    + "    return 1;\n"
+                    + "    return true;\n"
                     + "}"
             )
         )
@@ -1021,7 +1021,7 @@ public class CompareSDKTest {
             new ScriptContentInfo(
                 "test",
                 "func_67356dbc7ac2aa763be9f8af",
-                "function func_67356dbc7ac2aa763be9f8af(context, baseValue, testValue, arg) {return 2;}"
+                "function func_67356dbc7ac2aa763be9f8af(context, baseValue, testValue, arg) {return true;}"
             )
         )
     );
@@ -1039,6 +1039,66 @@ public class CompareSDKTest {
         + "}";
     CompareResult compare = compareSDK.quickCompare(baseMsg, testMsg, compareOptions);
     Assertions.assertEquals(1, compare.getCode());
+  }
+
+  @Test
+  public void testScriptValueMissing() {
+    CompareSDK compareSDK = new CompareSDK();
+
+    compareSDK.getGlobalOptions().putCompareScript(
+        Arrays.asList(
+            new ScriptContentInfo(
+                "",
+                "equals",
+                "function equals(context, baseValue, testValue, arg) {\n"
+                    + "    if(baseValue === null && testValue !== null) {\n"
+                    + "        return false;\n"
+                    + "    }\n"
+                    + "    if(baseValue !== null && testValue === null) {\n"
+                    + "        return false;\n"
+                    + "    }\n"
+                    + "    if(baseValue !== testValue) {\n"
+                    + "        return false;\n"
+                    + "    }\n"
+                    + "    return true;\n"
+                    + "}"
+            )
+        )
+    );
+
+    CompareOptions compareOptions = new CompareOptions();
+    compareOptions.putScriptCompareConfig(
+        new ScriptCompareConfig(Arrays.asList("scores", "maths"), new ScriptMethod("equals", ""))
+    );
+
+    String baseMsg = "{\n"
+        + "    \"name\": \"xiaoming\",\n"
+        + "    \"scores\": [\n"
+        + "        {\n"
+        + "            \"maths\": 90\n"
+        + "        },\n"
+        + "        {\n"
+        + "            \"maths\": 70\n"
+        + "        }\n"
+        + "    ],\n"
+        + "    \"alias\": null,\n"
+        + "    \"age\": 18\n"
+        + "}";
+    String testMsg = "{\n"
+        + "    \"name\": \"xiaoming\",\n"
+        + "    \"scores\": [\n"
+        + "        {\n"
+        + "            \"maths\": 90\n"
+        + "        },\n"
+        + "        {\n"
+        + "            \"english\": 70\n"
+        + "        }\n"
+        + "    ],\n"
+        + "    \"alias\": null,\n"
+        + "    \"age\": 18\n"
+        + "}";
+    CompareResult compare = compareSDK.compare(baseMsg, testMsg, compareOptions);
+    Assertions.assertEquals(2, compare.getLogs().size());
   }
 
 }

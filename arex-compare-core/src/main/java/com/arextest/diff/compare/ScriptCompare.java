@@ -3,7 +3,6 @@ package com.arextest.diff.compare;
 import com.arextest.diff.handler.log.LogMarker;
 import com.arextest.diff.handler.log.register.LogRegister;
 import com.arextest.diff.model.compare.CompareContext;
-import com.arextest.diff.model.enumeration.ParentNodeType;
 import com.arextest.diff.model.exception.FindErrorException;
 import com.arextest.diff.model.script.ScriptCompareConfig.ScriptMethod;
 import com.arextest.diff.model.script.ScriptMethodContext;
@@ -33,40 +32,11 @@ public class ScriptCompare {
     Object testValue = JacksonHelperUtil.objectMapper.convertValue(obj2, Object.class);
     ScriptSandbox scriptSandbox = compareContext.scriptSandbox;
     ScriptMethod scriptMethod = compareContext.scriptCompareConfigMap.get(fuzzyPath);
-    int result = scriptSandbox.invoke(context, baseValue, testValue, scriptMethod);
-    if (result == ScriptCompareType.Matched) {
+    Boolean result = scriptSandbox.invoke(context, baseValue, testValue, scriptMethod);
+    if (result) {
       return;
     }
-    LogRegister.register(obj1, obj2,
-        ScriptCompareType.convert(result, compareContext.parentNodeType), compareContext);
+    LogRegister.register(obj1, obj2, LogMarker.VALUE_DIFF, compareContext);
   }
-
-  public interface ScriptCompareType {
-
-    int Matched = 1;
-    int Unmatched = 2;
-    // the node of basic msg is missing
-    int LEFT_MISSING = 3;
-    // the node of test msg is missing
-    int RIGHT_MISSING = 4;
-
-    static LogMarker convert(int type, int parentType) {
-      switch (type) {
-        case Unmatched:
-          return LogMarker.VALUE_DIFF;
-        case LEFT_MISSING:
-          return parentType == ParentNodeType.OBJECT ? LogMarker.LEFT_OBJECT_MISSING
-              : LogMarker.LEFT_ARRAY_MISSING;
-        case RIGHT_MISSING:
-          return parentType == ParentNodeType.OBJECT ? LogMarker.RIGHT_OBJECT_MISSING
-              : LogMarker.RIGHT_ARRAY_MISSING;
-        default:
-          return LogMarker.UNKNOWN;
-      }
-
-    }
-
-  }
-
 
 }

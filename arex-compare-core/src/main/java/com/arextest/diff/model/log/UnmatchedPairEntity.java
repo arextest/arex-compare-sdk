@@ -85,19 +85,14 @@ public class UnmatchedPairEntity implements Serializable {
   }
 
   private List<NodeEntity> deepCopy(List<NodeEntity> origList) {
-    if (origList instanceof ArrayList) {
-      return (List<NodeEntity>) ((ArrayList) origList).clone();
-
-    } else {
-      List<NodeEntity> nodeEntities = new ArrayList<>();
-      if (origList != null) {
-        for (NodeEntity node : origList) {
-          nodeEntities.add(new NodeEntity(node.getNodeName(), node.getIndex()));
-        }
-      }
-      return nodeEntities;
+    if (origList == null) {
+      return null;
     }
-
+    List<NodeEntity> nodeEntities = new ArrayList<>();
+    for (NodeEntity node : origList) {
+      nodeEntities.add(new NodeEntity(node.getNodeName(), node.getIndex()));
+    }
+    return nodeEntities;
   }
 
 
