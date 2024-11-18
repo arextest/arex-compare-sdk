@@ -5,6 +5,8 @@ import com.arextest.diff.model.enumeration.CategoryType;
 import com.arextest.diff.model.key.ListSortEntity;
 import com.arextest.diff.model.key.ReferenceEntity;
 import com.arextest.diff.model.pathparse.ExpressionNodeEntity;
+import com.arextest.diff.model.script.ScriptCompareConfig.ScriptMethod;
+import com.arextest.diff.model.script.ScriptSandbox;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -13,6 +15,8 @@ import java.util.Set;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class RulesConfig {
+
+  private ScriptSandbox scriptSandbox;
 
   /**
    * @see CategoryType
@@ -41,6 +45,8 @@ public class RulesConfig {
 
   private List<ListSortEntity> listSortEntities = Collections.emptyList();
 
+  private Map<List<String>, ScriptMethod> scriptCompareConfigMap;
+
   private boolean nameToLower;
 
   private boolean nullEqualsEmpty;
@@ -67,6 +73,14 @@ public class RulesConfig {
   //endregion
 
   public RulesConfig() {
+  }
+
+  public ScriptSandbox getScriptSandbox() {
+    return scriptSandbox;
+  }
+
+  public void setScriptSandbox(ScriptSandbox scriptSandbox) {
+    this.scriptSandbox = scriptSandbox;
   }
 
   public String getCategoryType() {
@@ -157,6 +171,15 @@ public class RulesConfig {
 
   public void setListSortEntities(List<ListSortEntity> listSortEntities) {
     this.listSortEntities = listSortEntities;
+  }
+
+  public Map<List<String>, ScriptMethod> getScriptCompareConfigMap() {
+    return scriptCompareConfigMap;
+  }
+
+  public void setScriptCompareConfigMap(
+      Map<List<String>, ScriptMethod> scriptCompareConfigMap) {
+    this.scriptCompareConfigMap = scriptCompareConfigMap;
   }
 
   public boolean isNameToLower() {

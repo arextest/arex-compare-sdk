@@ -9,6 +9,8 @@ import com.arextest.diff.model.TransformConfig;
 import com.arextest.diff.model.TransformConfig.TransformMethod;
 import com.arextest.diff.model.key.ListSortEntity;
 import com.arextest.diff.model.key.ReferenceEntity;
+import com.arextest.diff.model.script.ScriptCompareConfig;
+import com.arextest.diff.model.script.ScriptCompareConfig.ScriptMethod;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -22,6 +24,7 @@ public class OptionsToRulesConvert {
     RulesConfig rulesConfig = new RulesConfig();
     rulesConfig.setBaseMsg(baseMsg);
     rulesConfig.setTestMsg(testMsg);
+    rulesConfig.setScriptSandbox(globalOptions.getScriptSandbox());
 
     systemToRules(rulesConfig);
     globalOptionsToRules(globalOptions, rulesConfig);
@@ -43,6 +46,8 @@ public class OptionsToRulesConvert {
         FieldToLowerUtil.mapKeyToLower(rulesConfig.getTransformConfigMap()));
     FieldToLowerUtil.referenceToLower(rulesConfig.getReferenceEntities());
     FieldToLowerUtil.keyConfigToLower(rulesConfig.getListSortEntities());
+    rulesConfig.setScriptCompareConfigMap(
+        FieldToLowerUtil.mapKeyToLower(rulesConfig.getScriptCompareConfigMap()));
   }
 
 
@@ -102,6 +107,8 @@ public class OptionsToRulesConvert {
     rulesConfig.setReferenceEntities(referenceConfigConvert(compareOptions.getReferenceConfig()));
     rulesConfig.setListSortEntities(listSortConfigConvert(compareOptions.getListSortConfig(),
         rulesConfig.getReferenceEntities()));
+    rulesConfig.setScriptCompareConfigMap(
+        scriptCompareConfigConvert(compareOptions.getScriptCompareConfigList()));
     if (compareOptions.getSelectIgnoreCompare() != null) {
       rulesConfig.setSelectIgnoreCompare(compareOptions.getSelectIgnoreCompare());
     }
@@ -221,5 +228,18 @@ public class OptionsToRulesConvert {
     return listKeyEntities;
   }
 
+
+  private static Map<List<String>, ScriptMethod> scriptCompareConfigConvert(
+      List<ScriptCompareConfig> scriptCompareConfigList) {
+    if (scriptCompareConfigList == null || scriptCompareConfigList.isEmpty()) {
+      return Collections.emptyMap();
+    }
+
+    Map<List<String>, ScriptMethod> result = new HashMap<>(scriptCompareConfigList.size());
+    for (ScriptCompareConfig scriptCompareConfig : scriptCompareConfigList) {
+      result.put(scriptCompareConfig.getNodePath(), scriptCompareConfig.getScriptMethod());
+    }
+    return result;
+  }
 
 }

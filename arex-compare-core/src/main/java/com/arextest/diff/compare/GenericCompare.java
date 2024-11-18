@@ -4,6 +4,7 @@ import com.arextest.diff.handler.log.LogMarker;
 import com.arextest.diff.handler.log.register.LogRegister;
 import com.arextest.diff.model.compare.CompareContext;
 import com.arextest.diff.model.enumeration.ParentNodeType;
+import com.arextest.diff.model.exception.FindErrorException;
 import com.arextest.diff.model.log.NodeEntity;
 import com.arextest.diff.utils.IgnoreUtil;
 import com.arextest.diff.utils.ListUti;
@@ -12,8 +13,11 @@ import com.fasterxml.jackson.databind.node.NullNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Logger;
 
 public class GenericCompare {
+
+  private static final Logger LOGGER = Logger.getLogger(GenericCompare.class.getName());
 
   public static void jsonCompare(Object obj1, Object obj2, CompareContext compareContext)
       throws Exception {
@@ -40,6 +44,18 @@ public class GenericCompare {
         compareContext.currentNodeRight, compareContext.exclusions,
         compareContext.conditionExclusions, compareContext.ignoreNodeSet)) {
       return;
+    }
+
+    // custom compare
+    try {
+      if (ScriptCompare.isScriptComparisonRequired(fuzzyPath, compareContext)) {
+        ScriptCompare.scriptCompare(obj1, obj2, fuzzyPath, compareContext);
+        return;
+      }
+    } catch (FindErrorException e) {
+      throw e;
+    } catch (Exception e) {
+      LOGGER.warning("Script compare error: " + e.getMessage());
     }
 
     // field missing

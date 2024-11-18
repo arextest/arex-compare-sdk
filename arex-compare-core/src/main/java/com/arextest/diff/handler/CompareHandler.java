@@ -37,6 +37,9 @@ public class CompareHandler {
     compareContext.logProcess = logProcess;
     compareContext.quickCompare = rulesConfig.isQuickCompare();
 
+    compareContext.scriptSandbox = rulesConfig.getScriptSandbox();
+    compareContext.scriptCompareConfigMap = rulesConfig.getScriptCompareConfigMap();
+
     if (msgStructureFuture != null) {
       MutablePair<MsgStructure, MsgStructure> msgStructureMutablePair = msgStructureFuture.join();
       compareContext.baseMsgStructure = msgStructureMutablePair.getLeft();

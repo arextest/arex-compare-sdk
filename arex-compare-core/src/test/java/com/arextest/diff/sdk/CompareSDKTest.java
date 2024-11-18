@@ -6,6 +6,9 @@ import com.arextest.diff.model.DecompressConfig;
 import com.arextest.diff.model.TransformConfig;
 import com.arextest.diff.model.TransformConfig.TransformMethod;
 import com.arextest.diff.model.enumeration.CategoryType;
+import com.arextest.diff.model.script.ScriptCompareConfig;
+import com.arextest.diff.model.script.ScriptCompareConfig.ScriptMethod;
+import com.arextest.diff.model.script.ScriptContentInfo;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -914,6 +917,184 @@ public class CompareSDKTest {
 
     CompareResult compare = sdk.compare(baseMsg, testMsg, compareOptions);
     Assertions.assertEquals(0, compare.getCode());
+  }
+
+  @Test
+  public void testScriptCompare() {
+    CompareSDK compareSDK = new CompareSDK();
+
+    compareSDK.getGlobalOptions().putCompareScript(
+        Arrays.asList(
+            new ScriptContentInfo(
+                "tolerance",
+                "function tolerance(context, baseValue, testValue, arg) {\n"
+                    + "    if(Math.abs(baseValue - testValue) <= 3) {\n"
+                    + "        return true;\n"
+                    + "    }else{\n"
+                    + "        return false;\n"
+                    + "    }\n"
+                    + "}"
+            )
+        )
+    );
+
+    CompareOptions compareOptions = new CompareOptions();
+    compareOptions.putScriptCompareConfig(
+        new ScriptCompareConfig(Arrays.asList("score"), new ScriptMethod("tolerance", ""))
+    );
+
+    String baseMsg = "{\n"
+        + "    \"score\": 18"
+        + "}";
+    String testMsg = "{\n"
+        + "    \"score\": 20\n"
+        + "}";
+    CompareResult compare = compareSDK.compare(baseMsg, testMsg, compareOptions);
+    Assertions.assertEquals(0, compare.getLogs().size());
+  }
+
+  @Test
+  public void testScriptCompare2() {
+    CompareSDK compareSDK = new CompareSDK();
+
+    compareSDK.getGlobalOptions().putCompareScript(
+        Arrays.asList(
+            new ScriptContentInfo(
+                "equals",
+                "function equals(context, baseValue, testValue, arg) {\n"
+                    + "    if(baseValue === null && testValue !== null) {\n"
+                    + "        return false;\n"
+                    + "    }\n"
+                    + "    if(baseValue !== null && testValue === null) {\n"
+                    + "        return false;\n"
+                    + "    }\n"
+                    + "    if(baseValue !== testValue) {\n"
+                    + "        return false;\n"
+                    + "    }\n"
+                    + "    return true;\n"
+                    + "}"
+            )
+        )
+    );
+
+    CompareOptions compareOptions = new CompareOptions();
+    compareOptions.putScriptCompareConfig(
+        new ScriptCompareConfig(Arrays.asList("scores", "maths"), new ScriptMethod("equals", ""))
+    );
+
+    String baseMsg = "{\n"
+        + "    \"name\": \"xiaoming\",\n"
+        + "    \"scores\": [\n"
+        + "        {\n"
+        + "            \"maths\": 90\n"
+        + "        },\n"
+        + "        {\n"
+        + "            \"maths\": 70\n"
+        + "        }\n"
+        + "    ],\n"
+        + "    \"alias\": null,\n"
+        + "    \"age\": 18\n"
+        + "}";
+    String testMsg = "{\n"
+        + "    \"name\": \"xiaoming\",\n"
+        + "    \"scores\": [\n"
+        + "        {\n"
+        + "            \"maths\": 18\n"
+        + "        }\n"
+        + "    ],\n"
+        + "    \"alias\": null,\n"
+        + "    \"age\": 18\n"
+        + "}";
+    CompareResult compare = compareSDK.compare(baseMsg, testMsg, compareOptions);
+    Assertions.assertEquals(2, compare.getLogs().size());
+  }
+
+
+  @Test
+  public void testScriptCompare3() {
+    CompareSDK compareSDK = new CompareSDK();
+
+    compareSDK.getGlobalOptions().putCompareScript(
+        Arrays.asList(
+            new ScriptContentInfo(
+                "func_67356dbc7ac2aa763be9f8af",
+                "function func_67356dbc7ac2aa763be9f8af(context, baseValue, testValue, arg) {return true;}"
+            )
+        )
+    );
+
+    CompareOptions compareOptions = new CompareOptions();
+    compareOptions.putScriptCompareConfig(
+        new ScriptCompareConfig(Arrays.asList("score"), new ScriptMethod("func_67356dbc7ac2aa763be9f8af", ""))
+    );
+
+    String baseMsg = "{\n"
+        + "    \"score\": 18"
+        + "}";
+    String testMsg = "{\n"
+        + "    \"score\": 20\n"
+        + "}";
+    CompareResult compare = compareSDK.quickCompare(baseMsg, testMsg, compareOptions);
+    Assertions.assertEquals(0, compare.getCode());
+  }
+
+  @Test
+  public void testScriptValueMissing() {
+    CompareSDK compareSDK = new CompareSDK();
+
+    compareSDK.getGlobalOptions().putCompareScript(
+        Arrays.asList(
+            new ScriptContentInfo(
+                "equals",
+                "function equals(context, baseValue, testValue, arg) {\n"
+                    + "    if(baseValue === null && testValue !== null) {\n"
+                    + "        return false;\n"
+                    + "    }\n"
+                    + "    if(baseValue !== null && testValue === null) {\n"
+                    + "        return false;\n"
+                    + "    }\n"
+                    + "    if(baseValue !== testValue) {\n"
+                    + "        return false;\n"
+                    + "    }\n"
+                    + "    return true;\n"
+                    + "}"
+            )
+        )
+    );
+
+    CompareOptions compareOptions = new CompareOptions();
+    compareOptions.putScriptCompareConfig(
+        new ScriptCompareConfig(Arrays.asList("scores", "maths"), new ScriptMethod("equals", ""))
+    );
+
+    String baseMsg = "{\n"
+        + "    \"name\": \"xiaoming\",\n"
+        + "    \"scores\": [\n"
+        + "        {\n"
+        + "            \"maths\": 90\n"
+        + "        },\n"
+        + "        {\n"
+        + "            \"maths\": 70\n"
+        + "        }\n"
+        + "    ],\n"
+        + "    \"alias\": null,\n"
+        + "    \"age\": 18\n"
+        + "}";
+    String testMsg = "{\n"
+        + "    \"name\": \"xiaoming\",\n"
+        + "    \"scores\": [\n"
+        + "        {\n"
+        + "            \"maths\": 90\n"
+        + "        },\n"
+        + "        {\n"
+        + "            \"english\": 70\n"
+        + "        }\n"
+        + "    ],\n"
+        + "    \"alias\": null,\n"
+        + "    \"age\": 18\n"
+        + "}";
+    CompareResult compare = compareSDK.compare(baseMsg, testMsg, compareOptions);
+    Assertions.assertEquals(2, compare.getLogs().size());
   }
 
 }
