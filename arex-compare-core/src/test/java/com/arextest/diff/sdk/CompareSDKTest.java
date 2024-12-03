@@ -1102,8 +1102,6 @@ public class CompareSDKTest {
 
   @Test
   public void testScriptCompare4() throws Exception {
-    TransformMethod transformMethodZstd = new TransformMethod("Base64", "");
-    TransformMethod transformMethodGzip = new TransformMethod("Gzip", null);
     CompareSDK compareSDK = new CompareSDK();
     compareSDK.getGlobalOptions()
         .putNameToLower(true)
@@ -1117,10 +1115,30 @@ public class CompareSDKTest {
 
     CompareResult result = compareSDK.compare(baseMsg, testMsg, options);
     Assertions.assertEquals(2, result.getLogs().size());
-    Assertions.assertEquals(2,result.getLogs().get(0).getPathPair().getLeftUnmatchedPath().size());
-    Assertions.assertEquals(2,result.getLogs().get(0).getPathPair().getRightUnmatchedPath().size());
+    Assertions.assertEquals(2, result.getLogs().get(0).getPathPair().getLeftUnmatchedPath().size());
+    Assertions.assertEquals(2,
+        result.getLogs().get(0).getPathPair().getRightUnmatchedPath().size());
     Assertions.assertEquals("CNY", result.getLogs().get(0).getBaseValue());
     Assertions.assertEquals("USD", result.getLogs().get(0).getTestValue());
+  }
+
+
+  @Test
+  public void testScriptCompare5() throws Exception {
+    CompareSDK compareSDK = new CompareSDK();
+    compareSDK.getGlobalOptions()
+        .putNameToLower(true)
+        .putNullEqualsEmpty(true)
+        .putPluginJarUrl("./lib/arex-compare-sdk-plugin-0.1.0-jar-with-dependencies.jar");
+
+    String baseMsg = "{\"root\":{\"UPPERCASE\":\"{\\\"customerCurrency\\\":\\\"CNY\\\"}\",\"otherNode\":\"otherNode1\"}}";
+    String testMsg = "{\"root\":{\"UPPERCASE\":\"{\\\"customerCurrency\\\":\\\"USD\\\"}\",\"otherNode\":\"otherNode2\"}}";
+
+    CompareOptions options = new CompareOptions();
+
+    CompareResult result = compareSDK.compare(baseMsg, testMsg, options);
+    Assertions.assertEquals(2, result.getParseNodePaths().get("root.uppercase").size());
+    Assertions.assertEquals("{\"customerCurrency\":\"CNY\"}", result.getParseNodePaths().get("root.uppercase").get(0));
   }
 
 }
