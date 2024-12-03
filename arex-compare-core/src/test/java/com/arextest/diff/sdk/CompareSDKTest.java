@@ -9,6 +9,8 @@ import com.arextest.diff.model.enumeration.CategoryType;
 import com.arextest.diff.model.script.ScriptCompareConfig;
 import com.arextest.diff.model.script.ScriptCompareConfig.ScriptMethod;
 import com.arextest.diff.model.script.ScriptContentInfo;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -1025,7 +1027,8 @@ public class CompareSDKTest {
 
     CompareOptions compareOptions = new CompareOptions();
     compareOptions.putScriptCompareConfig(
-        new ScriptCompareConfig(Arrays.asList("score"), new ScriptMethod("func_67356dbc7ac2aa763be9f8af", ""))
+        new ScriptCompareConfig(Arrays.asList("score"),
+            new ScriptMethod("func_67356dbc7ac2aa763be9f8af", ""))
     );
 
     String baseMsg = "{\n"
@@ -1095,6 +1098,29 @@ public class CompareSDKTest {
         + "}";
     CompareResult compare = compareSDK.compare(baseMsg, testMsg, compareOptions);
     Assertions.assertEquals(2, compare.getLogs().size());
+  }
+
+  @Test
+  public void testScriptCompare4() throws Exception {
+    TransformMethod transformMethodZstd = new TransformMethod("Base64", "");
+    TransformMethod transformMethodGzip = new TransformMethod("Gzip", null);
+    CompareSDK compareSDK = new CompareSDK();
+    compareSDK.getGlobalOptions()
+        .putNameToLower(true)
+        .putNullEqualsEmpty(true)
+        .putPluginJarUrl("./lib/arex-compare-sdk-plugin-0.1.0-jar-with-dependencies.jar");
+
+    String baseMsg = "{\"UPPERCASE\":\"{\\\"customerCurrency\\\":\\\"CNY\\\"}\",\"otherNode\":\"otherNode1\"}";
+    String testMsg = "{\"UPPERCASE\":\"{\\\"customerCurrency\\\":\\\"USD\\\"}\",\"otherNode\":\"otherNode2\"}";
+
+    CompareOptions options = new CompareOptions();
+
+    CompareResult result = compareSDK.compare(baseMsg, testMsg, options);
+    Assertions.assertEquals(2, result.getLogs().size());
+    Assertions.assertEquals(2,result.getLogs().get(0).getPathPair().getLeftUnmatchedPath().size());
+    Assertions.assertEquals(2,result.getLogs().get(0).getPathPair().getRightUnmatchedPath().size());
+    Assertions.assertEquals("CNY", result.getLogs().get(0).getBaseValue());
+    Assertions.assertEquals("USD", result.getLogs().get(0).getTestValue());
   }
 
 }

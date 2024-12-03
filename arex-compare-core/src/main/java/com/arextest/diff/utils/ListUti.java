@@ -56,13 +56,21 @@ public class ListUti {
   }
 
   public static List<String> convertToStringList(List<NodeEntity> list) {
+    return convertToStringList(list,false);
+  }
+
+  public static List<String> convertToStringList(List<NodeEntity> list, boolean ignoreCase) {
     if (list == null || list.size() == 0) {
       return Collections.emptyList();
     }
     List<String> nodes = new ArrayList<>();
     for (int i = 0; i < list.size(); i++) {
       if (list.get(i).getNodeName() != null) {
-        nodes.add(list.get(i).getNodeName());
+        if (ignoreCase) {
+          nodes.add(list.get(i).getNodeName().toLowerCase());
+        } else {
+          nodes.add(list.get(i).getNodeName());
+        }
       }
     }
     return nodes;

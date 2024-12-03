@@ -60,7 +60,7 @@ public class StringAndCompressParse {
       ObjectNode jsonObject = (ObjectNode) obj;
       List<String> names = JacksonHelperUtil.getNames(jsonObject);
       for (String fieldName : names) {
-        currentNode.add(new NodeEntity(nameToLower ? fieldName.toLowerCase() : fieldName, 0));
+        currentNode.add(new NodeEntity(fieldName, 0));
         Object objFieldValue = jsonObject.get(fieldName);
         getJSONParse(objFieldValue, obj);
         ListUti.removeLast(currentNode);
@@ -82,7 +82,7 @@ public class StringAndCompressParse {
       if (transFormConfigMap == null || transFormConfigMap.isEmpty()) {
         objectBooleanPair = processStringParse(value, preObj);
       } else {
-        List<String> nodePath = ListUti.convertToStringList(currentNode);
+        List<String> nodePath = ListUti.convertToStringList(currentNode, nameToLower);
         if (transFormConfigMap.containsKey(nodePath)) {
           List<TransformMethod> transformMethodList = this.transFormConfigMap.get(nodePath);
           objectBooleanPair = processCompress(value, this.pluginJarUrl, transformMethodList,
