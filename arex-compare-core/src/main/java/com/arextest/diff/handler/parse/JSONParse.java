@@ -34,7 +34,7 @@ public class JSONParse {
     stringAndCompressParse.setNameToLower(rulesConfig.isNameToLower());
     stringAndCompressParse.setPluginJarUrl(rulesConfig.getPluginJarUrl());
     stringAndCompressParse.setTransFormConfigMap(rulesConfig.getTransformConfigMap());
-    stringAndCompressParse.getJSONParse(obj, obj);
+    stringAndCompressParse.getJSONParse(obj, obj, null);
     // Convert field names in JSONObject to lowercase
     if (rulesConfig.isNameToLower()) {
       NameConvertUtil.nameConvert(obj);

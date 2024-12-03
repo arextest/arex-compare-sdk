@@ -51,7 +51,7 @@ public class StringAndCompressParse {
     this.pluginJarUrl = pluginJarUrl;
   }
 
-  public void getJSONParse(Object obj, Object preObj) {
+  public void getJSONParse(Object obj, Object preObj, String currentName) {
     if (obj == null || obj instanceof NullNode) {
       return;
     }
@@ -60,9 +60,9 @@ public class StringAndCompressParse {
       ObjectNode jsonObject = (ObjectNode) obj;
       List<String> names = JacksonHelperUtil.getNames(jsonObject);
       for (String fieldName : names) {
-        currentNode.add(new NodeEntity(fieldName, 0));
+        currentNode.add(new NodeEntity(nameToLower ? fieldName.toLowerCase() : fieldName, 0));
         Object objFieldValue = jsonObject.get(fieldName);
-        getJSONParse(objFieldValue, obj);
+        getJSONParse(objFieldValue, obj, fieldName);
         ListUti.removeLast(currentNode);
       }
     } else if (obj instanceof ArrayNode) {
@@ -70,7 +70,7 @@ public class StringAndCompressParse {
       for (int i = 0; i < objArray.size(); i++) {
         currentNode.add(new NodeEntity(null, i));
         Object element = objArray.get(i);
-        getJSONParse(element, obj);
+        getJSONParse(element, obj, String.valueOf(i));
         ListUti.removeLast(currentNode);
       }
 
@@ -82,7 +82,7 @@ public class StringAndCompressParse {
       if (transFormConfigMap == null || transFormConfigMap.isEmpty()) {
         objectBooleanPair = processStringParse(value, preObj);
       } else {
-        List<String> nodePath = ListUti.convertToStringList(currentNode, nameToLower);
+        List<String> nodePath = ListUti.convertToStringList(currentNode);
         if (transFormConfigMap.containsKey(nodePath)) {
           List<TransformMethod> transformMethodList = this.transFormConfigMap.get(nodePath);
           objectBooleanPair = processCompress(value, this.pluginJarUrl, transformMethodList,
@@ -96,10 +96,9 @@ public class StringAndCompressParse {
         return;
       }
       if (Objects.equals(objectBooleanPair.getValue(), Boolean.TRUE)) {
-        getJSONParse(objectBooleanPair.getKey(), preObj);
+        getJSONParse(objectBooleanPair.getKey(), preObj, null);
       }
 
-      String currentName = getCurrentName(currentNode);
       if (preObj instanceof ObjectNode) {
         ((ObjectNode) preObj).set(currentName, objectBooleanPair.getKey());
         original.put(new ArrayList<>(currentNode), value);
